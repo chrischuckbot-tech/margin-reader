@@ -210,6 +210,10 @@ function bindEvents() {
   });
   window.addEventListener("scroll", handleScroll, { passive: true });
   window.addEventListener("popstate", restoreRoute);
+  window.addEventListener("pagehide", saveProgress);
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") saveProgress();
+  });
   window.addEventListener("beforeinstallprompt", (event) => {
     event.preventDefault();
     state.installPrompt = event;
@@ -260,6 +264,8 @@ async function restoreRoute() {
 
 function showLibrary(push = true) {
   saveProgress();
+  clearTimeout(state.scrollTimer);
+  state.currentUrl = "";
   closePanels();
   els.readerView.hidden = true;
   els.libraryView.hidden = false;
@@ -585,14 +591,15 @@ function updateReadingProgress() {
 }
 
 function saveProgress() {
-  if (!state.publication || els.readerView.hidden || !state.chapters.length) return;
+  const chapter = state.chapters[state.chapterIndex];
+  if (!state.publication || els.readerView.hidden || !state.currentUrl || !chapter || !sameDocument(chapter.url, state.currentUrl)) return;
   const values = loadJSON(STORAGE.progress, {});
   const max = document.documentElement.scrollHeight - innerHeight;
   const chapterPercent = max > 0 ? Math.min(1, scrollY / max) : 1;
   values[state.publication.id] = {
     chapterIndex: state.chapterIndex,
     chapterUrl: state.currentUrl,
-    chapterTitle: state.chapters[state.chapterIndex]?.title,
+    chapterTitle: chapter.title,
     scrollY,
     chapterPercent,
     overallPercent: ((state.chapterIndex + chapterPercent) / state.chapters.length) * 100,
@@ -928,9 +935,16 @@ async function installApp() {
   els.installButton.hidden = true;
 }
 
-function registerServiceWorker() {
+async function registerServiceWorker() {
   if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("sw.js").catch(() => {});
+    try {
+      const registration = await navigator.serviceWorker.register("sw.js", { updateViaCache: "none" });
+      registration.update().catch(() => {});
+      const readyRegistration = await navigator.serviceWorker.ready;
+      readyRegistration.active?.postMessage({ type: "CACHE_PUBLICATIONS" });
+    } catch {
+      // The reader still works online when service workers are unavailable.
+    }
   }
 }
 

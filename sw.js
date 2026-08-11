@@ -1,4 +1,4 @@
-const SHELL_CACHE = "margin-shell-v4";
+const SHELL_CACHE = "margin-shell-v5";
 const CONTENT_CACHE = "margin-content-v1";
 const PUBLICATION_MANIFEST = "./data/publications.json";
 const PUBLICATION_HOSTS = new Set(["abseil.io", "google.github.io", "aosabook.org"]);
@@ -15,21 +15,35 @@ const SHELL_ASSETS = [
   "./assets/apple-touch-icon.png",
 ];
 
+let publicationCacheJob = null;
+
 self.addEventListener("install", (event) => {
   event.waitUntil((async () => {
     await caches.open(SHELL_CACHE).then((cache) => cache.addAll(SHELL_ASSETS));
-    await cachePublications();
     self.skipWaiting();
   })());
 });
 
 self.addEventListener("activate", (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) => Promise.all(
+  event.waitUntil((async () => {
+    await caches.keys().then((keys) => Promise.all(
       keys.filter((key) => key.startsWith("margin-shell-") && key !== SHELL_CACHE).map((key) => caches.delete(key)),
-    )),
-  );
-  self.clients.claim();
+    ));
+    await self.clients.claim();
+
+    // Home-screen apps can keep the original document alive for days. Reload
+    // existing windows once so a newly activated shell is visible immediately.
+    const windows = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+    windows.forEach((client) => { client.navigate(client.url).catch(() => {}); });
+  })());
+});
+
+self.addEventListener("message", (event) => {
+  if (event.data?.type !== "CACHE_PUBLICATIONS") return;
+  if (!publicationCacheJob) {
+    publicationCacheJob = cachePublications().finally(() => { publicationCacheJob = null; });
+  }
+  event.waitUntil(publicationCacheJob);
 });
 
 async function cachePublications() {
@@ -89,11 +103,30 @@ self.addEventListener("fetch", (event) => {
   const isLocalPublication = isAppAsset && url.pathname.includes("/publications/");
   const isPublicationAsset = isLocalPublication || PUBLICATION_HOSTS.has(url.hostname);
   if (!isAppAsset && !isPublicationAsset) return;
+
+  if (event.request.mode === "navigate") {
+    event.respondWith(fetch(event.request).then((response) => {
+      const copy = response.clone();
+      caches.open(SHELL_CACHE).then((cache) => cache.put("./index.html", copy));
+      return response;
+    }).catch(() => caches.match("./index.html")));
+    return;
+  }
+
+  if (isAppAsset && !isLocalPublication) {
+    event.respondWith(fetch(event.request).then((response) => {
+      const copy = response.clone();
+      caches.open(SHELL_CACHE).then((cache) => cache.put(event.request, copy));
+      return response;
+    }).catch(() => caches.match(event.request)));
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then((cached) => cached || fetch(event.request).then((response) => {
       const copy = response.clone();
-      caches.open(isAppAsset && !isLocalPublication ? SHELL_CACHE : CONTENT_CACHE).then((cache) => cache.put(event.request, copy));
+      caches.open(CONTENT_CACHE).then((cache) => cache.put(event.request, copy));
       return response;
-    }).catch(() => isAppAsset ? caches.match("./index.html") : Response.error())),
+    }).catch(() => Response.error())),
   );
 });
