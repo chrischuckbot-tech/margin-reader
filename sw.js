@@ -1,6 +1,7 @@
-const SHELL_CACHE = "margin-shell-v5";
+const SHELL_CACHE = "margin-shell-v6";
 const CONTENT_CACHE = "margin-content-v1";
 const PUBLICATION_MANIFEST = "./data/publications.json";
+const APP_SHELL = "./index.html";
 const PUBLICATION_HOSTS = new Set(["abseil.io", "google.github.io", "aosabook.org"]);
 const SHELL_ASSETS = [
   "./",
@@ -30,11 +31,6 @@ self.addEventListener("activate", (event) => {
       keys.filter((key) => key.startsWith("margin-shell-") && key !== SHELL_CACHE).map((key) => caches.delete(key)),
     ));
     await self.clients.claim();
-
-    // Home-screen apps can keep the original document alive for days. Reload
-    // existing windows once so a newly activated shell is visible immediately.
-    const windows = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
-    windows.forEach((client) => { client.navigate(client.url).catch(() => {}); });
   })());
 });
 
@@ -105,20 +101,12 @@ self.addEventListener("fetch", (event) => {
   if (!isAppAsset && !isPublicationAsset) return;
 
   if (event.request.mode === "navigate") {
-    event.respondWith(fetch(event.request).then((response) => {
-      const copy = response.clone();
-      caches.open(SHELL_CACHE).then((cache) => cache.put("./index.html", copy));
-      return response;
-    }).catch(() => caches.match("./index.html")));
+    event.respondWith(serveShell(event, APP_SHELL));
     return;
   }
 
   if (isAppAsset && !isLocalPublication) {
-    event.respondWith(fetch(event.request).then((response) => {
-      const copy = response.clone();
-      caches.open(SHELL_CACHE).then((cache) => cache.put(event.request, copy));
-      return response;
-    }).catch(() => caches.match(event.request)));
+    event.respondWith(serveShell(event, event.request));
     return;
   }
 
@@ -130,3 +118,18 @@ self.addEventListener("fetch", (event) => {
     }).catch(() => Response.error())),
   );
 });
+
+function serveShell(event, cacheKey) {
+  const update = fetch(event.request).then(async (response) => {
+    if (response.ok) {
+      const cache = await caches.open(SHELL_CACHE);
+      await cache.put(cacheKey, response.clone());
+    }
+    return response;
+  });
+  event.waitUntil(update.catch(() => {}));
+
+  return caches.open(SHELL_CACHE).then(async (cache) => (
+    (await cache.match(cacheKey)) || update
+  ));
+}
