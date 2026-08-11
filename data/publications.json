@@ -1,0 +1,18 @@
+[
+  {
+    "id": "software-engineering-at-google",
+    "title": "Software Engineering at Google",
+    "shortTitle": "Software Engineering at Google",
+    "authors": "Titus Winters, Tom Manshreck & Hyrum Wright",
+    "description": "Lessons on engineering practices, culture, processes, and tools from building software at Google scale.",
+    "type": "remote-html",
+    "sourceUrl": "https://abseil.io/resources/swe-book/html/toc.html",
+    "baseUrl": "https://abseil.io/resources/swe-book/html/",
+    "publisher": "O’Reilly Media",
+    "license": "CC BY-NC-ND 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-nc-nd/4.0/",
+    "accent": "copper",
+    "year": "2020",
+    "topics": ["Culture", "Processes", "Tools"]
+  }
+]

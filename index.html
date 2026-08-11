@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f4f0e8" />
+    <meta name="description" content="A calm, offline-friendly reader for software engineering books and papers." />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Margin" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+    <link rel="stylesheet" href="styles.css" />
+    <title>Margin — Software Engineering Reader</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to reading</a>
+
+    <div id="app" class="app-shell">
+      <section id="library-view" class="library-view" aria-labelledby="library-title">
+        <header class="library-header">
+          <a class="brand" href="./" aria-label="Margin home">
+            <span class="brand-mark" aria-hidden="true">M</span>
+            <span>Margin</span>
+          </a>
+          <div class="header-actions">
+            <button class="icon-button" id="library-theme-button" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></svg>
+            </button>
+            <button class="quiet-button install-button" id="install-button" type="button" hidden>
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 20h14"/></svg>
+              Install app
+            </button>
+          </div>
+        </header>
+
+        <main class="library-main">
+          <div class="eyebrow"><span></span>Your engineering reading room</div>
+          <h1 id="library-title">Read slowly.<br /><em>Remember more.</em></h1>
+          <p class="library-intro">A distraction-free home for the books, papers, and references that make you a better software engineer.</p>
+
+          <section class="library-section" aria-labelledby="continue-title">
+            <div class="section-heading">
+              <div>
+                <p class="section-kicker">Your library</p>
+                <h2 id="continue-title">Continue reading</h2>
+              </div>
+              <p id="library-count" class="library-count">1 publication</p>
+            </div>
+            <div id="publication-grid" class="publication-grid" aria-live="polite">
+              <div class="book-card-skeleton" aria-label="Loading library"></div>
+            </div>
+          </section>
+
+          <section class="reader-promise" aria-labelledby="reader-promise-title">
+            <div>
+              <p class="section-kicker">Built for technical reading</p>
+              <h2 id="reader-promise-title">The useful things stay close.</h2>
+            </div>
+            <ul>
+              <li><span>01</span> Highlights and notes saved on this device</li>
+              <li><span>02</span> Searchable chapters and quick section jumps</li>
+              <li><span>03</span> Offline reading after one download</li>
+              <li><span>04</span> Comfortable code blocks, day or night</li>
+            </ul>
+          </section>
+        </main>
+
+        <footer class="library-footer">
+          <span>Margin reader</span>
+          <span>Local-first · No account · No tracking</span>
+        </footer>
+      </section>
+
+      <section id="reader-view" class="reader-view" hidden aria-label="Reader">
+        <div class="top-progress" aria-hidden="true"><span id="top-progress-fill"></span></div>
+        <header class="reader-header">
+          <div class="reader-header-group">
+            <button class="icon-button" id="back-button" type="button" aria-label="Back to library" title="Back to library">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <button class="icon-button mobile-only" id="toc-toggle-button" type="button" aria-label="Open contents" title="Contents">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+            </button>
+          </div>
+          <button class="reader-title-button" id="reader-title-button" type="button" aria-label="Open contents">
+            <span id="reader-book-title">Publication</span>
+            <strong id="reader-chapter-title">Chapter</strong>
+          </button>
+          <div class="reader-header-group reader-header-group-right">
+            <button class="icon-button" id="bookmark-button" type="button" aria-label="Bookmark this chapter" title="Bookmark chapter">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18l-6-4-6 4Z"/></svg>
+            </button>
+            <button class="icon-button" id="notebook-button" type="button" aria-label="Open notebook" title="Notebook">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+            </button>
+            <button class="icon-button" id="settings-button" type="button" aria-label="Reading settings" title="Reading settings">
+              <span class="type-icon" aria-hidden="true">Aa</span>
+            </button>
+          </div>
+        </header>
+
+        <div class="reader-layout">
+          <aside id="toc-panel" class="side-panel toc-panel" aria-label="Table of contents">
+            <div class="panel-header">
+              <div>
+                <p class="panel-kicker">Publication</p>
+                <h2 id="toc-book-title">Contents</h2>
+              </div>
+              <button class="icon-button panel-close-button" id="toc-close-button" type="button" aria-label="Close contents">
+                <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m18 6-12 12M6 6l12 12"/></svg>
+              </button>
+            </div>
+            <label class="search-field">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+              <span class="sr-only">Search contents</span>
+              <input id="toc-search" type="search" placeholder="Search chapters" autocomplete="off" />
+              <kbd>/</kbd>
+            </label>
+            <nav id="toc-list" class="toc-list" aria-label="Chapters"></nav>
+            <div class="download-box">
+              <div class="download-status-row">
+                <span id="offline-status">Available online</span>
+                <span id="offline-count"></span>
+              </div>
+              <div class="download-progress" aria-hidden="true"><span id="download-progress-fill"></span></div>
+              <button id="download-button" class="quiet-button full-width" type="button">
+                <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 20h14"/></svg>
+                Download for offline
+              </button>
+            </div>
+          </aside>
+
+          <main id="main-content" class="reader-main" tabindex="-1">
+            <div id="chapter-loading" class="chapter-loading" role="status">
+              <span></span><span></span><span></span><span></span>
+            </div>
+            <article id="chapter-content" class="chapter-content" aria-live="polite"></article>
+            <nav id="chapter-navigation" class="chapter-navigation" aria-label="Chapter navigation" hidden>
+              <button id="previous-chapter-button" class="chapter-nav-button" type="button">
+                <span>Previous</span><strong></strong>
+              </button>
+              <button id="next-chapter-button" class="chapter-nav-button align-right" type="button">
+                <span>Next</span><strong></strong>
+              </button>
+            </nav>
+          </main>
+
+          <aside id="notebook-panel" class="side-panel notebook-panel" aria-label="Notebook" aria-hidden="true">
+            <div class="panel-header">
+              <div>
+                <p class="panel-kicker">Your thinking</p>
+                <h2>Notebook</h2>
+              </div>
+              <button class="icon-button" id="notebook-close-button" type="button" aria-label="Close notebook">
+                <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m18 6-12 12M6 6l12 12"/></svg>
+              </button>
+            </div>
+            <div class="notebook-tabs" role="tablist">
+              <button class="active" data-notebook-tab="highlights" role="tab" aria-selected="true">Highlights</button>
+              <button data-notebook-tab="bookmarks" role="tab" aria-selected="false">Bookmarks</button>
+            </div>
+            <div id="notebook-list" class="notebook-list"></div>
+          </aside>
+        </div>
+
+        <div id="scrim" class="scrim" hidden></div>
+
+        <div id="selection-toolbar" class="selection-toolbar" role="toolbar" aria-label="Highlight selection" hidden>
+          <button class="highlight-swatch yellow" data-highlight-color="yellow" type="button" aria-label="Yellow highlight"></button>
+          <button class="highlight-swatch green" data-highlight-color="green" type="button" aria-label="Green highlight"></button>
+          <button class="highlight-swatch blue" data-highlight-color="blue" type="button" aria-label="Blue highlight"></button>
+          <span aria-hidden="true"></span>
+          <button id="add-note-button" type="button">Add note</button>
+        </div>
+
+        <dialog id="settings-dialog" class="settings-dialog">
+          <form method="dialog">
+            <div class="dialog-heading">
+              <div><p class="panel-kicker">Make it yours</p><h2>Reading settings</h2></div>
+              <button class="icon-button" value="cancel" aria-label="Close settings">
+                <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m18 6-12 12M6 6l12 12"/></svg>
+              </button>
+            </div>
+            <fieldset>
+              <legend>Theme</legend>
+              <div class="segmented-control theme-control">
+                <button data-theme-value="light" type="button"><span class="theme-dot light"></span>Light</button>
+                <button data-theme-value="sepia" type="button"><span class="theme-dot sepia"></span>Sepia</button>
+                <button data-theme-value="dark" type="button"><span class="theme-dot dark"></span>Dark</button>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>Typeface</legend>
+              <div class="segmented-control">
+                <button data-font-value="serif" class="font-serif" type="button">Literary</button>
+                <button data-font-value="sans" type="button">Modern</button>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>Text size</legend>
+              <div class="stepper-control">
+                <button id="font-decrease" type="button" aria-label="Decrease text size">A−</button>
+                <output id="font-size-output">18px</output>
+                <button id="font-increase" type="button" aria-label="Increase text size">A+</button>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>Line spacing</legend>
+              <input id="line-height-input" type="range" min="1.5" max="2.1" step="0.1" value="1.8" />
+            </fieldset>
+            <label class="toggle-row">
+              <span><strong>Wrap long code</strong><small>Keep code inside the reading column</small></span>
+              <input id="code-wrap-input" type="checkbox" role="switch" />
+            </label>
+          </form>
+        </dialog>
+
+        <dialog id="note-dialog" class="note-dialog">
+          <form method="dialog" id="note-form">
+            <div class="dialog-heading">
+              <div><p class="panel-kicker">Annotation</p><h2>Add a note</h2></div>
+              <button class="icon-button" value="cancel" aria-label="Close note">
+                <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m18 6-12 12M6 6l12 12"/></svg>
+              </button>
+            </div>
+            <blockquote id="note-quote"></blockquote>
+            <label for="note-text">Your note</label>
+            <textarea id="note-text" rows="5" placeholder="Why did this stand out?"></textarea>
+            <div class="dialog-actions">
+              <button class="quiet-button" value="cancel">Cancel</button>
+              <button class="primary-button" id="save-note-button" value="default">Save note</button>
+            </div>
+          </form>
+        </dialog>
+      </section>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="app.js" defer></script>
+  </body>
+</html>
