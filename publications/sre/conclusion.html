@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta charset="utf-8">
+    <meta content="initial-scale=1, minimum-scale=1, width=device-width" name="viewport">
+    <title>Google SRE - SRE Methodology: Future Trends and Opportunities</title>
+      <meta name="description" content="Future of SRE methodology, its expanding applications, and emerging trends.Learn how SRE practices are evolving and find new opportunities in the field.">
+    <meta name="referrer" content="no-referrer" />
+    <link rel="canonical" href="conclusion.html">
+    <link rel="apple-touch-icon-precomposed" sizes="180x180" href="https://lh3.googleusercontent.com/Yf2DCX8RKda6r4Jml9DLMByS2zQCBFs3kQpvBfN8UgIh4YVWIYSYIQOoTxJriyuM26cT5PDjyEb5aynDQ0Xyz46yHKnfg8JlUbDW">
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Google+Sans:400|Roboto:400,400italic,500,500italic,700,700italic|Roboto+Mono:400,500,700|Material+Icons">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://lh3.googleusercontent.com/Yf2DCX8RKda6r4Jml9DLMByS2zQCBFs3kQpvBfN8UgIh4YVWIYSYIQOoTxJriyuM26cT5PDjyEb5aynDQ0Xyz46yHKnfg8JlUbDW">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://lh3.googleusercontent.com/Yf2DCX8RKda6r4Jml9DLMByS2zQCBFs3kQpvBfN8UgIh4YVWIYSYIQOoTxJriyuM26cT5PDjyEb5aynDQ0Xyz46yHKnfg8JlUbDW">
+    <link rel="shortcut icon" href="https://lh3.googleusercontent.com/Yf2DCX8RKda6r4Jml9DLMByS2zQCBFs3kQpvBfN8UgIh4YVWIYSYIQOoTxJriyuM26cT5PDjyEb5aynDQ0Xyz46yHKnfg8JlUbDW">
+    <link href="https://sre.google/sre-book/static/css/index.min.css?cache=6c30b59" rel="stylesheet">
+
+
+
+  </head>
+
+  <body>
+
+    <main>
+  <div ng-controller= "HeaderCtrl as headerCtrl">
+    <div id="curtain" class="menu-closed"></div>
+      <div class="header clearfix">
+        <a id="burger-menu" class="expand"></a>
+        <h2 class="chapter-title">
+                Chapter 34 - Conclusion
+        </h2>
+      </div>
+      <div id="overlay-element" class="expands">
+        <div class="logo">
+          <a href="https://www.google.com"><img src="assets/c812e821ce-YoVRtLOHMSRYQZ3OhFL8RIamcjFYbmQXX4oAQx02MRqqY9zlKNvsuZpS73khXiOqTH3qrFW27VrERJJIHTjPk-tAh46q8-Fd4w6qlw" alt="Google"></a>
+        </div>
+        <ol id="drop-down" class="dropdown-content hide">
+          <li><a class="menu-buttons" href="table-of-contents.html">Table of Contents</a></li>
+            <li>
+              <a href="foreword.html" class="menu-buttons">
+                  Foreword
+              </a>
+            </li>
+            <li>
+              <a href="preface.html" class="menu-buttons">
+                  Preface
+              </a>
+            </li>
+            <li>
+              <a href="part-I-introduction.html" class="menu-buttons">
+                  Part I - Introduction
+              </a>
+            </li>
+            <li>
+              <a href="introduction.html" class="menu-buttons">
+                  1. Introduction
+              </a>
+            </li>
+            <li>
+              <a href="production-environment.html" class="menu-buttons">
+                  2. The Production Environment at Google, from the Viewpoint of an SRE
+              </a>
+            </li>
+            <li>
+              <a href="part-II-principles.html" class="menu-buttons">
+                  Part II - Principles
+              </a>
+            </li>
+            <li>
+              <a href="embracing-risk.html" class="menu-buttons">
+                  3. Embracing Risk
+              </a>
+            </li>
+            <li>
+              <a href="service-level-objectives.html" class="menu-buttons">
+                  4. Service Level Objectives
+              </a>
+            </li>
+            <li>
+              <a href="eliminating-toil.html" class="menu-buttons">
+                  5. Eliminating Toil
+              </a>
+            </li>
+            <li>
+              <a href="monitoring-distributed-systems.html" class="menu-buttons">
+                  6. Monitoring Distributed Systems
+              </a>
+            </li>
+            <li>
+              <a href="automation-at-google.html" class="menu-buttons">
+                  7. The Evolution of Automation at Google
+              </a>
+            </li>
+            <li>
+              <a href="release-engineering.html" class="menu-buttons">
+                  8. Release Engineering
+              </a>
+            </li>
+            <li>
+              <a href="simplicity.html" class="menu-buttons">
+                  9. Simplicity
+              </a>
+            </li>
+            <li>
+              <a href="part-III-practices.html" class="menu-buttons">
+                  Part III - Practices
+              </a>
+            </li>
+            <li>
+              <a href="practical-alerting.html" class="menu-buttons">
+                  10. Practical Alerting
+              </a>
+            </li>
+            <li>
+              <a href="being-on-call.html" class="menu-buttons">
+                  11. Being On-Call
+              </a>
+            </li>
+            <li>
+              <a href="effective-troubleshooting.html" class="menu-buttons">
+                  12. Effective Troubleshooting
+              </a>
+            </li>
+            <li>
+              <a href="emergency-response.html" class="menu-buttons">
+                  13. Emergency Response
+              </a>
+            </li>
+            <li>
+              <a href="managing-incidents.html" class="menu-buttons">
+                  14. Managing Incidents
+              </a>
+            </li>
+            <li>
+              <a href="postmortem-culture.html" class="menu-buttons">
+                  15. Postmortem Culture: Learning from Failure
+              </a>
+            </li>
+            <li>
+              <a href="tracking-outages.html" class="menu-buttons">
+                  16. Tracking Outages
+              </a>
+            </li>
+            <li>
+              <a href="testing-reliability.html" class="menu-buttons">
+                  17. Testing for Reliability
+              </a>
+            </li>
+            <li>
+              <a href="software-engineering-in-sre.html" class="menu-buttons">
+                  18. Software Engineering in SRE
+              </a>
+            </li>
+            <li>
+              <a href="load-balancing-frontend.html" class="menu-buttons">
+                  19. Load Balancing at the Frontend
+              </a>
+            </li>
+            <li>
+              <a href="load-balancing-datacenter.html" class="menu-buttons">
+                  20. Load Balancing in the Datacenter
+              </a>
+            </li>
+            <li>
+              <a href="handling-overload.html" class="menu-buttons">
+                  21. Handling Overload
+              </a>
+            </li>
+            <li>
+              <a href="addressing-cascading-failures.html" class="menu-buttons">
+                  22. Addressing Cascading Failures
+              </a>
+            </li>
+            <li>
+              <a href="managing-critical-state.html" class="menu-buttons">
+                  23. Managing Critical State: Distributed Consensus for Reliability
+              </a>
+            </li>
+            <li>
+              <a href="distributed-periodic-scheduling.html" class="menu-buttons">
+                  24. Distributed Periodic Scheduling with Cron
+              </a>
+            </li>
+            <li>
+              <a href="data-processing-pipelines.html" class="menu-buttons">
+                  25. Data Processing Pipelines
+              </a>
+            </li>
+            <li>
+              <a href="data-integrity.html" class="menu-buttons">
+                  26. Data Integrity: What You Read Is What You Wrote
+              </a>
+            </li>
+            <li>
+              <a href="reliable-product-launches.html" class="menu-buttons">
+                  27. Reliable Product Launches at Scale
+              </a>
+            </li>
+            <li>
+              <a href="part-IV-management.html" class="menu-buttons">
+                  Part IV - Management
+              </a>
+            </li>
+            <li>
+              <a href="accelerating-sre-on-call.html" class="menu-buttons">
+                  28. Accelerating SREs to On-Call and Beyond
+              </a>
+            </li>
+            <li>
+              <a href="dealing-with-interrupts.html" class="menu-buttons">
+                  29. Dealing with Interrupts
+              </a>
+            </li>
+            <li>
+              <a href="operational-overload.html" class="menu-buttons">
+                  30. Embedding an SRE to Recover from Operational Overload
+              </a>
+            </li>
+            <li>
+              <a href="communication-and-collaboration.html" class="menu-buttons">
+                  31. Communication and Collaboration in SRE
+              </a>
+            </li>
+            <li>
+              <a href="evolving-sre-engagement-model.html" class="menu-buttons">
+                  32. The Evolving SRE Engagement Model
+              </a>
+            </li>
+            <li>
+              <a href="part-V-conclusions.html" class="menu-buttons">
+                  Part V - Conclusions
+              </a>
+            </li>
+            <li>
+              <a href="lessons-learned.html" class="menu-buttons">
+                  33. Lessons Learned from Other Industries
+              </a>
+            </li>
+            <li class="active">
+              <a href="conclusion.html" class="menu-buttons">
+                  34. Conclusion
+              </a>
+            </li>
+            <li>
+              <a href="availability-table.html" class="menu-buttons">
+                  Appendix A. Availability Table
+              </a>
+            </li>
+            <li>
+              <a href="service-best-practices.html" class="menu-buttons">
+                  Appendix B. A Collection of Best Practices for Production Services
+              </a>
+            </li>
+            <li>
+              <a href="incident-document.html" class="menu-buttons">
+                  Appendix C. Example Incident State Document
+              </a>
+            </li>
+            <li>
+              <a href="example-postmortem.html" class="menu-buttons">
+                  Appendix D. Example Postmortem
+              </a>
+            </li>
+            <li>
+              <a href="launch-checklist.html" class="menu-buttons">
+                  Appendix E. Launch Coordination Checklist
+              </a>
+            </li>
+            <li>
+              <a href="production-meeting.html" class="menu-buttons">
+                  Appendix F. Example Production Meeting Minutes
+              </a>
+            </li>
+            <li>
+              <a href="bibliography.html" class="menu-buttons">
+                  Bibliography
+              </a>
+            </li>
+        </ol>
+      </div>
+    </div>
+
+  <div id="maia-main">
+    <div class="content" id="content">
+      <section data-type="chapter" id="chapter_conclusion">
+  <h1 class="heading jumptargets">Conclusion</h1>
+
+  <p class="author byline">Written by Benjamin Lutch<sup><a class="jumptarget" data-type="noteref" id="id-rq7uXSYFKx-marker" href="#id-rq7uXSYFKx">162</a></sup></br>Edited by Betsy Beyer</p>
+
+  <p>I read through this book with enormous pride. From the time I began working at Excite in the early ’90s, where my group was a sort of neanderthal SRE group dubbed "Software Operations," I’ve spent my career fumbling through the process of building systems. In light of my experiences over the years in the tech industry, it’s amazing to see how the idea of SRE took root at Google and evolved so quickly. SRE has grown from a few hundred engineers when I joined Google in 2006 to over 1,000 people today, spread over a dozen sites and running what I think is the most interesting computing infrastructure on the planet.</p>
+
+  <p>So what has enabled the SRE organization at Google to evolve over the past decade to maintain this massive infrastructure in an intelligent, efficient, and scalable way? I think that the key to the overwhelming success of SRE is the nature of the principles by which it operates.</p>
+
+  <p>SRE teams are constructed so that our engineers divide their time between two equally important types of work. SREs staff on-call shifts, which entail putting our hands around the systems, observing where and how these systems break, and understanding challenges such as how to best scale them. But we also have time to then reflect and decide what to build in order to make those systems easier to manage. In essence, we have the pleasure of playing both the roles of the pilot <em>and</em> the engineer/designer. Our experiences running massive computing infrastructure are codified in actual code and then packaged as a discrete product.</p>
+
+  <p>These solutions are then easily usable by other SRE teams and ultimately by anyone at Google (or even outside of Google…think Google Cloud!) who wants to use or improve upon the experience we’ve accumulated and the systems we’ve built.</p>
+
+  <p>When you approach building a team or a system, ideally its foundation should be a set of rules or axioms that are general enough to be immediately useful, but that will remain relevant in the future. Much of what Ben Treynor Sloss outlined in this book’s introduction represents just that: a flexible, mostly future-proof set of responsibilities that remain spot-on 10 years after they were conceived, despite the changes and growth Google’s infrastructure and the SRE team have undergone.</p>
+
+  <p>As SRE has grown, we’ve noticed a couple different dynamics at play. The first is the consistent nature of SRE’s primary responsibilities and concerns over time: our systems might be 1,000 times larger or faster, but ultimately, they still need to remain reliable, flexible, easy to manage in an emergency, well monitored, and capacity <span class="keep-together">planned</span>. At the same time, the typical activities undertaken by SRE evolve by necessity as Google’s services and SRE’s competencies mature. For example, what was once a goal to "build a dashboard for 20 machines" might now instead be "automate discovery, dashboard building, and alerting over a fleet of tens of thousands of machines."</p>
+
+  <p>For those who haven’t been in the trenches of SRE for the past decade, an analogy between how SRE thinks about complex systems and how the aircraft industry has approached plane flight is useful in conceptualizing how SRE has evolved and matured over time. While the stakes of failure between the two industries are very different,
+  certain core similarities hold true.</p>
+
+  <p>Imagine that you wanted to fly between two cities a hundred years ago. Your airplane probably had a single engine (two, if you were lucky), a few bags of cargo, and a pilot. The pilot also filled the role of mechanic, and possibly additionally acted as cargo loader and unloader. The cockpit had room for the pilot, and if you were lucky, a co-pilot/navigator. Your little plane would bounce off a runway in good weather, and if everything went well, you’d slowly climb your way through the skies and eventually touch down in another city, maybe a few hundred miles away. Failure of any of the plane’s systems was catastrophic, and it wasn’t unheard of for a pilot to have to climb out of the cockpit to perform repairs in-flight! The systems that fed into the cockpit were essential, simple, and fragile, and most likely were not redundant.</p>
+
+  <p>Fast-forward a hundred years to a huge 747 sitting on the tarmac. Hundreds of passengers are loading up on both floors, while tons of cargo are simultaneously being loaded into the hold below. The plane is chock-full of reliable, redundant systems. It’s a model of safety and reliability; in fact, you’re actually safer in the air than on the ground in a car. Your plane will take off from a dotted line on a runway on one continent, and land easily on a dotted line on another runway 6,000 miles away, right on schedule—within minutes of its forecasted landing time. But take a look into the cockpit and what do you find? Just two pilots again!</p>
+
+  <p>How has every other element of the flight experience—safety, capacity, speed, and reliability—scaled up so beautifully, while there are still only two pilots? The answer to this question is a great parallel to how Google approaches the enormous, fantastically complex systems that SRE runs. The interfaces to the plane’s operating systems are well thought out and approachable enough that learning how to pilot them in normal conditions is not an insurmountable task. Yet these interfaces also provide enough flexibility, and the people operating them are sufficiently trained, that responses to emergencies are robust and quick. The cockpit was designed by people who understand complex systems and how to present them to humans in a way that’s both consumable and scalable. The systems underlying the cockpit have all the same properties discussed in this book: availability, performance optimization, change management, monitoring and alerting, capacity planning, and emergency response.</p>
+
+  <p>Ultimately, SRE’s goal is to follow a similar course. An SRE team should be as compact as possible and operate at a high level of abstraction, relying upon lots of backup systems as failsafes and thoughtful APIs to communicate with the systems. At the same time, the SRE team should also have comprehensive knowledge of the systems—how they operate, how they fail, and how to respond to failures—that comes from operating them day-to-day.</p>
+
+  <div class="footnotes" data-type="footnotes"><p data-type="footnote" id="id-rq7uXSYFKx"><sup><a class="jumptargets" href="#id-rq7uXSYFKx-marker">162</a></sup>Vice President, Site Reliability Engineering, for Google, Inc.</p></div>
+</section>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="maia-aux">
+      <div class="previous">
+          <a href="lessons-learned.html">
+            <p class="footer-caption">Previous</p>
+            <p class="chapter-link">
+                Chapter 33 - Lessons Learned from Other Industries
+            </p>
+          </a>
+      </div>
+      <div class="next">
+          <a href="availability-table.html">
+            <p class="footer-caption">Next</p>
+            <p class="chapter-link">
+                Appendix A - Availability Table
+            </p>
+          </a>
+      </div>
+        <p class="footer-link">Copyright © 2017 Google, Inc. Published by O'Reilly Media, Inc. Licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener noreferrer" target="_blank">CC BY-NC-ND 4.0</a></p>
+    </div>
+  </div>
+    </main>
+
+
+
+
+
+  </body>
+</html>

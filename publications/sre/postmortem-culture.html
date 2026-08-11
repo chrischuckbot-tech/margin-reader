@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta charset="utf-8">
+    <meta content="initial-scale=1, minimum-scale=1, width=device-width" name="viewport">
+    <title>Google SRE - Blameless Postmortem for System Resilience</title>
+      <meta name="description" content="Blameless postmortems in SRE culture. Incident study that focus on root cause analysis and preventive actions, for culture of continuous improvement.">
+    <meta name="referrer" content="no-referrer" />
+    <link rel="canonical" href="postmortem-culture.html">
+    <link rel="apple-touch-icon-precomposed" sizes="180x180" href="https://lh3.googleusercontent.com/Yf2DCX8RKda6r4Jml9DLMByS2zQCBFs3kQpvBfN8UgIh4YVWIYSYIQOoTxJriyuM26cT5PDjyEb5aynDQ0Xyz46yHKnfg8JlUbDW">
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Google+Sans:400|Roboto:400,400italic,500,500italic,700,700italic|Roboto+Mono:400,500,700|Material+Icons">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://lh3.googleusercontent.com/Yf2DCX8RKda6r4Jml9DLMByS2zQCBFs3kQpvBfN8UgIh4YVWIYSYIQOoTxJriyuM26cT5PDjyEb5aynDQ0Xyz46yHKnfg8JlUbDW">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://lh3.googleusercontent.com/Yf2DCX8RKda6r4Jml9DLMByS2zQCBFs3kQpvBfN8UgIh4YVWIYSYIQOoTxJriyuM26cT5PDjyEb5aynDQ0Xyz46yHKnfg8JlUbDW">
+    <link rel="shortcut icon" href="https://lh3.googleusercontent.com/Yf2DCX8RKda6r4Jml9DLMByS2zQCBFs3kQpvBfN8UgIh4YVWIYSYIQOoTxJriyuM26cT5PDjyEb5aynDQ0Xyz46yHKnfg8JlUbDW">
+    <link href="https://sre.google/sre-book/static/css/index.min.css?cache=6c30b59" rel="stylesheet">
+
+
+
+  </head>
+
+  <body>
+
+    <main>
+  <div ng-controller= "HeaderCtrl as headerCtrl">
+    <div id="curtain" class="menu-closed"></div>
+      <div class="header clearfix">
+        <a id="burger-menu" class="expand"></a>
+        <h2 class="chapter-title">
+                Chapter 15 - Postmortem Culture: Learning from Failure
+        </h2>
+      </div>
+      <div id="overlay-element" class="expands">
+        <div class="logo">
+          <a href="https://www.google.com"><img src="assets/c812e821ce-YoVRtLOHMSRYQZ3OhFL8RIamcjFYbmQXX4oAQx02MRqqY9zlKNvsuZpS73khXiOqTH3qrFW27VrERJJIHTjPk-tAh46q8-Fd4w6qlw" alt="Google"></a>
+        </div>
+        <ol id="drop-down" class="dropdown-content hide">
+          <li><a class="menu-buttons" href="table-of-contents.html">Table of Contents</a></li>
+            <li>
+              <a href="foreword.html" class="menu-buttons">
+                  Foreword
+              </a>
+            </li>
+            <li>
+              <a href="preface.html" class="menu-buttons">
+                  Preface
+              </a>
+            </li>
+            <li>
+              <a href="part-I-introduction.html" class="menu-buttons">
+                  Part I - Introduction
+              </a>
+            </li>
+            <li>
+              <a href="introduction.html" class="menu-buttons">
+                  1. Introduction
+              </a>
+            </li>
+            <li>
+              <a href="production-environment.html" class="menu-buttons">
+                  2. The Production Environment at Google, from the Viewpoint of an SRE
+              </a>
+            </li>
+            <li>
+              <a href="part-II-principles.html" class="menu-buttons">
+                  Part II - Principles
+              </a>
+            </li>
+            <li>
+              <a href="embracing-risk.html" class="menu-buttons">
+                  3. Embracing Risk
+              </a>
+            </li>
+            <li>
+              <a href="service-level-objectives.html" class="menu-buttons">
+                  4. Service Level Objectives
+              </a>
+            </li>
+            <li>
+              <a href="eliminating-toil.html" class="menu-buttons">
+                  5. Eliminating Toil
+              </a>
+            </li>
+            <li>
+              <a href="monitoring-distributed-systems.html" class="menu-buttons">
+                  6. Monitoring Distributed Systems
+              </a>
+            </li>
+            <li>
+              <a href="automation-at-google.html" class="menu-buttons">
+                  7. The Evolution of Automation at Google
+              </a>
+            </li>
+            <li>
+              <a href="release-engineering.html" class="menu-buttons">
+                  8. Release Engineering
+              </a>
+            </li>
+            <li>
+              <a href="simplicity.html" class="menu-buttons">
+                  9. Simplicity
+              </a>
+            </li>
+            <li>
+              <a href="part-III-practices.html" class="menu-buttons">
+                  Part III - Practices
+              </a>
+            </li>
+            <li>
+              <a href="practical-alerting.html" class="menu-buttons">
+                  10. Practical Alerting
+              </a>
+            </li>
+            <li>
+              <a href="being-on-call.html" class="menu-buttons">
+                  11. Being On-Call
+              </a>
+            </li>
+            <li>
+              <a href="effective-troubleshooting.html" class="menu-buttons">
+                  12. Effective Troubleshooting
+              </a>
+            </li>
+            <li>
+              <a href="emergency-response.html" class="menu-buttons">
+                  13. Emergency Response
+              </a>
+            </li>
+            <li>
+              <a href="managing-incidents.html" class="menu-buttons">
+                  14. Managing Incidents
+              </a>
+            </li>
+            <li class="active">
+              <a href="postmortem-culture.html" class="menu-buttons">
+                  15. Postmortem Culture: Learning from Failure
+              </a>
+            </li>
+            <li>
+              <a href="tracking-outages.html" class="menu-buttons">
+                  16. Tracking Outages
+              </a>
+            </li>
+            <li>
+              <a href="testing-reliability.html" class="menu-buttons">
+                  17. Testing for Reliability
+              </a>
+            </li>
+            <li>
+              <a href="software-engineering-in-sre.html" class="menu-buttons">
+                  18. Software Engineering in SRE
+              </a>
+            </li>
+            <li>
+              <a href="load-balancing-frontend.html" class="menu-buttons">
+                  19. Load Balancing at the Frontend
+              </a>
+            </li>
+            <li>
+              <a href="load-balancing-datacenter.html" class="menu-buttons">
+                  20. Load Balancing in the Datacenter
+              </a>
+            </li>
+            <li>
+              <a href="handling-overload.html" class="menu-buttons">
+                  21. Handling Overload
+              </a>
+            </li>
+            <li>
+              <a href="addressing-cascading-failures.html" class="menu-buttons">
+                  22. Addressing Cascading Failures
+              </a>
+            </li>
+            <li>
+              <a href="managing-critical-state.html" class="menu-buttons">
+                  23. Managing Critical State: Distributed Consensus for Reliability
+              </a>
+            </li>
+            <li>
+              <a href="distributed-periodic-scheduling.html" class="menu-buttons">
+                  24. Distributed Periodic Scheduling with Cron
+              </a>
+            </li>
+            <li>
+              <a href="data-processing-pipelines.html" class="menu-buttons">
+                  25. Data Processing Pipelines
+              </a>
+            </li>
+            <li>
+              <a href="data-integrity.html" class="menu-buttons">
+                  26. Data Integrity: What You Read Is What You Wrote
+              </a>
+            </li>
+            <li>
+              <a href="reliable-product-launches.html" class="menu-buttons">
+                  27. Reliable Product Launches at Scale
+              </a>
+            </li>
+            <li>
+              <a href="part-IV-management.html" class="menu-buttons">
+                  Part IV - Management
+              </a>
+            </li>
+            <li>
+              <a href="accelerating-sre-on-call.html" class="menu-buttons">
+                  28. Accelerating SREs to On-Call and Beyond
+              </a>
+            </li>
+            <li>
+              <a href="dealing-with-interrupts.html" class="menu-buttons">
+                  29. Dealing with Interrupts
+              </a>
+            </li>
+            <li>
+              <a href="operational-overload.html" class="menu-buttons">
+                  30. Embedding an SRE to Recover from Operational Overload
+              </a>
+            </li>
+            <li>
+              <a href="communication-and-collaboration.html" class="menu-buttons">
+                  31. Communication and Collaboration in SRE
+              </a>
+            </li>
+            <li>
+              <a href="evolving-sre-engagement-model.html" class="menu-buttons">
+                  32. The Evolving SRE Engagement Model
+              </a>
+            </li>
+            <li>
+              <a href="part-V-conclusions.html" class="menu-buttons">
+                  Part V - Conclusions
+              </a>
+            </li>
+            <li>
+              <a href="lessons-learned.html" class="menu-buttons">
+                  33. Lessons Learned from Other Industries
+              </a>
+            </li>
+            <li>
+              <a href="conclusion.html" class="menu-buttons">
+                  34. Conclusion
+              </a>
+            </li>
+            <li>
+              <a href="availability-table.html" class="menu-buttons">
+                  Appendix A. Availability Table
+              </a>
+            </li>
+            <li>
+              <a href="service-best-practices.html" class="menu-buttons">
+                  Appendix B. A Collection of Best Practices for Production Services
+              </a>
+            </li>
+            <li>
+              <a href="incident-document.html" class="menu-buttons">
+                  Appendix C. Example Incident State Document
+              </a>
+            </li>
+            <li>
+              <a href="example-postmortem.html" class="menu-buttons">
+                  Appendix D. Example Postmortem
+              </a>
+            </li>
+            <li>
+              <a href="launch-checklist.html" class="menu-buttons">
+                  Appendix E. Launch Coordination Checklist
+              </a>
+            </li>
+            <li>
+              <a href="production-meeting.html" class="menu-buttons">
+                  Appendix F. Example Production Meeting Minutes
+              </a>
+            </li>
+            <li>
+              <a href="bibliography.html" class="menu-buttons">
+                  Bibliography
+              </a>
+            </li>
+        </ol>
+      </div>
+    </div>
+
+  <div id="maia-main">
+    <div class="content" id="content">
+      <h1 class="heading jumptargets" id="postmortem-culture-learning-from-failure">Postmortem Culture: Learning from Failure</h1>
+
+<p class="byline author">Written by John Lunney and Sue Lueder<br>Edited by Gary O’ Connor</p>
+
+<blockquote>
+  <p class="quote">The cost of failure is education.</p>
+  <p class="author">Devin Carraway</p>
+</blockquote>
+
+<p>As SREs, we work with large-scale, complex, distributed systems. We constantly enhance our services with new features and add new systems. Incidents and outages are inevitable given our scale and velocity of change. When an incident occurs, we fix the underlying issue, and services return to their normal operating conditions. Unless we have some formalized process of learning from these incidents in place, they may recur ad infinitum. Left unchecked, incidents can multiply in complexity or even cascade, overwhelming a system and its operators and ultimately impacting our users. Therefore, postmortems are an essential tool for SRE.</p>
+
+<p>The postmortem concept is well known in the technology industry <a href="https://sre.google/sre-book/bibliography#All12">[All12]</a>. A postmortem is a written record of an incident, its impact, the actions taken to mitigate or resolve it, the root cause(s), and the follow-up actions to prevent the incident from recurring. This chapter describes criteria for deciding when to conduct postmortems, some best practices around postmortems, and advice on how to cultivate a postmortem culture based on the experience we’ve gained over the years.</p>
+
+<h2 class="heading jumptargets" id="googles-postmortem-philosophy">Google’s Postmortem Philosophy</h2>
+
+<p>The primary goals of <a href="example-postmortem.html">writing a postmortem</a> are to ensure that the incident is documented, that all contributing root cause(s) are well understood, and, especially, that effective preventive actions are put in place to reduce the likelihood and/or impact of recurrence. A detailed survey of root-cause analysis techniques is beyond the scope of this chapter (instead, see <a href="https://sre.google/sre-book/bibliography#Roo04">[Roo04]</a>); however, articles, best practices, and tools abound in the system quality domain. Our teams use a variety of techniques for root-cause analysis and choose the technique best suited to their services. Postmortems are expected after any significant undesirable event. Writing a postmortem is not punishment—it is a learning opportunity for the entire company. The postmortem process does present an inherent cost in terms of time or effort, so we are deliberate in choosing when to write one. Teams have some internal flexibility, but common <a href="https://sre.google/workbook/postmortem-analysis/">postmortem triggers</a> include:</p>
+
+<ul>
+  <li>
+    User-visible downtime or degradation beyond a certain threshold
+  </li>
+  <li>
+    Data loss of any kind
+  </li>
+  <li>
+    On-call engineer intervention (release rollback, rerouting of traffic, etc.)
+  </li>
+  <li>
+    A resolution time above some threshold
+  </li>
+  <li>
+    A monitoring failure (which usually implies manual incident discovery)
+  </li>
+</ul>
+
+<p>It is important to define postmortem criteria before an incident occurs so that everyone knows when a postmortem is necessary. In addition to these objective triggers, any stakeholder may request a postmortem for an event.</p>
+
+<p>Blameless postmortems are a tenet of SRE culture. For a postmortem to be truly blameless, it must focus on identifying the contributing causes of the incident without indicting any individual or team for bad or inappropriate behavior. A blamelessly written postmortem assumes that everyone involved in an incident had good intentions and did the right thing with the information they had. If a culture of finger pointing and shaming individuals or teams for doing the &quot;wrong&quot; thing prevails, people will not bring issues to light for fear of punishment.</p>
+
+<p>Blameless culture originated in the healthcare and avionics industries where mistakes can be fatal. These industries nurture an environment where every &quot;mistake&quot; is seen as an opportunity to strengthen the system. When postmortems shift from allocating blame to investigating the systematic reasons why an individual or team had incomplete or incorrect information, effective prevention plans can be put in place. You can’t &quot;fix&quot; people, but you can fix systems and processes to better support people making the right choices when designing and maintaining complex systems.</p>
+
+<p>When an outage does occur, a postmortem is not written as a formality to be forgotten. Instead the postmortem is seen by engineers as an opportunity not only to fix a weakness, but to make Google more resilient as a whole. While a blameless postmortem doesn’t simply vent frustration by pointing fingers, it <em>should</em> call out where and how services can be improved. Here are two examples:</p>
+
+<dl class="desc-list">
+  <dt class="dt-heading jumptargets" id="pointing-fingers">Pointing fingers</dt>
+  <dd>&quot;We need to rewrite the entire complicated backend system! It’s been breaking weekly for the last three quarters and I’m sure we’re all tired of fixing things onesy-twosy. Seriously, if I get paged one more time I’ll rewrite it myself…&quot;</dd>
+  <dt class="dt-heading jumptargets" id="blameless">Blameless</dt>
+  <dd>&quot;An action item to rewrite the entire backend system might actually prevent these annoying pages from continuing to happen, and the maintenance manual for this version is quite long and really difficult to be fully trained up on. I’m sure our future on-callers will thank us!&quot;</dd>
+</dl>
+
+<h5 class="subheaders jumptargets" id="best-practice-avoid-blame-and-keep-it-constructive">Best Practice: Avoid Blame and Keep It Constructive</h5>
+
+<p>Blameless postmortems can be challenging to write, because the postmortem format clearly identifies the actions that led to the incident. Removing blame from a postmortem gives people the confidence to escalate issues without fear. It is also important not to stigmatize frequent production of postmortems by a person or team. An atmosphere of blame risks creating a culture in which incidents and issues are swept under the rug, leading to greater risk for the organization <a href="https://sre.google/sre-book/bibliography#Boy13">[Boy13]</a>.</p>
+
+<h1 class="heading jumptargets" id="collaborate-and-share-knowledge">Collaborate and Share Knowledge</h1>
+
+<p>We value collaboration, and the postmortem process is no exception. The postmortem workflow includes collaboration and knowledge-sharing at every stage.</p>
+
+<p>Our postmortem documents are Google Docs, with an in-house template (see <a href="example-postmortem.html">Example Postmortem</a>). Regardless of the specific tool you use, look for the following key features:</p>
+
+<dl class="desc-list">
+  <dt class="italic jumptargets" id="real-time-collaboration">Real-time collaboration</dt>
+  <dd>Enables the rapid collection of data and ideas. Essential during the early creation of a postmortem.</dd>
+  <dt class="italic jumptargets" id="an-open-commenting-annotation">An open commenting/annotation system</dt>
+  <dd>Makes crowdsourcing solutions easy and improves coverage.</dd>
+  <dt class="italic jumptargets" id="email-notifications">Email notifications</dt>
+  <dd>Can be directed at collaborators within the document or used to loop in others to provide input.</dd>
+</dl>
+
+<p>Writing a postmortem also involves formal review and publication. In practice, teams share the first postmortem draft internally and solicit a group of senior engineers to assess the draft for completeness. Review criteria might include:</p>
+
+<ul>
+  <li>
+    Was key incident data collected for posterity?
+  </li>
+  <li>
+    Are the impact assessments complete?
+  </li>
+  <li>
+    Was the root cause sufficiently deep?
+  </li>
+  <li>
+    Is the action plan appropriate and are resulting bug fixes at appropriate priority?
+  </li>
+  <li>
+    Did we share the outcome with relevant stakeholders?
+  </li>
+</ul>
+
+<p>Once the initial review is complete, the postmortem is shared more broadly, typically with the larger engineering team or on an internal mailing list. Our goal is to share postmortems to the widest possible audience that would benefit from the knowledge or lessons imparted. Google has stringent rules around access to any piece of information that might identify an end-user,<sup><a class="jumptarget" id="id-D04I1SPc1iK-marker" href="#id-D04I1SPc1iK">80</a></sup> and even internal documents like postmortems never include such information.</p>
+
+<h5 class="subheaders jumptargets" id="best-practice-no-postmortem-left-unreviewed">Best Practice: No Postmortem Left Unreviewed</h5>
+
+<p>An unreviewed postmortem might as well never have existed. To ensure that each completed draft is reviewed, we encourage regular review sessions for postmortems. In these meetings, it is important to close out any ongoing discussions and comments, to capture ideas, and to finalize the state.</p>
+
+<p>Once those involved are satisfied with the document and its action items, the postmortem is added to a team or organization repository of past incidents.<sup><a class="jumptarget" id="id-4DBuqSVu9iy-marker" href="#id-4DBuqSVu9iy">81</a></sup> Transparent sharing makes it easier for others to find and learn from the postmortem.</p>
+
+<h1 class="heading jumptargets" id="introducing-a-postmortem-culture">Introducing a Postmortem Culture</h1>
+
+<p>Introducing a postmortem culture to your organization is easier said than done; such an effort requires continuous cultivation and reinforcement. We reinforce a collaborative postmortem culture through senior management’s active participation in the review and collaboration process. Management can encourage this culture, but blameless postmortems are ideally the product of engineer self-motivation. In the spirit of nurturing the postmortem culture, SREs proactively create activities that disseminate what we learn about system infrastructure. Some example activities include:</p>
+
+<dl class="desc-list">
+  <dt class="dt-heading jumptargets" id="postmortem-of-the-month">Postmortem of the month</dt>
+  <dd>In a monthly newsletter, an interesting and well-written postmortem is shared with the entire organization.</dd>
+  <dt class="dt-heading jumptargets" id="google-postmortem-group">Google+ postmortem group</dt>
+  <dd>This group shares and discusses internal and external postmortems, best practices, and commentary about postmortems.</dd>
+  <dt class="dt-heading jumptargets" id="postmortem-reading-clubs">Postmortem reading clubs</dt>
+  <dd>Teams host regular postmortem reading clubs, in which an interesting or impactful postmortem is brought to the table (along with some tasty refreshments) for an open dialogue with participants, nonparticipants, and new Googlers about what happened, what lessons the incident imparted, and the aftermath of the incident. Often, the postmortem being reviewed is months or years old!</dd>
+  <dt class="dt-heading jumptargets" id="wheel-of-misfortune">Wheel of Misfortune</dt>
+  <dd>New SREs are often treated to the Wheel of Misfortune exercise (see <a href="https://sre.google/sre-book/accelerating-sre-on-call#xref_training_disaster-rpg">Disaster Role Playing</a>), in which a previous postmortem is reenacted with a cast of engineers playing roles as laid out in the postmortem. The original incident commander attends to help make the experience as &quot;real&quot; as possible.</dd>
+</dl>
+
+<p>One of the biggest challenges of introducing postmortems to an organization is that some may question their value given the cost of their preparation. The following strategies can help in facing this challenge:</p>
+
+<ul>
+  <li>
+    Ease postmortems into the workflow. A trial period with several complete and successful postmortems may help prove their value, in addition to helping to identify what criteria should initiate a postmortem.
+  </li>
+  <li>
+    Make sure that writing effective postmortems is a rewarded and celebrated practice, both publicly through the social methods mentioned earlier, and through individual and team performance management.
+  </li>
+  <li>
+    Encourage senior leadership’s acknowledgment and participation. Even Larry Page talks about the high value of postmortems!
+  </li>
+</ul>
+
+<h5 class="subheaders jumptargets" id="best-practice-visibly-reward-people-for-doing-the-right-thing">Best Practice: Visibly Reward People for Doing the Right Thing</h5>
+
+<p>Google’s founders Larry Page and Sergey Brin host TGIF, a weekly all-hands held live at our headquarters in Mountain View, California, and broadcast to Google offices around the world. A 2014 TGIF focused on &quot;The Art of the Postmortem,&quot; which featured SRE discussion of high-impact incidents. One SRE discussed a release he had recently pushed; despite thorough testing, an unexpected interaction inadvertently took down a critical service for four minutes. The incident only lasted four minutes because the SRE had the presence of mind to roll back the change immediately, averting a much longer and larger-scale outage. Not only did this engineer receive two peer bonuses<sup><a class="jumptarget" id="id-JJ7umIlF2Tyuq-marker" href="#id-JJ7umIlF2Tyuq">82</a></sup> immediately afterward in recognition of his quick and level-headed handling of the incident, but he also received a huge round of applause from the TGIF audience, which included the company’s founders and an audience of Googlers numbering in the thousands. In addition to such a visible forum, Google has an array of internal social networks that drive peer praise toward well-written <a href="managing-incidents.html">postmortems</a> and exceptional incident handling. This is one example of many where recognition of these contributions comes from peers, CEOs, and everyone in between.<sup><a class="jumptarget" id="id-9vbuDtvF7TXuQ-marker" href="#id-9vbuDtvF7TXuQ">83</a></sup></p>
+
+<h5 class="subheaders jumptargets" id="best-practice-ask-for-feedback-on-postmortem-effectiveness">Best Practice: Ask for Feedback on Postmortem Effectiveness</h5>
+
+<p>At Google, we strive to address problems as they arise and share innovations internally. We regularly survey our teams on how the postmortem process is supporting their goals and how the process might be improved. We ask questions such as: Is the culture supporting your work? Does writing a postmortem entail too much toil (see <a href="eliminating-toil.html">Eliminating Toil</a>)? What best practices does your team recommend for other teams? What kinds of tools would you like to see developed? The survey results give the SREs in the trenches the opportunity to ask for improvements that will increase the effectiveness of the postmortem culture.</p>
+
+<p>Beyond the operational aspects of incident management and follow-up, postmortem practice has been woven into the culture at Google: it’s now a cultural norm that any significant incident is followed by a comprehensive postmortem.</p>
+
+<h1 class="heading jumptargets" id="conclusion-and-ongoing-improvements">Conclusion and Ongoing Improvements</h1>
+
+<p>We can say with confidence that thanks to our continuous investment in cultivating a postmortem culture, Google weathers fewer outages and fosters a better user experience. Our &quot;Postmortems at Google&quot; working group is one example of our commitment to the culture of blameless postmortems. This group coordinates postmortem efforts across the company: pulling together postmortem templates, automating postmortem creation with data from tools used during an incident, and helping automate data extraction from postmortems so we can perform trend analysis. We’ve been able to collaborate on best practices from products as disparate as YouTube, Google Fiber, Gmail, Google Cloud, AdWords, and Google Maps. While these products are quite diverse, they all conduct postmortems with the universal goal of learning from our darkest hours.</p>
+
+<p>With a large number of postmortems produced each month across Google, tools to aggregate postmortems are becoming more and more useful. These tools help us identify common themes and areas for improvement across product boundaries. To facilitate comprehension and automated analysis, we have recently enhanced our postmortem template (see <a href="example-postmortem.html">Example Postmortem</a>) with additional metadata fields. Future work in this domain includes machine learning to help predict our weaknesses, facilitate real-time incident investigation, and reduce duplicate incidents.</p>
+
+<div class="footnotes"><p id="id-D04I1SPc1iK"><sup><a class="jumptargets" href="#id-D04I1SPc1iK-marker">80</a></sup>See <a href="https://www.google.com/policies/privacy/" target="_blank" rel="noopener noreferrer"><em>https://www.google.com/policies/privacy/</em></a>.</p><p id="id-4DBuqSVu9iy"><sup><a class="jumptargets" href="#id-4DBuqSVu9iy-marker">81</a></sup>If you’d like to start your own repository, Etsy has released <a href="https://github.com/etsy/morgue" target="_blank" rel="noopener noreferrer"><em>Morgue</em></a>, a tool for managing postmortems.</p><p id="id-JJ7umIlF2Tyuq"><sup><a class="jumptargets" href="#id-JJ7umIlF2Tyuq-marker">82</a></sup>Google’s Peer Bonus program is a way for fellow Googlers to recognize colleagues for exceptional efforts and involves a token cash reward.</p><p id="id-9vbuDtvF7TXuQ"><sup><a class="jumptargets" href="#id-9vbuDtvF7TXuQ-marker">83</a></sup>For further discussion of this particular incident, see <a href="emergency-response.html">Emergency Response</a>.</p></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="maia-aux">
+      <div class="previous">
+          <a href="managing-incidents.html">
+            <p class="footer-caption">Previous</p>
+            <p class="chapter-link">
+                Chapter 14 - Managing Incidents
+            </p>
+          </a>
+      </div>
+      <div class="next">
+          <a href="tracking-outages.html">
+            <p class="footer-caption">Next</p>
+            <p class="chapter-link">
+                Chapter 16 - Tracking Outages
+            </p>
+          </a>
+      </div>
+        <p class="footer-link">Copyright © 2017 Google, Inc. Published by O'Reilly Media, Inc. Licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener noreferrer" target="_blank">CC BY-NC-ND 4.0</a></p>
+    </div>
+  </div>
+    </main>
+
+
+
+
+
+  </body>
+</html>

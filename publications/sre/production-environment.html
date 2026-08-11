@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta charset="utf-8">
+    <meta content="initial-scale=1, minimum-scale=1, width=device-width" name="viewport">
+    <title>Google SRE - SRE best practices for production environment</title>
+      <meta name="description" content="Google SRE book for critical understanding about what is a production environment and the role played by production environment in software testing.">
+    <meta name="referrer" content="no-referrer" />
+    <link rel="canonical" href="production-environment.html">
+    <link rel="apple-touch-icon-precomposed" sizes="180x180" href="https://lh3.googleusercontent.com/Yf2DCX8RKda6r4Jml9DLMByS2zQCBFs3kQpvBfN8UgIh4YVWIYSYIQOoTxJriyuM26cT5PDjyEb5aynDQ0Xyz46yHKnfg8JlUbDW">
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Google+Sans:400|Roboto:400,400italic,500,500italic,700,700italic|Roboto+Mono:400,500,700|Material+Icons">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://lh3.googleusercontent.com/Yf2DCX8RKda6r4Jml9DLMByS2zQCBFs3kQpvBfN8UgIh4YVWIYSYIQOoTxJriyuM26cT5PDjyEb5aynDQ0Xyz46yHKnfg8JlUbDW">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://lh3.googleusercontent.com/Yf2DCX8RKda6r4Jml9DLMByS2zQCBFs3kQpvBfN8UgIh4YVWIYSYIQOoTxJriyuM26cT5PDjyEb5aynDQ0Xyz46yHKnfg8JlUbDW">
+    <link rel="shortcut icon" href="https://lh3.googleusercontent.com/Yf2DCX8RKda6r4Jml9DLMByS2zQCBFs3kQpvBfN8UgIh4YVWIYSYIQOoTxJriyuM26cT5PDjyEb5aynDQ0Xyz46yHKnfg8JlUbDW">
+    <link href="https://sre.google/sre-book/static/css/index.min.css?cache=6c30b59" rel="stylesheet">
+
+
+
+  </head>
+
+  <body>
+
+    <main>
+  <div ng-controller= "HeaderCtrl as headerCtrl">
+    <div id="curtain" class="menu-closed"></div>
+      <div class="header clearfix">
+        <a id="burger-menu" class="expand"></a>
+        <h2 class="chapter-title">
+                Chapter 2 - The Production Environment at Google, from the Viewpoint of an SRE
+        </h2>
+      </div>
+      <div id="overlay-element" class="expands">
+        <div class="logo">
+          <a href="https://www.google.com"><img src="assets/c812e821ce-YoVRtLOHMSRYQZ3OhFL8RIamcjFYbmQXX4oAQx02MRqqY9zlKNvsuZpS73khXiOqTH3qrFW27VrERJJIHTjPk-tAh46q8-Fd4w6qlw" alt="Google"></a>
+        </div>
+        <ol id="drop-down" class="dropdown-content hide">
+          <li><a class="menu-buttons" href="table-of-contents.html">Table of Contents</a></li>
+            <li>
+              <a href="foreword.html" class="menu-buttons">
+                  Foreword
+              </a>
+            </li>
+            <li>
+              <a href="preface.html" class="menu-buttons">
+                  Preface
+              </a>
+            </li>
+            <li>
+              <a href="part-I-introduction.html" class="menu-buttons">
+                  Part I - Introduction
+              </a>
+            </li>
+            <li>
+              <a href="introduction.html" class="menu-buttons">
+                  1. Introduction
+              </a>
+            </li>
+            <li class="active">
+              <a href="production-environment.html" class="menu-buttons">
+                  2. The Production Environment at Google, from the Viewpoint of an SRE
+              </a>
+            </li>
+            <li>
+              <a href="part-II-principles.html" class="menu-buttons">
+                  Part II - Principles
+              </a>
+            </li>
+            <li>
+              <a href="embracing-risk.html" class="menu-buttons">
+                  3. Embracing Risk
+              </a>
+            </li>
+            <li>
+              <a href="service-level-objectives.html" class="menu-buttons">
+                  4. Service Level Objectives
+              </a>
+            </li>
+            <li>
+              <a href="eliminating-toil.html" class="menu-buttons">
+                  5. Eliminating Toil
+              </a>
+            </li>
+            <li>
+              <a href="monitoring-distributed-systems.html" class="menu-buttons">
+                  6. Monitoring Distributed Systems
+              </a>
+            </li>
+            <li>
+              <a href="automation-at-google.html" class="menu-buttons">
+                  7. The Evolution of Automation at Google
+              </a>
+            </li>
+            <li>
+              <a href="release-engineering.html" class="menu-buttons">
+                  8. Release Engineering
+              </a>
+            </li>
+            <li>
+              <a href="simplicity.html" class="menu-buttons">
+                  9. Simplicity
+              </a>
+            </li>
+            <li>
+              <a href="part-III-practices.html" class="menu-buttons">
+                  Part III - Practices
+              </a>
+            </li>
+            <li>
+              <a href="practical-alerting.html" class="menu-buttons">
+                  10. Practical Alerting
+              </a>
+            </li>
+            <li>
+              <a href="being-on-call.html" class="menu-buttons">
+                  11. Being On-Call
+              </a>
+            </li>
+            <li>
+              <a href="effective-troubleshooting.html" class="menu-buttons">
+                  12. Effective Troubleshooting
+              </a>
+            </li>
+            <li>
+              <a href="emergency-response.html" class="menu-buttons">
+                  13. Emergency Response
+              </a>
+            </li>
+            <li>
+              <a href="managing-incidents.html" class="menu-buttons">
+                  14. Managing Incidents
+              </a>
+            </li>
+            <li>
+              <a href="postmortem-culture.html" class="menu-buttons">
+                  15. Postmortem Culture: Learning from Failure
+              </a>
+            </li>
+            <li>
+              <a href="tracking-outages.html" class="menu-buttons">
+                  16. Tracking Outages
+              </a>
+            </li>
+            <li>
+              <a href="testing-reliability.html" class="menu-buttons">
+                  17. Testing for Reliability
+              </a>
+            </li>
+            <li>
+              <a href="software-engineering-in-sre.html" class="menu-buttons">
+                  18. Software Engineering in SRE
+              </a>
+            </li>
+            <li>
+              <a href="load-balancing-frontend.html" class="menu-buttons">
+                  19. Load Balancing at the Frontend
+              </a>
+            </li>
+            <li>
+              <a href="load-balancing-datacenter.html" class="menu-buttons">
+                  20. Load Balancing in the Datacenter
+              </a>
+            </li>
+            <li>
+              <a href="handling-overload.html" class="menu-buttons">
+                  21. Handling Overload
+              </a>
+            </li>
+            <li>
+              <a href="addressing-cascading-failures.html" class="menu-buttons">
+                  22. Addressing Cascading Failures
+              </a>
+            </li>
+            <li>
+              <a href="managing-critical-state.html" class="menu-buttons">
+                  23. Managing Critical State: Distributed Consensus for Reliability
+              </a>
+            </li>
+            <li>
+              <a href="distributed-periodic-scheduling.html" class="menu-buttons">
+                  24. Distributed Periodic Scheduling with Cron
+              </a>
+            </li>
+            <li>
+              <a href="data-processing-pipelines.html" class="menu-buttons">
+                  25. Data Processing Pipelines
+              </a>
+            </li>
+            <li>
+              <a href="data-integrity.html" class="menu-buttons">
+                  26. Data Integrity: What You Read Is What You Wrote
+              </a>
+            </li>
+            <li>
+              <a href="reliable-product-launches.html" class="menu-buttons">
+                  27. Reliable Product Launches at Scale
+              </a>
+            </li>
+            <li>
+              <a href="part-IV-management.html" class="menu-buttons">
+                  Part IV - Management
+              </a>
+            </li>
+            <li>
+              <a href="accelerating-sre-on-call.html" class="menu-buttons">
+                  28. Accelerating SREs to On-Call and Beyond
+              </a>
+            </li>
+            <li>
+              <a href="dealing-with-interrupts.html" class="menu-buttons">
+                  29. Dealing with Interrupts
+              </a>
+            </li>
+            <li>
+              <a href="operational-overload.html" class="menu-buttons">
+                  30. Embedding an SRE to Recover from Operational Overload
+              </a>
+            </li>
+            <li>
+              <a href="communication-and-collaboration.html" class="menu-buttons">
+                  31. Communication and Collaboration in SRE
+              </a>
+            </li>
+            <li>
+              <a href="evolving-sre-engagement-model.html" class="menu-buttons">
+                  32. The Evolving SRE Engagement Model
+              </a>
+            </li>
+            <li>
+              <a href="part-V-conclusions.html" class="menu-buttons">
+                  Part V - Conclusions
+              </a>
+            </li>
+            <li>
+              <a href="lessons-learned.html" class="menu-buttons">
+                  33. Lessons Learned from Other Industries
+              </a>
+            </li>
+            <li>
+              <a href="conclusion.html" class="menu-buttons">
+                  34. Conclusion
+              </a>
+            </li>
+            <li>
+              <a href="availability-table.html" class="menu-buttons">
+                  Appendix A. Availability Table
+              </a>
+            </li>
+            <li>
+              <a href="service-best-practices.html" class="menu-buttons">
+                  Appendix B. A Collection of Best Practices for Production Services
+              </a>
+            </li>
+            <li>
+              <a href="incident-document.html" class="menu-buttons">
+                  Appendix C. Example Incident State Document
+              </a>
+            </li>
+            <li>
+              <a href="example-postmortem.html" class="menu-buttons">
+                  Appendix D. Example Postmortem
+              </a>
+            </li>
+            <li>
+              <a href="launch-checklist.html" class="menu-buttons">
+                  Appendix E. Launch Coordination Checklist
+              </a>
+            </li>
+            <li>
+              <a href="production-meeting.html" class="menu-buttons">
+                  Appendix F. Example Production Meeting Minutes
+              </a>
+            </li>
+            <li>
+              <a href="bibliography.html" class="menu-buttons">
+                  Bibliography
+              </a>
+            </li>
+        </ol>
+      </div>
+    </div>
+
+  <div id="maia-main">
+    <div class="content" id="content">
+      <section data-type="chapter" id="chapter_production-environment">
+  <h1 class="heading jumptargets">The Production Environment at Google, from the Viewpoint of an SRE</h1>
+  <p class="byline author">Written by JC van Winkel</br>Edited by Betsy Beyer</p>
+  <p>Google datacenters are very different from most conventional datacenters and small-scale server farms. These differences present both extra problems and opportunities. This chapter discusses the challenges and opportunities that characterize Google datacenters and introduces terminology that is used throughout the book.</p>
+<section data-type="sect1" id="hardware-xqsjhK">
+    <h2 class="heading jumptargets">Hardware</h2>
+    <p>Most of Google’s compute resources are in Google-designed datacenters with proprietary power distribution, cooling, networking, and compute hardware (see <a data-type="xref" href="https://sre.google/sre-book/bibliography#Bar13">[Bar13]</a>). Unlike "standard" colocation datacenters, the compute hardware in a Google-designed datacenter is the same across the board.<sup><a class="jumptarget" data-type="noteref" id="id-N1KFQTnFxhW-marker" href="#id-N1KFQTnFxhW">9</a></sup> To eliminate the confusion between server hardware and server software, we use the following terminology throughout the book:</p>
+    <dl class="desc-list">
+      <dt class="subheaders jumptargets" id="machine">Machine</dt>
+      <dd>A piece of hardware (or perhaps a VM)</dd>
+      <dt class="subheaders jumptargets" id="server">Server</dt>
+      <dd>A piece of software that implements a service</dd>
+    </dl>
+    <p>Machines can run any server, so we don’t dedicate specific machines to specific server programs. There’s no specific machine that runs our mail server, for example. Instead, resource allocation is handled by our cluster operating system, <em>Borg</em>.</p>
+<p>We realize this use of the word <em>server</em> is unusual. The common use of the word conflates “binary that accepts network connection” with <em>machine</em>, but differentiating between the two is important when talking about computing at Google. Once you get used to our usage of <em>server</em>, it becomes more apparent why it makes sense to use this specialized terminology, not just within Google but also in the rest of this book.</p>
+<p><a data-type="xref" href="#fig_production-environment_topology">Figure 2-1</a> illustrates the topology of a Google datacenter:</p>
+<ul>
+      <li>Tens of machines are placed in a <em>rack</em>.</li>
+      <li>Racks stand in a <em>row</em>.</li>
+      <li>One or more rows form a <em>cluster</em>.</li>
+      <li>Usually a <em>datacenter</em> building houses multiple clusters.</li>
+      <li>Multiple datacenter buildings that are located close together form a <em>campus</em>.</li>
+    </ul>
+<figure id="fig_production-environment_topology" class="horizontal vertical jumptarget">
+      <img src="assets/7a3548bc02-reety2gbKIv2DsOTZ_xlGO4NwoGNVMRJUchhm6Ov1PiOODJc5svag80YGi1W_-iIXpKjtR_5dU9PsvSoUnRCRMXeJzvbslEjwr6FUQ-s900" alt="Example Google datacenter campus topology.">
+      <figcaption><span class="label">Figure 2-1. </span>Example Google datacenter campus topology</figcaption>
+    </figure>
+<p>Machines within a given datacenter need to be able to talk with each other, so we created a very fast virtual switch with tens of thousands of ports. We accomplished this by connecting hundreds of Google-built switches in a Clos network fabric <a data-type="xref" href="https://sre.google/sre-book/bibliography#Clos53">[Clos53]</a> named <em>Jupiter</em> <a data-type="xref" href="https://sre.google/sre-book/bibliography#Sin15">[Sin15]</a>. In its largest configuration, Jupiter supports 1.3 Pbps bisection bandwidth among servers.</p>
+<p>Datacenters are connected to each other with our globe-spanning backbone network <em>B4</em> <a data-type="xref" href="https://sre.google/sre-book/bibliography#Jai13">[Jai13]</a>. B4 is a software-defined networking architecture (and uses the OpenFlow open-standard communications protocol). It supplies massive bandwidth to a modest number of sites, and uses elastic bandwidth allocation to maximize average bandwidth <a data-type="xref" href="https://sre.google/sre-book/bibliography#Kum15">[Kum15]</a>.</p>
+  </section>
+<section data-type="sect1" id="system-software-that-organizes-the-hardware-PasaTg">
+    <h1 class="heading jumptargets">System Software That "Organizes" the Hardware</h1>
+    <p>Our hardware must be controlled and administered by software that can handle massive scale. Hardware failures are one notable problem that we manage with software. Given the large number of hardware components in a cluster, hardware failures occur quite frequently. In a single cluster in a typical year, thousands of machines fail and thousands of hard disks break; when multiplied by the number of clusters we operate globally, these numbers become somewhat breathtaking. Therefore, we want to abstract such problems away from users, and the teams running our services similarly don’t want to be bothered by hardware failures. Each datacenter campus has teams dedicated to <a href="managing-critical-state.html">maintaining the hardware and datacenter infrastructure</a>.</p>
+<section data-type="sect2" id="managing-machines-XQsKIBTq">
+      <h2 class="subheaders jumptargets">Managing Machines</h2>
+      <p><em>Borg</em>, illustrated in <a data-type="xref" href="#fig_production-environment_borg">Figure 2-2</a>, is a distributed cluster operating system <a data-type="xref" href="https://sre.google/sre-book/bibliography#Ver15">[Ver15]</a>, similar to Apache Mesos.<sup><a class="jumptarget" data-type="noteref" id="id-BWDuecjF7IPTj-marker" href="#id-BWDuecjF7IPTj">10</a></sup> Borg manages its jobs at the cluster level.</p>
+<figure id="fig_production-environment_borg" class="horizontal vertical jumptarget">
+        <img src="assets/7b8418882c-u-b_doOMDhXmXkA52nLOu6OEn9sf_hXxku7Hp8GQe6xj_hO5RZ6OKuSbTa4MUE-71jTxGSJ3N2gjt9juDJ5hXsQCeIxFu37BmjblZw-s900" alt="High-level Borg cluster architecture.">
+      <figcaption><span class="label">Figure 2-2. </span>High-level Borg cluster architecture</figcaption>
+      </figure>
+<p>Borg is responsible for running users’ <em>jobs</em>, which can either be indefinitely running servers or batch processes like a MapReduce <a data-type="xref" href="https://sre.google/sre-book/bibliography#Dea04">[Dea04]</a>. Jobs can consist of more than one (and sometimes thousands) of identical <em>tasks</em>, both for reasons of reliability and because a single process can’t usually handle all cluster traffic. When Borg starts a job, it finds machines for the tasks and tells the machines to start the server program. Borg then continually monitors these tasks. If a task malfunctions, it is killed and restarted, possibly on a different machine.</p>
+<p>Because tasks are fluidly allocated over machines, we can’t simply rely on IP addresses and port numbers to refer to the tasks. We solve this problem with an extra level of indirection: when starting a job, Borg allocates a name and index number to each task using the <em>Borg Naming Service</em> (BNS). Rather than using the IP address and port number, other processes connect to Borg tasks via the BNS name, which is translated to an IP address and port number by BNS. For example, the BNS path might be a string such as <code>/bns/&lt;<em>cluster</em>&gt;/&lt;<em>user</em>&gt;/&lt;<em>job name</em>&gt;/&lt;<em>task number</em>&gt;</code>, which would resolve to <code>&lt;<em>IP address</em>&gt;:&lt;<em>port</em>&gt;</code>.</p>
+<p>Borg is also responsible for the allocation of resources to jobs. Every job needs to specify its required resources (e.g., 3 CPU cores, 2 GiB of RAM). Using the list of requirements for all jobs, Borg can binpack the tasks over the machines in an optimal way that also accounts for failure domains (for example: Borg won’t run all of a job’s tasks on the same rack, as doing so means that the top of rack switch is a single point of failure for that job).</p>
+<p>If a task tries to use more resources than it requested, Borg kills the task and restarts it (as a slowly crashlooping task is usually preferable to a task that hasn’t been restarted at all).</p>
+    </section>
+<section data-type="sect2" id="storage-jWsvt4TM">
+      <h2 class="subheaders jumptargets">Storage</h2>
+      <p>Tasks can use the local disk on machines as a scratch pad, but we have several cluster storage options for permanent storage (and even scratch space will eventually move to the cluster storage model).  These are comparable to Lustre and the Hadoop Distributed File System (HDFS), which are both open source cluster filesystems.</p>
+<p>The storage layer is responsible for offering users easy and reliable access to the storage available for a cluster. As shown in <a data-type="xref" href="#fig_production-environment_storage-stack">Figure 2-3</a>, storage has many layers:</p>
+      <ol>
+        <li>The lowest layer is called <em>D</em> (for <em>disk</em>, although D uses both spinning disks and flash storage). D is a fileserver running on almost all machines in a cluster. However, users who want to access their data don’t want to have to remember which machine is storing their data, which is where the next layer comes into play.</li>
+        <li>A layer on top of D called <em>Colossus</em> creates a cluster-wide filesystem that offers usual filesystem semantics, as well as replication and encryption. Colossus is the successor to GFS, the Google File System <a data-type="xref" href="https://sre.google/sre-book/bibliography#Ghe03">[Ghe03]</a>.</li>
+        <li>
+          <p>There are several database-like services built on top of Colossus:</p>
+          <ol>
+            <li>Bigtable <a data-type="xref" href="https://sre.google/sre-book/bibliography#Cha06">[Cha06]</a> is a NoSQL database system that can handle databases that are petabytes in size. A Bigtable is a sparse, distributed, persistent multidimensional sorted map that is indexed by row key, column key, and timestamp; each value in the map is an uninterpreted array of bytes. Bigtable supports eventually consistent, cross-datacenter replication.</li>
+            <li>Spanner <a data-type="xref" href="https://sre.google/sre-book/bibliography#Cor12">[Cor12]</a> offers an SQL-like interface for users that require real consistency across the world.</li>
+            <li>Several other database systems, such as <em>Blobstore</em>, are available. Each of these options comes with its own set of trade-offs (see <a data-type="xref" href="data-integrity.html">Data Integrity: What You Read Is What You Wrote</a>).</li>
+          </ol>
+        </li>
+      </ol>
+      <figure id="fig_production-environment_storage-stack" class="horizontal vertical jumptarget">
+        <img src="assets/236c4ce227-vRFHzV6MGcmYL3af2KVAHkj4ODl5EcNAAlKV28S0cpf1dBvQii8SV_dguh9-8SqJFbFFhvI_wqlld1NsK2U5N3CYR6s8FRhRE8c-s901" alt="Portions of the Google storage stack.">
+        <figcaption><span class="label">Figure 2-3. </span>Portions of the Google storage stack</figcaption>
+      </figure>
+    </section>
+<section data-type="sect2" id="networking-2ksZhrT8">
+      <h2 class="subheaders jumptargets">Networking</h2>
+      <p>Google’s network hardware is controlled in several ways. As discussed earlier, we use an OpenFlow-based software-defined network. Instead of using "smart" routing hardware, we rely on less expensive "dumb" switching components in combination with a central (duplicated) controller that precomputes best paths across the network. Therefore, we’re able to move compute-expensive routing decisions away from the routers and use simple switching hardware.</p>
+<p>Network bandwidth needs to be allocated wisely. Just as Borg limits the compute resources that a task can use, the Bandwidth Enforcer (BwE) manages the available bandwidth to maximize the average available bandwidth. Optimizing bandwidth isn’t just about cost: centralized traffic engineering has been shown to solve a number of problems that are traditionally extremely difficult to solve through a combination of distributed routing and traffic engineering <a data-type="xref" href="https://sre.google/sre-book/bibliography#Kum15">[Kum15]</a>.</p>
+<p>Some services have jobs running in multiple clusters, which are distributed across the world. In order to minimize latency for globally distributed services, we want to direct users to the closest datacenter with available capacity. Our <em>Global Software Load Balancer</em> (GSLB) performs load balancing on three levels:</p>
+<ul>
+        <li>Geographic load balancing for DNS requests (for example, to <em>www.google.com</em>), described in <a data-type="xref" href="load-balancing-frontend.html">Load Balancing at the Frontend</a></li>
+  <li>Load balancing at a user service level (for example, YouTube or Google Maps)</li>
+        <li>Load balancing at the Remote Procedure Call (RPC) level, described in <a data-type="xref" href="load-balancing-datacenter.html">Load Balancing in the Datacenter</a></li>
+      </ul>
+<p>Service owners specify a symbolic name for a service, a list of BNS addresses of servers, and the capacity available at each of the locations (typically measured in queries per second). GSLB then directs traffic to the BNS addresses.</p>
+    </section></section>
+<section data-type="sect1" id="other-system-software-OKsvc7">
+    <h1 class="heading jumptargets">Other System Software</h1>
+    <p>Several other components in a datacenter are also important.</p>
+<section data-type="sect2" id="lock-service-jWsjIlcM">
+      <h2 class="subheaders jumptargets">Lock Service</h2>
+      <p>The <em>Chubby</em> <a data-type="xref" href="https://sre.google/sre-book/bibliography#Bur06">[Bur06]</a> lock service provides a filesystem-like API for maintaining locks. Chubby handles these locks across datacenter locations. It uses the Paxos protocol for asynchronous Consensus (see <a data-type="xref" href="managing-critical-state.html">Managing Critical State: Distributed Consensus for Reliability</a>).</p>
+<p>Chubby also plays an important role in master election. When a service has five replicas of a job running for reliability purposes but only one replica may perform actual work, Chubby is used to select <em>which</em> replica may proceed.</p>
+<p>Data that must be consistent is well suited to storage in Chubby. For this reason, BNS uses Chubby to store mapping between BNS paths and <code>IP address:port</code> pairs.</p>
+</section>
+<section data-type="sect2" id="monitoring-and-alerting-2ksLtBc8">
+      <h2 class="subheaders jumptargets">Monitoring and Alerting</h2>
+<p>We want to make sure that all services are running as required. Therefore, we run many instances of our <em>Borgmon</em> monitoring program (see <a data-type="xref" href="practical-alerting.html">Practical Alerting from Time-Series Data</a>). Borgmon regularly "scrapes" metrics from monitored servers. These metrics can be used instantaneously for alerting and also stored for use in historic overviews (e.g., graphs). We can use monitoring in several ways:</p>
+<ul class="pagebreak-before">
+        <li>Set up alerting for acute problems.</li>
+        <li>Compare behavior: did a software update make the server faster?</li>
+        <li>Examine how resource consumption behavior evolves over time, which is essential for capacity planning.</li>
+      </ul>
+    </section>
+  </section>
+<section data-type="sect1" id="our-software-infrastructure-XQs4iw">
+    <h1 class="heading jumptargets">Our Software Infrastructure</h1>
+<p>Our software architecture is designed to make the most efficient use of our hardware infrastructure. Our code is heavily multithreaded, so one task can easily use many cores. To facilitate dashboards, monitoring, and debugging, every server has an HTTP server that provides diagnostics and statistics for a given task.</p>
+<p>All of Google’s services communicate using a Remote Procedure Call (RPC) infrastructure named <em>Stubby</em>; an open source version, gRPC, is available.<sup><a class="jumptarget" data-type="noteref" id="id-mX2u9tnIwix-marker" href="#id-mX2u9tnIwix">11</a></sup> Often, an RPC call is made even when a call to a subroutine in the local program needs to be performed. This makes it easier to refactor the call into a different server if more modularity is needed, or when a server’s codebase grows. GSLB can load balance RPCs in the same way it load balances externally visible services.</p>
+<p>A server receives RPC requests from its <em>frontend</em> and sends RPCs to its <em>backend</em>. In traditional terms, the frontend is called the client and the backend is called the server.</p>
+<p>Data is transferred to and from an RPC using <em>protocol buffers</em>,<sup><a class="jumptarget" data-type="noteref" id="id-BWDu0tehOiB-marker" href="#id-BWDu0tehOiB">12</a></sup> often abbreviated to "protobufs," which are similar to Apache’s Thrift. Protocol buffers have many advantages over XML for serializing structured data: they are simpler to use, 3 to 10 times smaller, 20 to 100 times faster, and less ambiguous.</p>
+</section>
+<section data-type="sect1" id="our-development-environment-jWsMun">
+    <h1 class="heading jumptargets">Our Development Environment</h1>
+    <p>Development velocity is very important to Google, so we’ve built a complete development environment to make use of our infrastructure <a data-type="xref" href="https://sre.google/sre-book/bibliography#Mor12b">[Mor12b]</a>.</p>
+    <p>Apart from a few groups that have their own open source repositories (e.g., Android and Chrome), Google Software Engineers work from a single shared repository <a data-type="xref" href="https://sre.google/sre-book/bibliography#Pot16">[Pot16]</a>. This has a few important practical implications for our workflows:</p>
+    <ul>
+      <li>If engineers encounter a problem in a component outside of their project, they can fix the problem, send the proposed changes ("changelist," or <em>CL</em>) to the owner for review, and submit the CL to the mainline.</li>
+      <li>Changes to source code in an engineer’s own project require a review. All software is reviewed before being submitted.</li>
+    </ul>
+    <p>When software is built, the build request is sent to build servers in a datacenter. Even large builds are executed quickly, as many build servers can compile in parallel. This infrastructure is also used for continuous testing. Each time a CL is submitted, tests run on all software that may depend on that CL, either directly or indirectly. If the framework determines that the change likely broke other parts in the system, it notifies the owner of the submitted change. Some projects use a push-on-green system, where a new version is automatically pushed to production after passing tests.</p>
+</section>
+<section data-type="sect1" id="xref_production-environment_shakespeare">
+    <h1 class="heading jumptargets">Shakespeare: A Sample Service</h1>
+    <p>To provide a model of how a service would hypothetically be deployed in the Google production environment, let’s look at an example service that interacts with multiple Google technologies. Suppose we want to offer a service that lets you determine where a given word is used throughout all of Shakespeare’s works.</p>
+    <p>We can divide this system into two parts:</p>
+    <ul>
+      <li>A batch component that reads all of Shakespeare’s texts, creates an index, and writes the index into a Bigtable. This job need only run once, or perhaps very infrequently (as you never know if a new text might be discovered!).</li>
+      <li>An application frontend that handles end-user requests. This job is always up, as users in all time zones will want to search in Shakespeare’s books.</li>
+    </ul>
+    <p>The batch component is a MapReduce comprising three phases.</p>
+    <p>The mapping phase reads Shakespeare’s texts and splits them into individual words. This is faster if performed in parallel by multiple workers.</p>
+    <p>The shuffle phase sorts the tuples by word.</p>
+    <p>In the reduce phase, a tuple of (<em>word</em>, <em>list of locations</em>) is created.</p>
+    <p>Each tuple is written to a row in a Bigtable, using the word as the key.</p>
+<section data-type="sect2" class="pagebreak-before" id="life-of-a-request-nqsMUBUJ">
+      <h2 class="subheaders jumptargets">Life of a Request</h2>
+      <p><a data-type="xref" href="#fig_production-environment_life-of-a-request">Figure 2-4</a> shows how a user’s request is serviced: first, the user points their browser to <em>shakespeare.google.com</em>. To obtain the corresponding IP address, the user’s device resolves the address with its <a href="load-balancing-frontend.html">DNS server</a> (1). This request ultimately ends up at Google’s DNS server, which talks to GSLB. As GSLB keeps track of traffic load among frontend servers across regions, it picks which server IP address to send to this user.</p>
+      <figure id="fig_production-environment_life-of-a-request" class="horizontal vertical jumptarget">
+        <img src="assets/3c69bf5986-oABYup26V8DtDwmugmNQebUmUSOzM9UFY-jXD-C31MIuIA7MODQe8fCOT5pHERILEcptT5ymIa12DLZACCJmlQWzE3AT2KV2cop96jA-s900" alt="Life of a request.">
+        <figcaption><span class="label">Figure 2-4. </span>The life of a request</figcaption>
+      </figure>
+<p>The browser connects to the HTTP server on this IP. This server (named the Google Frontend, or GFE) is a reverse proxy that terminates the TCP connection (2). The GFE looks up which service is required (web search, maps, or—in this case—Shakespeare). Again using GSLB, the server finds an available Shakespeare frontend server, and sends that server an RPC containing the HTTP request (3).</p>
+<p>The Shakespeare server analyzes the HTTP request and constructs a protobuf containing the word to look up. The Shakespeare frontend server now needs to contact the Shakespeare backend server: the frontend server contacts GSLB to obtain the BNS address of a suitable and unloaded backend server (4). That Shakespeare backend server now contacts a Bigtable server to obtain the requested data (5).</p>
+<p>The answer is written to the reply protobuf and returned to the Shakespeare backend server. The backend hands a protobuf containing the results to the Shakespeare <span class="keep-together">frontend</span> server, which assembles the HTML and returns the answer to the user.</p>
+<p>This entire chain of events is executed in the blink of an eye—just a few hundred milliseconds! Because many moving parts are involved, there are many potential points of failure; in particular, a failing GSLB would wreak havoc. However, Google’s policies of rigorous testing and careful rollout, in addition to our proactive error recovery methods such as graceful degradation, allow us to deliver the <a href="part-III-practices.html">reliable service</a> that our users have come to expect. After all, people regularly use <em>www.google.com</em> to check if their Internet connection is set up correctly.</p>
+</section>
+<section data-type="sect2" id="xref_production-environment_job-and-data-organization">
+      <h2 class="subheaders jumptargets">Job and Data Organization</h2>
+      <p>Load testing determined that our backend server can handle about 100 queries per second (QPS). Trials performed with a limited set of users lead us to expect a peak load of about 3,470 QPS, so we need at least 35 tasks. However, the following considerations mean that we need at least 37 tasks in the job, or <span data-type="tex">N+2</span>:</p>
+      <ul>
+        <li>During updates, one task at a time will be unavailable, leaving 36 tasks.</li>
+        <li>A machine failure might occur during a task update, leaving only 35 tasks, just enough to serve peak load.<sup><a class="jumptarget" data-type="noteref" id="id-0vYuXSpSqF0IzCmUg-marker" href="#id-0vYuXSpSqF0IzCmUg">13</a></sup></li>
+      </ul>
+<p>A closer examination of user traffic shows our peak usage is distributed globally: 1,430 QPS from North America, 290 from South America, 1,400 from Europe and Africa, and 350 from Asia and Australia. Instead of locating all backends at one site, we distribute them across the USA, South America, Europe, and Asia. Allowing for <span data-type="tex">N+2</span> redundancy per region means that we end up with 17 tasks in the USA, 16 in Europe, and 6 in Asia. However, we decide to use 4 tasks (instead of 5) in South America, to lower the overhead of <span data-type="tex">N+2</span> to <span data-type="tex">N+1</span>. In this case, we’re willing to tolerate a small risk of higher latency in exchange for lower hardware costs: if GSLB redirects traffic from one continent to another when our South American datacenter is over capacity, we can save 20% of the resources we’d spend on hardware. In the larger regions, we’ll spread tasks across two or three clusters for extra resiliency.</p>
+<p>Because the backends need to contact the Bigtable holding the data, we need to also design this storage element strategically. A backend in Asia contacting a Bigtable in the USA adds a significant amount of latency, so we replicate the Bigtable in each region. Bigtable replication helps us in two ways: it provides resilience should a <span class="keep-together">Bigtable</span> server fail, and it lowers data-access latency. While Bigtable only offers eventual consistency, it isn’t a major problem because we don’t need to update the contents often.</p>
+<p>We’ve introduced a lot of terminology here; while you don’t need to remember it all, it’s useful for framing many of the other systems we’ll refer to later.</p>
+</section>
+</section>
+<div data-type="footnotes" class="footnotes"><p data-type="footnote" id="id-N1KFQTnFxhW"><sup><a class="jumptargets" href="#id-N1KFQTnFxhW-marker">9</a></sup>Well, <em>roughly</em> the same. Mostly. Except for the stuff that is different. Some datacenters end up with multiple generations of compute hardware, and sometimes we augment datacenters after they are built. But for the most part, our datacenter hardware is homogeneous.</p><p data-type="footnote" id="id-BWDuecjF7IPTj"><sup><a class="jumptargets" href="#id-BWDuecjF7IPTj-marker">10</a></sup>Some readers may be more familiar with Borg’s descendant, Kubernetes—an open source Container Cluster orchestration framework started by Google in 2014; see <a href="https://kubernetes.io" target="_blank" rel="noopener noreferrer"><em class="hyperlink">https://kubernetes.io</em></a> and <a data-type="xref" href="https://sre.google/sre-book/bibliography#Bur16">[Bur16]</a>. For more details on the similarities between Borg and Apache Mesos, see <a data-type="xref" href="https://sre.google/sre-book/bibliography#Ver15">[Ver15]</a>.</p><p data-type="footnote" id="id-mX2u9tnIwix"><sup><a class="jumptargets" href="#id-mX2u9tnIwix-marker">11</a></sup>See <a href="https://grpc.io" target="_blank" rel="noopener noreferrer"><em class="hyperlink">https://grpc.io</em></a>.</p><p data-type="footnote" id="id-BWDu0tehOiB"><sup><a class="jumptargets" href="#id-BWDu0tehOiB-marker">12</a></sup>Protocol buffers are a language-neutral, platform-neutral extensible mechanism for serializing structured data. For more details, see <a href="https://developers.google.com/protocol-buffers/" target="_blank" rel="noopener noreferrer"><em class="hyperlink">https://developers.google.com/protocol-buffers/</em></a>.</p><p data-type="footnote" id="id-0vYuXSpSqF0IzCmUg"><sup><a class="jumptargets" href="#id-0vYuXSpSqF0IzCmUg-marker">13</a></sup>We assume the probability of two simultaneous task failures in our environment is low enough to be negligible. Single points of failure, such as top-of-rack switches or power distribution, may make this assumption invalid in other environments.</p></div>
+</section>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="maia-aux">
+      <div class="previous">
+          <a href="introduction.html">
+            <p class="footer-caption">Previous</p>
+            <p class="chapter-link">
+                Chapter 1 - Introduction
+            </p>
+          </a>
+      </div>
+      <div class="next">
+          <a href="part-II-principles.html">
+            <p class="footer-caption">Next</p>
+            <p class="chapter-link">
+                Part II - Principles
+            </p>
+          </a>
+      </div>
+        <p class="footer-link">Copyright © 2017 Google, Inc. Published by O'Reilly Media, Inc. Licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener noreferrer" target="_blank">CC BY-NC-ND 4.0</a></p>
+    </div>
+  </div>
+    </main>
+
+
+
+
+
+  </body>
+</html>

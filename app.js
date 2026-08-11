@@ -228,7 +228,7 @@ function renderLibrary() {
     const label = saved.chapterTitle ? `Continue · ${saved.chapterTitle}` : "Start reading";
     return `
       <button class="book-card" type="button" data-publication-id="${escapeHTML(publication.id)}">
-        <span class="book-cover" aria-hidden="true">
+        <span class="book-cover ${escapeHTML(publication.accent || "copper")}" aria-hidden="true">
           <span class="cover-kicker">${escapeHTML(publication.publisher || "Technical reading")}</span>
           <strong class="cover-title">${escapeHTML(publication.title)}</strong>
           <span class="cover-mark">{ }</span>
@@ -303,24 +303,42 @@ async function fetchToc(publication) {
   }
   const html = await fetchText(publication.sourceUrl);
   const doc = new DOMParser().parseFromString(html, "text/html");
-  const items = $$("nav[data-type='toc'] > ol > li", doc);
+  const baseUrl = new URL(publication.baseUrl, location.href).href;
+  const candidates = publication.tocSelector
+    ? $$(publication.tocSelector, doc).map((anchor) => ({ anchor, type: inferChapterType(anchor.textContent.trim()) }))
+    : $$(":scope > ol > li, :scope > ul > li", $("nav[data-type='toc']", doc)).map((item) => ({
+      anchor: $(":scope > a", item),
+      type: item.dataset.type || "section",
+    }));
   const seen = new Set();
-  return items.flatMap((item) => {
-    const anchor = $(":scope > a", item);
+  return candidates.flatMap(({ anchor, type }) => {
     if (!anchor) return [];
-    const url = new URL(anchor.getAttribute("href"), publication.baseUrl).href;
+    const href = anchor.getAttribute("href");
+    if (!href) return [];
+    if (publication.tocHrefPattern && !(new RegExp(publication.tocHrefPattern, "i")).test(href)) return [];
+    const url = new URL(href, baseUrl).href;
     const documentUrl = url.split("#")[0];
     if (seen.has(documentUrl)) return [];
     seen.add(documentUrl);
-    const type = item.dataset.type || "section";
     return [{
       publicationId: publication.id,
       title: anchor.textContent.trim(),
       url,
       type,
-      label: chapterLabel(type),
+      label: publication.id === "architecture-open-source-applications"
+        ? (url.includes("/v1/") ? "Volume 1" : "Volume 2")
+        : chapterLabel(type),
     }];
   });
+}
+
+function inferChapterType(title) {
+  if (/^part\b/i.test(title)) return "part";
+  if (/foreword/i.test(title)) return "foreword";
+  if (/preface/i.test(title)) return "preface";
+  if (/introduction/i.test(title)) return "chapter";
+  if (/acknowledg|bibliograph|appendix|index/i.test(title)) return "section";
+  return "chapter";
 }
 
 function chapterLabel(type) {
@@ -410,8 +428,11 @@ async function loadChapter(index, hash = "", push = true) {
 }
 
 function renderDocument(doc, baseUrl) {
-  const source = doc.body.cloneNode(true);
+  const contentRoot = state.publication.contentSelector ? $(state.publication.contentSelector, doc) : doc.body;
+  if (!contentRoot) throw new Error("The publication’s chapter content was not found");
+  const source = contentRoot.cloneNode(true);
   $$('script, style, nav, [data-type="indexterm"]', source).forEach((node) => node.remove());
+  if (state.publication.removeSelector) $$(state.publication.removeSelector, source).forEach((node) => node.remove());
   $$('[contenteditable]', source).forEach((node) => node.removeAttribute("contenteditable"));
   $$('img', source).forEach((image) => {
     const src = image.getAttribute("src");
@@ -431,13 +452,24 @@ function renderDocument(doc, baseUrl) {
   els.chapterContent.replaceChildren(...source.childNodes);
   const attribution = document.createElement("footer");
   attribution.className = "source-attribution";
+  const originalUrl = getOriginalChapterUrl(baseUrl);
   attribution.innerHTML = `
     <p><strong>${escapeHTML(state.publication.title)}</strong> by ${escapeHTML(state.publication.authors)}.</p>
-    <p>Read from <a href="${escapeHTML(baseUrl)}" target="_blank" rel="noopener noreferrer">the original publication</a>. Content is provided under <a href="${escapeHTML(state.publication.licenseUrl)}" target="_blank" rel="noopener noreferrer">${escapeHTML(state.publication.license)}</a>.</p>`;
+    <p>Read from <a href="${escapeHTML(originalUrl)}" target="_blank" rel="noopener noreferrer">the original publication</a>. Content is provided under <a href="${escapeHTML(state.publication.licenseUrl)}" target="_blank" rel="noopener noreferrer">${escapeHTML(state.publication.license)}</a>.</p>`;
   els.chapterContent.append(attribution);
   applyStoredHighlights();
   addCodeControls();
   applySettings();
+}
+
+function getOriginalChapterUrl(localUrl) {
+  const publication = state.publication;
+  if (!publication.originalBaseUrl) return localUrl;
+  const filename = new URL(localUrl, location.href).pathname.split("/").pop();
+  if (publication.originalUrlStyle === "directory") {
+    return new URL(`${filename.replace(/\.html$/i, "")}/`, publication.originalBaseUrl).href;
+  }
+  return new URL(filename, publication.originalBaseUrl).href;
 }
 
 function renderPdf(publication) {

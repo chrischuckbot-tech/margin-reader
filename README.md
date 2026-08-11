@@ -4,14 +4,18 @@ Margin is a static, installable reading app for software engineering books, pape
 
 ## Included now
 
-- Software Engineering at Google, read directly from the official Abseil HTML edition
+- Software Engineering at Google
+- Site Reliability Engineering
+- Building Secure and Reliable Systems
+- The Architecture of Open Source Applications, Volumes 1 and 2
+- Game Programming Patterns
 - Light, sepia, and dark themes
 - Serif/sans type, text size, line spacing, and code wrapping controls
 - Chapter progress and automatic resume
 - Chapter search and internal section links
 - Highlights, notes, chapter bookmarks, and a local notebook
 - Copy buttons for code examples
-- Automatic offline caching for chapter text and illustrations—no download step
+- Automatic offline caching for every chapter—no download step; illustrations cache when a book is opened online
 - Installable PWA metadata for “Add to Home Screen”
 - Basic PDF support for future local publications
 
@@ -40,6 +44,8 @@ The `.nojekyll` file keeps GitHub Pages in simple static-file mode.
 ## Add another publication
 
 Publications live in `data/publications.json`.
+
+`scripts/import-publications.mjs` refreshes the locally bundled copies of sources that do not permit cross-origin browser fetching. Run it from the repository root with Node.js when those upstream editions change.
 
 For another cross-origin HTML publication, add an item with `type: "remote-html"`, a table-of-contents `sourceUrl`, and its `baseUrl`. The source must allow browser CORS requests.
 

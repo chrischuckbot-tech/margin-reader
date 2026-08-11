@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta charset="utf-8">
+    <meta content="initial-scale=1, minimum-scale=1, width=device-width" name="viewport">
+    <title>Google SRE - Stress Testing: Build Confidence in System</title>
+      <meta name="description" content="Stress testing helps SREs quantify confidence in the systems they maintain, enabling them to make informed decisions about releases and changes.">
+    <meta name="referrer" content="no-referrer" />
+    <link rel="canonical" href="testing-reliability.html">
+    <link rel="apple-touch-icon-precomposed" sizes="180x180" href="https://lh3.googleusercontent.com/Yf2DCX8RKda6r4Jml9DLMByS2zQCBFs3kQpvBfN8UgIh4YVWIYSYIQOoTxJriyuM26cT5PDjyEb5aynDQ0Xyz46yHKnfg8JlUbDW">
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Google+Sans:400|Roboto:400,400italic,500,500italic,700,700italic|Roboto+Mono:400,500,700|Material+Icons">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://lh3.googleusercontent.com/Yf2DCX8RKda6r4Jml9DLMByS2zQCBFs3kQpvBfN8UgIh4YVWIYSYIQOoTxJriyuM26cT5PDjyEb5aynDQ0Xyz46yHKnfg8JlUbDW">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://lh3.googleusercontent.com/Yf2DCX8RKda6r4Jml9DLMByS2zQCBFs3kQpvBfN8UgIh4YVWIYSYIQOoTxJriyuM26cT5PDjyEb5aynDQ0Xyz46yHKnfg8JlUbDW">
+    <link rel="shortcut icon" href="https://lh3.googleusercontent.com/Yf2DCX8RKda6r4Jml9DLMByS2zQCBFs3kQpvBfN8UgIh4YVWIYSYIQOoTxJriyuM26cT5PDjyEb5aynDQ0Xyz46yHKnfg8JlUbDW">
+    <link href="https://sre.google/sre-book/static/css/index.min.css?cache=6c30b59" rel="stylesheet">
+
+
+
+  </head>
+
+  <body>
+
+    <main>
+  <div ng-controller= "HeaderCtrl as headerCtrl">
+    <div id="curtain" class="menu-closed"></div>
+      <div class="header clearfix">
+        <a id="burger-menu" class="expand"></a>
+        <h2 class="chapter-title">
+                Chapter 17 - Testing for Reliability
+        </h2>
+      </div>
+      <div id="overlay-element" class="expands">
+        <div class="logo">
+          <a href="https://www.google.com"><img src="assets/c812e821ce-YoVRtLOHMSRYQZ3OhFL8RIamcjFYbmQXX4oAQx02MRqqY9zlKNvsuZpS73khXiOqTH3qrFW27VrERJJIHTjPk-tAh46q8-Fd4w6qlw" alt="Google"></a>
+        </div>
+        <ol id="drop-down" class="dropdown-content hide">
+          <li><a class="menu-buttons" href="table-of-contents.html">Table of Contents</a></li>
+            <li>
+              <a href="foreword.html" class="menu-buttons">
+                  Foreword
+              </a>
+            </li>
+            <li>
+              <a href="preface.html" class="menu-buttons">
+                  Preface
+              </a>
+            </li>
+            <li>
+              <a href="part-I-introduction.html" class="menu-buttons">
+                  Part I - Introduction
+              </a>
+            </li>
+            <li>
+              <a href="introduction.html" class="menu-buttons">
+                  1. Introduction
+              </a>
+            </li>
+            <li>
+              <a href="production-environment.html" class="menu-buttons">
+                  2. The Production Environment at Google, from the Viewpoint of an SRE
+              </a>
+            </li>
+            <li>
+              <a href="part-II-principles.html" class="menu-buttons">
+                  Part II - Principles
+              </a>
+            </li>
+            <li>
+              <a href="embracing-risk.html" class="menu-buttons">
+                  3. Embracing Risk
+              </a>
+            </li>
+            <li>
+              <a href="service-level-objectives.html" class="menu-buttons">
+                  4. Service Level Objectives
+              </a>
+            </li>
+            <li>
+              <a href="eliminating-toil.html" class="menu-buttons">
+                  5. Eliminating Toil
+              </a>
+            </li>
+            <li>
+              <a href="monitoring-distributed-systems.html" class="menu-buttons">
+                  6. Monitoring Distributed Systems
+              </a>
+            </li>
+            <li>
+              <a href="automation-at-google.html" class="menu-buttons">
+                  7. The Evolution of Automation at Google
+              </a>
+            </li>
+            <li>
+              <a href="release-engineering.html" class="menu-buttons">
+                  8. Release Engineering
+              </a>
+            </li>
+            <li>
+              <a href="simplicity.html" class="menu-buttons">
+                  9. Simplicity
+              </a>
+            </li>
+            <li>
+              <a href="part-III-practices.html" class="menu-buttons">
+                  Part III - Practices
+              </a>
+            </li>
+            <li>
+              <a href="practical-alerting.html" class="menu-buttons">
+                  10. Practical Alerting
+              </a>
+            </li>
+            <li>
+              <a href="being-on-call.html" class="menu-buttons">
+                  11. Being On-Call
+              </a>
+            </li>
+            <li>
+              <a href="effective-troubleshooting.html" class="menu-buttons">
+                  12. Effective Troubleshooting
+              </a>
+            </li>
+            <li>
+              <a href="emergency-response.html" class="menu-buttons">
+                  13. Emergency Response
+              </a>
+            </li>
+            <li>
+              <a href="managing-incidents.html" class="menu-buttons">
+                  14. Managing Incidents
+              </a>
+            </li>
+            <li>
+              <a href="postmortem-culture.html" class="menu-buttons">
+                  15. Postmortem Culture: Learning from Failure
+              </a>
+            </li>
+            <li>
+              <a href="tracking-outages.html" class="menu-buttons">
+                  16. Tracking Outages
+              </a>
+            </li>
+            <li class="active">
+              <a href="testing-reliability.html" class="menu-buttons">
+                  17. Testing for Reliability
+              </a>
+            </li>
+            <li>
+              <a href="software-engineering-in-sre.html" class="menu-buttons">
+                  18. Software Engineering in SRE
+              </a>
+            </li>
+            <li>
+              <a href="load-balancing-frontend.html" class="menu-buttons">
+                  19. Load Balancing at the Frontend
+              </a>
+            </li>
+            <li>
+              <a href="load-balancing-datacenter.html" class="menu-buttons">
+                  20. Load Balancing in the Datacenter
+              </a>
+            </li>
+            <li>
+              <a href="handling-overload.html" class="menu-buttons">
+                  21. Handling Overload
+              </a>
+            </li>
+            <li>
+              <a href="addressing-cascading-failures.html" class="menu-buttons">
+                  22. Addressing Cascading Failures
+              </a>
+            </li>
+            <li>
+              <a href="managing-critical-state.html" class="menu-buttons">
+                  23. Managing Critical State: Distributed Consensus for Reliability
+              </a>
+            </li>
+            <li>
+              <a href="distributed-periodic-scheduling.html" class="menu-buttons">
+                  24. Distributed Periodic Scheduling with Cron
+              </a>
+            </li>
+            <li>
+              <a href="data-processing-pipelines.html" class="menu-buttons">
+                  25. Data Processing Pipelines
+              </a>
+            </li>
+            <li>
+              <a href="data-integrity.html" class="menu-buttons">
+                  26. Data Integrity: What You Read Is What You Wrote
+              </a>
+            </li>
+            <li>
+              <a href="reliable-product-launches.html" class="menu-buttons">
+                  27. Reliable Product Launches at Scale
+              </a>
+            </li>
+            <li>
+              <a href="part-IV-management.html" class="menu-buttons">
+                  Part IV - Management
+              </a>
+            </li>
+            <li>
+              <a href="accelerating-sre-on-call.html" class="menu-buttons">
+                  28. Accelerating SREs to On-Call and Beyond
+              </a>
+            </li>
+            <li>
+              <a href="dealing-with-interrupts.html" class="menu-buttons">
+                  29. Dealing with Interrupts
+              </a>
+            </li>
+            <li>
+              <a href="operational-overload.html" class="menu-buttons">
+                  30. Embedding an SRE to Recover from Operational Overload
+              </a>
+            </li>
+            <li>
+              <a href="communication-and-collaboration.html" class="menu-buttons">
+                  31. Communication and Collaboration in SRE
+              </a>
+            </li>
+            <li>
+              <a href="evolving-sre-engagement-model.html" class="menu-buttons">
+                  32. The Evolving SRE Engagement Model
+              </a>
+            </li>
+            <li>
+              <a href="part-V-conclusions.html" class="menu-buttons">
+                  Part V - Conclusions
+              </a>
+            </li>
+            <li>
+              <a href="lessons-learned.html" class="menu-buttons">
+                  33. Lessons Learned from Other Industries
+              </a>
+            </li>
+            <li>
+              <a href="conclusion.html" class="menu-buttons">
+                  34. Conclusion
+              </a>
+            </li>
+            <li>
+              <a href="availability-table.html" class="menu-buttons">
+                  Appendix A. Availability Table
+              </a>
+            </li>
+            <li>
+              <a href="service-best-practices.html" class="menu-buttons">
+                  Appendix B. A Collection of Best Practices for Production Services
+              </a>
+            </li>
+            <li>
+              <a href="incident-document.html" class="menu-buttons">
+                  Appendix C. Example Incident State Document
+              </a>
+            </li>
+            <li>
+              <a href="example-postmortem.html" class="menu-buttons">
+                  Appendix D. Example Postmortem
+              </a>
+            </li>
+            <li>
+              <a href="launch-checklist.html" class="menu-buttons">
+                  Appendix E. Launch Coordination Checklist
+              </a>
+            </li>
+            <li>
+              <a href="production-meeting.html" class="menu-buttons">
+                  Appendix F. Example Production Meeting Minutes
+              </a>
+            </li>
+            <li>
+              <a href="bibliography.html" class="menu-buttons">
+                  Bibliography
+              </a>
+            </li>
+        </ol>
+      </div>
+    </div>
+
+  <div id="maia-main">
+    <div class="content" id="content">
+      <h1 class="heading jumptargets" id="testing-for-reliability">Testing for Reliability</h1>
+
+<p class="byline author">Written by Alex Perry and Max Luebbe<br>Edited by Diane Bates</p>
+
+<blockquote>
+  <p class="quote">If you haven&#39;t tried it, assume it&#39;s broken.</p>
+  <p class="quote-author">Unknown</p>
+</blockquote>
+
+<p>One key responsibility of Site Reliability Engineers is to quantify confidence in the systems they maintain. SREs perform this task by adapting classical <a href="testing-reliability.html">software testing techniques</a> to systems at scale.<sup><a class="jumptarget" id="id-LvQuNI2hr-marker" href="#id-LvQuNI2hr">86</a></sup> Confidence can be measured both by past reliability and future reliability. The former is captured by analyzing data provided by monitoring historic system behavior, while the latter is quantified by making predictions from data about past system behavior. In order for these predictions to be strong enough to be useful, one of the following conditions must hold:</p>
+
+<ul>
+  <li>The site remains completely unchanged over time with no software releases or changes in the server fleet, which means that future behavior will be similar to past behavior.</li>
+  <li>You can confidently describe all changes to the site, in order for analysis to allow for the uncertainty incurred by each of these changes.</li>
+</ul>
+
+<p>Testing is the mechanism you use to demonstrate specific areas of equivalence when changes occur.<sup><a class="jumptarget" id="id-LvQu7Socr-marker" href="#id-LvQu7Socr">87</a></sup> Each test that passes both before and after a change reduces the uncertainty for which the analysis needs to allow. Thorough testing helps us predict the future reliability of a given site with enough detail to be practically useful.</p>
+
+<p>The amount of testing you need to conduct depends on the reliability requirements for your system. As the percentage of your codebase covered by tests increases, you reduce uncertainty and the potential decrease in reliability from each change. Adequate testing coverage means that you can make more changes before reliability falls below an acceptable level. If you make too many changes too quickly, the predicted reliability approaches the acceptability limit. At this point, you may want to stop making changes while new monitoring data accumulates. The accumulating data supplements the tested coverage, which validates the reliability being asserted for revised execution paths. Assuming the served clients are randomly distributed <a href="https://sre.google/sre-book/bibliography#Woo96">[Woo96]</a>, sampling statistics can extrapolate from monitored metrics whether the aggregate behavior is making use of new paths. These statistics identify the areas that need better testing or other retrofitting.</p>
+
+<h5 class="subheaders jumptargets" id="relationships-between-testing-and-mean-time-to-repair">Relationships Between Testing and Mean Time to Repair</h5>
+
+<p>Passing a test or a series of tests doesn’t necessarily prove reliability. However, tests that are failing generally prove the absence of reliability.</p>
+
+<p>A monitoring system can uncover bugs, but only as quickly as the reporting pipeline can react. The <em>Mean Time to Repair</em> (MTTR) measures how long it takes the operations team to fix the bug, either through a rollback or another action.</p>
+
+<p>It’s possible for a testing system to identify a bug with zero MTTR. Zero MTTR occurs when a system-level test is applied to a subsystem, and that test detects the exact same problem that monitoring would detect. Such a test enables the push to be blocked so the bug never reaches production (though it still needs to be repaired in the source code). Repairing zero MTTR bugs by blocking a push is both quick and convenient. The more bugs you can find with zero MTTR, the higher the <em>Mean Time Between Failures</em> (MTBF) experienced by your users.</p>
+
+<p>As MTBF increases in response to better testing, developers are encouraged to release features faster. Some of these features will, of course, have bugs. New bugs result in an opposite adjustment to release velocity as these bugs are found and fixed.</p>
+
+<p>Authors writing about software testing largely agree on what coverage is needed. Most conflicts of opinion stem from conflicting terminology, differing emphasis on the impact of testing in each of the software lifecycle phases, or the particularities of the systems on which they’ve conducted testing. For a discussion about testing at Google in general, see <a href="https://sre.google/sre-book/bibliography#Whi12">[Whi12]</a>. The following sections specify how software testing–related terminology is used in this chapter.</p>
+
+<h2 class="heading jumptargets" id="types-of-software-testing">Types of Software Testing</h2>
+
+<p>Software tests broadly fall into two categories: traditional and production. Traditional tests are more common in software development to evaluate the correctness of software offline, during development. Production tests are performed on a live web service to evaluate whether a deployed software system is working correctly.</p>
+
+<h2 class="subheaders jumptargets" id="traditional-tests">Traditional Tests</h2>
+
+<p>As shown in <a href="#fig_testing_hierarchy">Figure 17-1</a>, traditional software testing begins with unit tests. Testing of more complex functionality is layered atop unit tests.</p>
+
+<figure class="horizontal vertical jumptarget" >
+  <img src="assets/d1bf3638d6-TK6IE07bQYqR2YkDFsfcIz-EcvQ4FbJoD_O0gxzGXJFHXZkrD6N66hLtANofjSkAdQbRtbY7PSAs0lfJKvfkjtFvojahQjUj4ahhEg-s900" alt="The hierarchy of traditional tests." id="fig_testing_hierarchy">
+  <figcaption><span>Figure 17-1. </span>The hierarchy of traditional tests</figcaption>
+</figure>
+
+<h3 class="subheaders jumptargets" id="unit-tests">Unit tests</h3>
+
+<p>A <em>unit test</em> is the smallest and simplest form of software testing. These tests are employed to assess a separable unit of software, such as a class or function, for correctness independent of the larger software system that contains the unit. Unit tests are also employed as a form of specification to ensure that a function or module exactly performs the behavior required by the system. Unit tests are commonly used to introduce test-driven development concepts.</p>
+
+<h3 class="subheaders jumptargets" id="integration-tests">Integration tests</h3>
+
+<p>Software components that pass individual unit tests are assembled into larger components. Engineers then run an <em>integration test</em> on an assembled component to verify that it functions correctly. Dependency injection, which is performed with tools such as Dagger,<sup><a class="jumptarget" id="id-rq7uwtYFWhDImCJ-marker" href="#id-rq7uwtYFWhDImCJ">88</a></sup> is an extremely powerful technique for creating mocks of complex dependencies so that an engineer can cleanly test a component. A common example of a dependency injection is to replace a stateful database with a lightweight mock that has precisely specified behavior.</p>
+
+<h3 class="subheaders jumptargets" id="system-tests">System tests</h3>
+
+<p>A <em>system test</em> is the largest scale test that engineers run for an undeployed system. All modules belonging to a specific component, such as a server that passed integration tests, are assembled into the system. Then the engineer tests the end-to-end functionality of the system. System tests come in many different flavors:</p>
+
+<dl class="desc-list">
+  <dt class="dt-heading jumptargets" id="smoke-tests">Smoke tests</dt>
+  <dd><em>Smoke tests</em>, in which engineers test very simple but critical behavior, are among the simplest type of system tests. Smoke tests are also known as <em>sanity testing</em>, and serve to short-circuit additional and more expensive testing.</dd>
+  <dt class="dt-heading jumptargets" id="performance-tests">Performance tests</dt>
+  <dd>Once basic correctness is established via a smoke test, a common next step is to write another variant of a system test to ensure that the performance of the system stays acceptable over the duration of its lifecycle. Because response times for dependencies or resource requirements may change dramatically during the course of development, a system needs to be tested to make sure that it doesn’t become incrementally slower without anyone noticing (before it gets released to users). For example, a given program may evolve to need 32 GB of memory when it formerly only needed 8 GB, or a 10 ms response time might turn into 50 ms, and then into 100 ms. A performance test ensures that over time, a system doesn’t degrade or become too expensive.</dd>
+  <dt class="dt-heading jumptargets" id="regression-tests">Regression tests</dt>
+  <dd>Another type of system test involves preventing bugs from sneaking back into the codebase. Regression tests can be analogized to a gallery of rogue bugs that historically caused the system to fail or produce incorrect results. By documenting these bugs as tests at the system or integration level, engineers refactoring the codebase can be sure that they don’t accidentally introduce bugs that they’ve already invested time and effort to eliminate.</dd>
+    <dd>It’s important to note that tests have a cost, both in terms of time and computational resources. At one extreme, unit tests are very cheap in both dimensions, as they can usually be completed in milliseconds on the resources available on a laptop. At the other end of the spectrum, bringing up a complete server with required dependencies (or mock equivalents) to run related tests can take significantly more time—from several minutes to multiple hours—and possibly require dedicated computing resources. Mindfulness of these costs is essential to developer productivity, and also encourages more efficient use of testing resources.</dd>
+</dl>
+
+<h2 class="subheaders jumptargets" id="production-tests">Production Tests</h2>
+
+<p>Production tests interact with a live production system, as opposed to a system in a hermetic testing environment. These tests are in many ways similar to black-box monitoring (see <a href="monitoring-distributed-systems.html">Monitoring Distributed Systems</a>), and are therefore sometimes called <em>black-box testing</em>. Production tests are essential to running a reliable production service.</p>
+
+<h5 class="subheaders jumptargets" id="rollouts-entangle-tests">Rollouts Entangle Tests</h5>
+
+<p>It’s often said that testing is (or should be) performed in a hermetic environment <a href="https://sre.google/sre-book/bibliography#Nar12">[Nar12]</a>. This statement implies that production is not hermetic. Of course, production usually isn’t hermetic, because rollout cadences make live changes to the production environment in small and well-understood chunks.</p>
+
+<p>To manage uncertainty and hide risk from users, changes might not be pushed live in the same order that they were added to source control. Rollouts often happen in stages, using mechanisms that gradually shuffle users around, in addition to monitoring at each stage to ensure that the new environment isn’t hitting anticipated yet unexpected problems. As a result, the entire production environment is intentionally not representative of any given version of a binary that’s checked into source control.</p>
+
+<p>It’s possible for source control to have more than one version of a binary and its associated configuration file waiting to be made live. This scenario can cause problems when tests are conducted against the live environment. For example, the test might use the latest version of a configuration file located in source control along with an older version of the binary that’s live. Or it might test an older version of the configuration file and find a bug that’s been fixed in a newer version of the file.</p>
+
+<p>Similarly, a system test can use the configuration files to assemble its modules before running the test. If the test passes, but its version is one in which the configuration test (discussed in the following section) fails, the result of the test is valid hermetically, but not operationally. Such an outcome is inconvenient.</p>
+
+<h3 class="subheaders jumptargets" id="configuration-test">Configuration test</h3>
+
+<p>At Google, web service configurations are described in files that are stored in our version control system. For each configuration file, a separate <em>configuration test</em> examines production to see how a particular binary is actually configured and reports discrepancies against that file. Such tests are inherently not hermetic, as they operate outside the test infrastructure sandbox.</p>
+
+<p>Configuration tests are built and tested for a specific version of the checked-in configuration file. Comparing which version of the test is passing in relation to the goal version for automation implicitly indicates how far actual production currently lags behind ongoing engineering work.</p>
+
+<p>These nonhermetic configuration tests tend to be especially valuable as part of a distributed monitoring solution since the pattern of passes/fails across production can identify paths through the service stack that don’t have sensible combinations of the local configurations. The monitoring solution’s rules try to match paths of actual user requests (from the trace logs) against that set of undesirable paths. Any matches found by the rules become alerts that ongoing releases and/or pushes are not proceeding safely and remedial action is needed.</p>
+
+<p>Configuration tests can be very simple when the production deployment uses the actual file content and offers a real-time query to retrieve a copy of the content. In this case, the test code simply issues that query and diffs the response against the file. The tests become more complex when the configuration does one of the following:</p>
+
+<ul>
+  <li>Implicitly incorporates defaults that are built into the binary (meaning that the tests are separately versioned as a result)</li>
+  <li>Passes through a preprocessor such as bash into command-line flags (rendering the tests subject to expansion rules)</li>
+  <li>Specifies behavioral context for a shared runtime (making the tests depend on that runtime’s release schedule)</li>
+</ul>
+
+<h3 class="subheaders jumptargets" id="stress-test">Stress test</h3>
+
+<p>In order to safely operate a system, SREs need to understand the limits of both the system and its components. In many cases, individual components don’t gracefully degrade beyond a certain point—instead, they catastrophically fail. Engineers use <em>stress tests</em> to find the limits on a web service. Stress tests answer questions such as:</p>
+
+<ul>
+  <li>How full can a database get before writes start to fail?</li>
+  <li>How many queries a second can be sent to an application server before it becomes overloaded, causing requests to fail?</li>
+</ul>
+
+<h3 class="subheaders jumptargets" id="canary-test">Canary test</h3>
+
+<p>The <em>canary test</em> is conspicuously absent from this list of production tests. The term <em>canary</em> comes from the phrase &quot;canary in a coal mine,&quot; and refers to the practice of using a live bird to detect toxic gases before humans were poisoned.</p>
+
+<p>To conduct a canary test, a subset of servers is upgraded to a new version or configuration and then left in an incubation period. Should no unexpected variances <span>occur, the</span> release continues and the rest of the servers are upgraded in a progressive fashion.<sup><a class="jumptarget" id ="id-wbau4FDI4TztWCD-marker" href="#id-wbau4FDI4TztWCD">89</a></sup> Should anything go awry, the modified servers can be quickly reverted to a known good state. We commonly refer to the incubation period for the upgraded servers as &quot;baking the binary.&quot;</p>
+
+<p>A canary test isn’t really a test; rather, it’s structured user acceptance. Whereas configuration and stress tests confirm the existence of a specific condition over deterministic software, a canary test is more ad hoc. It only exposes the code under test to less predictable live production traffic, and thus, it isn’t perfect and doesn’t always catch newly introduced faults.</p>
+
+<p>To provide a concrete example of how a canary might proceed: consider a given underlying fault that relatively rarely impacts user traffic and is being deployed with an upgrade rollout that is exponential. We expect a growing cumulative number of reported variances <span>CU = RK</span> where <span>R</span> is the rate of those reports, <span>U</span> is the order of the fault (defined later), and <span>K</span> is the period over which the traffic grows by a factor of <span>e</span>, or 172%.<sup><a class="jumptarget" id="id-2opuqTwhGTVtBCz-marker" href="#id-2opuqTwhGTVtBCz">90</a></sup></p>
+
+<p>In order to avoid user impact, a rollout that triggers undesirable variances needs to be quickly rolled back to the prior configuration. In the short time it takes automation to observe the variances and respond, it is likely that several additional reports will be generated. Once the dust has settled, these reports can estimate both the cumulative number <span>C</span> and rate <span>R</span>.</p>
+
+<p>Dividing and correcting for <span>K</span> gives an estimate of <span>U</span>, the order of the underlying fault.<sup><a class="jumptarget" id="id-jE2ujIlcETXtnCK-marker" href="#id-jE2ujIlcETXtnCK">91</a></sup> Some examples:</p>
+
+<ul>
+  <li>U=1: The user’s request encountered code that is simply broken.</li>
+  <li>U=2: This user’s request randomly damages data that a future user’s request may see.</li>
+  <li>U=3: The randomly damaged data is also a valid identifier to a previous request.</li>
+</ul>
+
+<p>Most bugs are of order one: they scale linearly with the amount of user traffic <a href="https://sre.google/sre-book/bibliography#Per07">[Per07]</a>. You can generally track down these bugs by converting logs of all requests with unusual responses into new regression tests. This strategy doesn’t work for higher-order bugs; a request that repeatedly fails if all the preceding requests are attempted in order will suddenly pass if some requests are omitted. It is important to catch these higher-order bugs during release, because otherwise, operational workload can increase very quickly.</p>
+
+<p>Keeping the dynamics of higher- versus lower-order bugs in mind, when you are using an exponential rollout strategy, it isn’t necessary to attempt to achieve fairness among fractions of user traffic. As long as each method for establishing a fraction uses the same <span>K</span> interval, the estimate of <span>U</span> will be valid even though you can’t yet determine which method was instrumental in illuminating the fault. Using many methods sequentially while permitting some overlap keeps the value of <span>K</span> small. This strategy minimizes the total number of user-visible variances <span>C</span> while still allowing an early estimate of <span>U</span> (hoping for 1, of course).</p>
+
+<h1 class="heading jumptargets" id="creating-a-test-and-build-environment">Creating a Test and Build Environment</h1>
+
+<p>While it’s wonderful to think about these types of tests and failure scenarios on day one of a project, frequently SREs join a developer team when a project is already well underway—once the team’s project validates its research model, its library proves that the project’s underlying algorithm is scalable, or perhaps when all of the user interface mocks are finally acceptable. The team’s codebase is still a prototype and comprehensive testing hasn’t yet been designed or deployed. In such situations, where should your testing efforts begin? Conducting unit tests for every key function and class is a completely overwhelming prospect if the current test coverage is low or nonexistent. Instead, start with testing that delivers the most impact with the least effort.</p>
+
+<p>You can start your approach by asking the following questions:</p>
+
+<ul>
+  <li>Can you prioritize the codebase in any way? To borrow a technique from feature development and project management, if every task is high priority, none of the tasks are high priority.  Can you stack-rank the components of the system you’re testing by any measure of importance?</li>
+  <li>Are there particular functions or classes that are absolutely mission-critical or business-critical? For example, code that involves billing is a commonly business-critical. Billing code is also frequently cleanly separable from other parts of the system.</li>
+  <li>Which APIs are other teams integrating against? Even the kind of breakage that never makes it past release testing to a user can be extremely harmful if it confuses another developer team, causing them to write wrong (or even just suboptimal) clients for your API.</li>
+</ul>
+
+<p>Shipping software that is obviously broken is among the most cardinal sins of a developer. It takes little effort to create a series of smoke tests to run for every release. This type of low-effort, high-impact first step can lead to highly tested, reliable <span>software</span>.</p>
+
+<p>One way to establish a strong testing culture<sup><a class="jumptarget" id="id-Zo9uxSpTZsK-marker" href="#id-Zo9uxSpTZsK">92</a></sup> is to start documenting all reported bugs as test cases. If every bug is converted into a test, each test is supposed to initially fail because the bug hasn’t yet been fixed. As engineers fix the bugs, the software passes testing and you’re on the road to developing a comprehensive regression test suite.</p>
+
+<p>Another key task for creating well-tested software is to set up a testing infrastructure. The foundation for a strong testing infrastructure is a versioned source control system that tracks every change to the codebase.</p>
+
+<p>Once source control is in place, you can add a continuous build system that builds the software and runs tests every time code is submitted. We’ve found it optimal if the build system notifies engineers the moment a change breaks a software project. At the risk of sounding obvious, it’s essential that the latest version of a software project in source control is working completely. When the build system notifies engineers about broken code, they should drop all of their other tasks and prioritize fixing the problem. It is appropriate to treat defects this seriously for a few reasons:</p>
+
+<ul>
+  <li>It’s usually harder to fix what’s broken if there are changes to the codebase after the defect is introduced.</li>
+  <li>Broken software slows down the team because they must work around the <span>breakage</span>.</li>
+  <li>Release cadences, such as nightly and weekly builds, lose their value.</li>
+  <li>The ability of the team to respond to a request for an emergency release (for example, in response to a security vulnerability disclosure) becomes much more complex and difficult.</li>
+</ul>
+
+<p>The concepts of stability and agility are traditionally in tension in the world of SRE. The last bullet point provides an interesting case where stability actually drives agility. When the build is predictably solid and reliable, developers can iterate faster!</p>
+
+<p>Some build systems like Bazel<sup><a class="jumptarget" id="id-wbau7S0CJsL-marker" href="#id-wbau7S0CJsL">93</a></sup> have valuable features that afford more precise control over testing. For example, Bazel creates dependency graphs for software projects. When a change is made to a file, Bazel only rebuilds the part of the software that depends on that file. Such systems provide reproducible builds. Instead of running all tests at every submit, tests only run for changed code. As a result, tests execute cheaper and faster.</p>
+
+<p>There are a variety of tools to help you quantify and visualize the level of test coverage you need <a href="https://sre.google/sre-book/bibliography#Cra10">[Cra10]</a>. Use these tools to shape the focus of your testing: approach the prospect of creating highly tested code as an engineering project rather than a philosophical mental exercise. Instead of repeating the ambiguous refrain &quot;We need more tests,&quot; set explicit goals and deadlines.</p>
+
+<p>Remember that not all software is created equal. Life-critical or revenue-critical systems demand substantially higher levels of test quality and coverage than a non-production script with a short shelf life.</p>
+
+<h1 class="heading jumptargets" id="testing-at-scale">Testing at Scale</h1>
+
+<p>Now that we’ve covered the fundamentals of testing, let’s examine how SRE takes a systems perspective to testing in order to drive reliability at scale.</p>
+
+<p>A small unit test might have a short list of dependencies: one source file, the testing library, the runtime libraries, the compiler, and the local hardware running the tests. A robust testing environment dictates that those dependencies each have their own test coverage, with tests that specifically address use cases that other parts of the environment expect. If the implementation of that unit test depends on a code path inside a runtime library that doesn’t have test coverage, an unrelated change in the environment<sup><a class="jumptarget" id="id-JJ7uDSjIBH7-marker" href="#id-JJ7uDSjIBH7">94</a></sup> can lead the unit test to consistently pass testing, regardless of faults in the code under test.</p>
+
+<p>In contrast, a release test might depend on so many parts that it has a transitive dependency on every object in the code repository. If the test depends on a clean copy of the production environment, in principle, every small patch requires performing a full disaster recovery iteration. Practical testing environments try to select branch points among the versions and merges. Doing so resolves the maximum amount of dependent uncertainty for the minimum number of iterations. Of course, when an area of uncertainty resolves into a fault, you need to select additional branch points.</p>
+
+<h2 class="subheaders jumptargets" id="xref_testing_scalable-tools">Testing Scalable Tools</h2>
+
+<p>As pieces of software, SRE tools also need testing.<sup><a class="jumptarget" id="id-yJLuyFpFnhGHJ-marker" href="#id-yJLuyFpFnhGHJ">95</a></sup> SRE-developed tools might perform tasks such as the following:</p>
+
+<ul>
+  <li>Retrieving and propagating database performance metrics</li>
+  <li>Predicting usage metrics to plan for capacity risks</li>
+  <li>Refactoring data within a service replica that isn’t user accessible</li>
+  <li>Changing files on a server</li>
+</ul>
+
+<p>SRE tools share two characteristics:</p>
+
+<ul>
+  <li>Their side effects remain within the tested mainstream API</li>
+  <li>They’re isolated from user-facing production by an existing validation and release barrier</li>
+</ul>
+
+<h5 class="subheaders jumptargets" id="barrier-defenses-against-risky-software">Barrier Defenses Against Risky Software</h5>
+
+<p>Software that bypasses the usual heavily tested API (even if it does so for a good cause) could wreak havoc on a live service. For example, a database engine implementation might allow administrators to temporarily turn off transactions in order to shorten maintenance windows. If the implementation is used by batch update software, user-facing isolation may be lost if that utility is ever accidentally launched against a user-facing replica. Avoid this risk of havoc with design:</p>
+
+<ol>
+  <li>Use a separate tool to place a barrier in the replication configuration so that the replica cannot pass its health check. As a result, the replica isn’t released to users.</li>
+  <li>Configure the risky software to check for the barrier upon startup. Allow the risky software to only access unhealthy replicas.</li>
+  <li>Use the replica health validating tool you use for black-box monitoring to remove the barrier.</li>
+</ol>
+
+<p>Automation tools are also software. Because their risk footprint appears out-of-band for a different layer of the service, their testing needs are more subtle. Automation tools perform tasks like the following:</p>
+
+<ul>
+  <li>Database index selection</li>
+  <li>Load balancing between datacenters</li>
+  <li>Shuffling relay logs for fast remastering</li>
+</ul>
+
+<p>Automation tools share two characteristics:</p>
+
+<ul>
+  <li>The actual operation performed is against a robust, predictable, and well-tested API</li>
+  <li>The purpose of the operation is the side effect that is an invisible discontinuity to another API client</li>
+</ul>
+
+<p>Testing can demonstrate the desired behavior of the other service layer, both before and after the change. It’s often possible to test whether internal state, as seen through the API, is constant across the operation. For example, databases pursue correct answers, even if a suitable index isn’t available for the query. On the other hand, some documented API invariants (such as a DNS cache holding until the TTL) may not hold across the operation. For example, if a runlevel change replaces a local nameserver with a caching proxy, both choices can promise to retain completed lookups for many seconds. It’s unlikely that the cache state is handed over from one to the other.</p>
+
+<p>Given that automation tools imply additional release tests for other binaries to handle environmental transients, how do you define the environment in which those automation tools run? After all, the automation for shuffling containers to improve usage is likely to try to shuffle itself at some point if it also runs in a container. It would be embarrassing if a new release of its internal algorithm yielded dirty memory pages so quickly that the network bandwidth of the associated mirroring ended up preventing the code from finalizing the live migration. Even if there’s an integration test for which the binary intentionally shuffles itself around, the test likely doesn’t use a production-sized model of the container fleet. It almost certainly isn’t allowed to use scarce high-latency intercontinental bandwidth for testing such races.</p>
+
+<p>Even more amusingly, one automation tool might be changing the environment in which another automation tool runs. Or both tools might be changing the environment of the other automation tool simultaneously! For example, a fleet upgrading tool likely consumes the most resources when it’s pushing upgrades. As a result, the container rebalancing would be tempted to move the tool. In turn, the container rebalancing tool occasionally needs upgrading. This circular dependency is fine if the associated APIs have restart semantics, someone remembered to implement test coverage for those semantics, and checkpoint health is assured independently.</p>
+
+<h2 class="subheaders jumptargets" id="testing-disaster">Testing Disaster</h2>
+
+<p>Many disaster recovery tools can be carefully designed to operate <em>offline</em>. Such tools do the following:</p>
+
+<ul>
+  <li>Compute a <em>checkpoint</em> state that is equivalent to cleanly stopping the service</li>
+  <li>Push the checkpoint state to be <em>loadable</em> by existing nondisaster validation tools</li>
+  <li>Support the usual release <em>barrier</em> tools, which trigger the <em>clean start</em> procedure
+  </li>
+</ul>
+
+<p>In many cases, you can implement these phases so that the associated tests are easy to write and offer excellent coverage. If any of the constraints (offline, checkpoint, loadable, barrier, or clean start) must be broken, it’s much harder to show confidence that the associated tool implementation will work at any time on short notice.</p>
+
+<p>Online repair tools inherently operate outside the mainstream API and therefore become more interesting to test. One challenge you face in a distributed system is determining if normal behavior, which may be eventually consistent by nature, will interact badly with the repair. For example, consider a race condition that you can attempt to analyze using the offline tools. An offline tool is generally written to expect instant consistency, as opposed to eventual consistency, because instant consistency is less challenging to test. This situation becomes complicated because the repair binary is generally built separately from the serving production binary that it’s racing against. Consequently, you might need to build a unified instrumented binary to run within these tests so that the tools can observe transactions.</p>
+
+<h5 class="subheaders jumptargets" id="using-statistical-tests">Using Statistical Tests</h5>
+
+<p>Statistical techniques, such as Lemon <a href="https://sre.google/sre-book/bibliography#Ana07">[Ana07]</a> for fuzzing, and Chaos Monkey<sup><a class="jumptarget" id="id-2opuZhjFGTmTyHz-marker" href="#id-2opuZhjFGTmTyHz">96</a></sup> and Jepsen<sup><a class="jumptarget" id="id-p8BuBTjFKT8TZHX-marker" href="#id-p8BuBTjFKT8TZHX">97</a></sup> for distributed state, aren’t necessarily repeatable tests. Simply rerunning such tests after a code change doesn’t definitively prove that the observed fault is fixed.<sup><a class="jumptarget" id="d-oAduvcXFjTlTnHG-marker" href="#id-oAduvcXFjTlTnHG">98</a></sup> However, these techniques can be useful:</p>
+
+<ul>
+  <li>They can provide a log of all the randomly selected actions that are taken in a given run—sometimes simply by logging the random number generator seed.</li>
+  <li>If this log is immediately refactored as a release test, running it a few times before starting on the bug report is often helpful. The rate of nonfailure on replay tells you how hard it will be to later assert that the fault is fixed.</li>
+  <li>Variations in how the fault is expressed help you pinpoint suspicious areas in the code.</li>
+  <li>Some of those later runs may demonstrate failure situations that are more severe than those in the original run. In response, you may want to escalate the bug’s severity and impact.</li>
+</ul>
+
+<h2 class="subheaders jumptargets" id="the-need-for-speed">The Need for Speed</h2>
+
+<p>For every version (patch) in the code repository, every defined test provides a pass or fail indication. That indication may change for repeated and seemingly identical runs. You can estimate the actual likelihood of a test passing or failing by averaging over those many runs and computing the statistical uncertainty of that likelihood. However, performing this calculation for every test at every version point is computationally infeasible.</p>
+
+<p>Instead, you must form hypotheses about the many scenarios of interest and run the appropriate number of repeats of each test and version to allow a reasonable inference. Some of these scenarios are benign (in a code quality sense), while others are actionable. These scenarios affect all the test attempts to varying extents and, because they are coupled, reliably and quickly obtaining a list of actionable hypotheses (i.e., components that are actually broken) means estimating all scenarios at the same time.</p>
+
+<p>Engineers who use the testing infrastructure want to know if their code—usually a tiny fraction of all the source behind a given test run—is broken. Often, not being broken implies that any observed failures can be blamed on someone else’s code. In other words, the engineer wants to know if their code has an unanticipated race condition that makes the test flaky (or more flaky than the test already was due to other factors).</p>
+
+<h5 class="subheaders jumptargets" id="testing-deadlines">Testing Deadlines</h5>
+
+<p>Most tests are simple, in the sense that they run as a self-contained hermetic binary that fits in a small compute container for a few seconds. These tests give engineers interactive feedback about mistakes before the engineer switches context to the next bug or task.</p>
+
+<p>Tests that require orchestration across many binaries and/or across a fleet that has many containers tend to have startup times measured in seconds. Such tests are usually unable to offer interactive feedback, so they can be classified as batch tests. Instead of saying &quot;don’t close the editor tab&quot; to the engineer, these test failures are saying &quot;this code is not ready for review&quot; to the code reviewer.</p>
+
+<p>The informal deadline for the test is the point at which the engineer makes the next context switch. Test results are best given to the engineer before he or she switches context, because otherwise the next context may involve XKCD compiling.<sup><a class="jumptarget" id="id-Xe4u9SLtZhWcNHD-marker" href="#id-Xe4u9SLtZhWcNHD">99</a></sup></p>
+
+<p>Suppose an engineer is working on a service with over 21,000 simple tests and occasionally proposes a patch against the service’s codebase. To test the patch, you want to compare the vector of pass/fail results from the codebase before the patch with the vector of results from the codebase after the patch. A favorable comparison of those two vectors provisionally qualifies the codebase as releasable. This qualification creates an incentive to run the many release and integration tests, as well as other distributed binary tests that examine scaling of the system (in case the patch uses significantly more local compute resources) and complexity (in case the patch creates a superlinear workload elsewhere).</p>
+
+<p>At what rate can you incorrectly flag a user’s patch as damaging by miscalculating environmental flakiness? It seems likely that users would vehemently complain if 1 in 10 patches is rejected. But a rejection of 1 patch among 100 perfect patches might go without comment.</p>
+
+<p>This means you’re interested in the 42,000th root (one for each defined test before the patch, and one for each defined test after the patch) of 0.99 (the fraction of patches that are accepted). This <span>calculation:</span></p>
+
+<div class="equation-align">
+<p><img class="equation" src="assets/25905b5620-WyBNpergxBppq_cq5TRECJgFyZLLWr8EKsHBYLwpotRPsSfSe7Cvk_oc95hXQewbmee7J02jKi0ZtHdTWI1aYRAmSwbO_aKDwTLGGWg-s91" alt=""></p>
+</div>
+
+<p>suggests that those individual tests must run correctly over 99.9999% of the time. Hmm.</p>
+
+<h2 class="subheaders jumptargets" id="pushing-to-production">Pushing to Production</h2>
+
+<p>While production configuration management is commonly kept in a source control repository, configuration is often separate from the developer source code. Similarly, the software testing infrastructure often can’t see production configuration. Even if the two are located in the same repository, changes for configuration management are made in branches and/or a segregated directory tree that test automation has historically ignored.</p>
+
+<p>In a legacy corporate environment where software engineers develop binaries and throw them over the wall to the administrators who update the servers, segregation of testing infrastructure and production configuration is at best annoying, and at worst can damage reliability and agility. Such segregation might also lead to tool duplication. In a nominally integrated Ops environment, this segregation degrades resiliency because it creates subtle inconsistencies between the behavior for the two sets of tools. This segregation also limits project velocity because of commit races between the versioning systems.</p>
+
+<p>In the SRE model, the impact of segregating testing infrastructure from production configuration is appreciably worse, as it prevents relating the model describing production to the model describing the application behavior. This discrepancy impacts engineers who want to find statistical inconsistencies in expectations at development time. However, this segregation doesn’t slow down development so much as prevent the system architecture from changing, because there is no way to eliminate migration risk.</p>
+
+<p>Consider a scenario of unified versioning and unified testing, so that the SRE methodology is applicable. What impact would the failure of a distributed architecture migration have? A fair amount of testing will probably occur. So far, it’s assumed that a software engineer would likely accept the test system giving the wrong answer 1 time in 10 or so. What risk are you willing to take with the migration if you know that testing may return a false negative and the situation could become really exciting, really quickly? Clearly, some areas of test coverage need a higher level of paranoia than others. This distinction can be generalized: some test failures are indicative of a larger impact risk than other test failures.</p>
+
+<h2 class="subheaders jumptargets" id="expect-testing-fail">Expect Testing Fail</h2>
+
+<p>Not too long ago, a software product might have released once per year. Its binaries were generated by a compiler toolchain over many hours or days, and most of the testing was performed by humans against manually written instructions. This release process was inefficient, but there was little need to automate it. The release effort was dominated by documentation, data migration, user retraining, and other factors. Mean Time Between Failure (MTBF) for those releases was one year, no matter how much testing took place. So many changes happened per release that some user-visible breakage was bound to be hiding in the software. Effectively, the reliability data from the previous release was irrelevant for the next release.</p>
+
+<p>Effective API/ABI management tools and interpreted languages that scale to large amounts of code now support building and executing a new software version every few minutes. In principle, a sufficiently large army of humans<sup><a class="jumptarget" id="id-xJ0u4SqIQuNHn-marker" href="#id-xJ0u4SqIQuNHn">100</a></sup> could complete testing on each new version using the methods described earlier and achieve the same quality bar for each incremental version. Even though ultimately only the same tests are applied to the same code, that final software version has higher quality in the resulting release that ships annually. This is because in addition to the annual versions, the intermediate versions of the code are also being tested. Using intermediates, you can unambiguously map problems found during testing back to their underlying causes and be confident that the whole issue, and not just the limited symptom that was exposed, is fixed. This principle of a shorter feedback cycle is equally effective when applied to automated test coverage.</p>
+
+<p>If you let users try more versions of the software during the year, the MTBF suffers because there are more opportunities for user-visible breakage. However, you can also discover areas that would benefit from additional test coverage. If these tests are implemented, each improvement protects against some future failure. Careful reliability management combines the limits on uncertainty due to test coverage with the limits on user-visible faults in order to adjust the release cadence. This combination maximizes the knowledge that you gain from operations and end users. These gains drive test coverage and, in turn, product release velocity.</p>
+
+<p>If an SRE modifies a configuration file or adjusts an automation tool’s strategy (as opposed to implementing a user feature), the engineering work matches the same conceptual model. When you are defining a release cadence based on reliability, it often makes sense to segment the reliability budget by functionality, or (more conveniently) by team. In such a scenario, the feature engineering team aims to achieve a given uncertainty limit that affects their goal release cadence. The SRE team has a separate budget with its own associated uncertainty, and thus an upper limit on their release rate.</p>
+
+<p>In order to remain reliable and to avoid scaling the number of SREs supporting a service linearly, the production environment has to run mostly unattended. To remain unattended, the environment must be resilient against minor faults. When a major event that demands manual SRE intervention occurs, the tools used by SRE must be suitably tested. Otherwise, that intervention decreases confidence that historical data is applicable to the near future. The reduction in confidence requires waiting for an analysis of monitoring data in order to eliminate the uncertainty incurred. Whereas the previous discussion in <a href="#xref_testing_scalable-tools">Testing Scalable Tools</a> focused on how to meet the opportunity of test coverage for an SRE tool, here you see that testing determines how often it is appropriate to use that tool against production.</p>
+
+<p>Configuration files generally exist because changing the configuration is faster than rebuilding a tool. This low latency is often a factor in keeping MTTR low. However, these same files are also changed frequently for reasons that don’t need that reduced latency. When viewed from the point of view of reliability:</p>
+
+<ul>
+  <li>A configuration file that exists to keep MTTR low, and is only modified when there’s a failure, has a release cadence slower than the MTBF. There can be a fair amount of uncertainty as to whether a given manual edit is actually truly optimal without the edit impacting the overall site reliability.</li>
+  <li>A configuration file that changes more than once per user-facing application release (for example, because it holds release state) can be a major risk if these changes are not treated the same as application releases. If testing and monitoring coverage of that configuration file is not considerably better than that of the user application, that file will dominate site reliability in a negative way.</li>
+</ul>
+
+<p>One method of handling configuration files is to make sure that every configuration file is categorized under only one of the options in the preceding bulleted list, and to somehow enforce that rule. Should you take the latter strategy, make sure of the <span>following</span>:</p>
+
+<ul>
+  <li>Each configuration file has enough test coverage to support regular routine <span>editing</span>.</li>
+  <li>Before releases, file edits are somewhat delayed while waiting for release testing.</li>
+  <li>Provide a break-glass mechanism to push the file live before completing the testing. Since breaking the glass impairs reliability, it’s generally a good idea to make the break noisy by (for example) filing a bug requesting a more robust resolution for next time.</li>
+</ul>
+
+<h5 class="subheaders jumptargets" id="break-glass-and-testing">Break-Glass and Testing</h5>
+
+<p>You can implement a break-glass mechanism to disable release testing. Doing so means that whoever makes a hurried manual edit isn’t told about any mistakes until the real user impact is reported by monitoring. It’s better to leave the tests running, associate the early push event with the pending testing event, and (as soon as possible) back-annotate the push with any broken tests. This way, a flawed manual push can be quickly followed by another (hopefully less flawed) manual push. Ideally, that break-glass mechanism automatically boosts the priority of those release tests so that they can preempt the routine incremental validation and coverage workload that the test infrastructure is already processing.</p>
+
+<h2 class="subheaders jumptargets" id="integration">Integration</h2>
+
+<p>In addition to unit testing a configuration file to mitigate its risk to reliability, it’s also important to consider integration testing configuration files. The contents of the configuration file are (for testing purposes) potentially hostile content to the interpreter reading the configuration. Interpreted languages such as Python are commonly used for configuration files because their interpreters can be embedded, and some simple sandboxing is available to protect against nonmalicious coding errors.</p>
+
+<p>Writing your configuration files in an interpreted language is risky, as this approach is fraught with latent failures that are hard to definitively address. Because loading content actually consists of executing a program, there’s no inherent upper limit on how inefficient loading can be. In addition to any other testing, you should pair this type of integration testing with careful deadline checking on all integration test methods in order to label tests that do not run to completion in a reasonable amount of time as failed.</p>
+
+<p>If the configuration is instead written as text in a custom syntax, every category of test needs separate coverage from scratch. Using an existing syntax such as YAML in combination with a heavily tested parser like Python’s <code>safe_load</code> removes some of the toil incurred by the configuration file. Careful choice of syntax and parser can ensure there’s a hard upper limit on how long the loading operation can take. However, the implementer needs to address schema faults, and most simple strategies for doing so don’t have an upper bound on runtime. Even worse, these strategies tend not to be robustly unit tested.</p>
+
+<p>The benefit of using protocol buffers<sup><a class="jumptarget" id="id-jE2ulFAhjU2Hr-marker" href="#id-jE2ulFAhjU2Hr">101</a></sup> is that the schema is defined in advance and automatically checked at load time, removing even more of the toil, yet still offering the bounded runtime.</p>
+
+<p>The role of SRE generally includes writing systems engineering tools<sup><a class="jumptarget" id="id-2opulFrTNUNH8-marker" href="#id-2opulFrTNUNH8">102</a></sup> (if no one else is already writing them) and adding robust validation with test coverage. All tools can behave unexpectedly due to bugs not caught by testing, so defense in depth is advisable. When one tool behaves unexpectedly, engineers need to be as confident as possible that most of their other tools are working correctly and can therefore mitigate or resolve the side effects of that misbehavior. A key element of delivering site reliability is finding each anticipated form of misbehavior and making sure that some test (or another tool’s tested input validator) reports that misbehavior. The tool that finds the problem might not be able to fix or even stop it, but should at least report the problem before a catastrophic outage occurs.</p>
+
+<p>For example, consider the configured list of all users (such as <em>/etc/passwd</em> on a non-networked Unix-style machine) and imagine an edit that unintentionally causes the parser to stop after parsing only half of the file. Because recently created users haven’t loaded, the machine will most likely continue to run without problem, and many users may not notice the fault. The tool that maintains home directories can easily notice the mismatch between the actual directories present and those implied by the (partial) user list and urgently report the discrepancy. This tool’s value lies in reporting the problem, and it should avoid attempting to remediate on its own (by deleting lots of user data).</p>
+
+<h2 class="subheaders jumptargets" id="production-probes">Production Probes</h2>
+
+<p>Given that testing specifies acceptable behavior in the face of known data, while monitoring confirms acceptable behavior in the face of unknown user data, it would seem that major sources of risk—both the known and the unknown—are covered by the combination of testing and monitoring. Unfortunately, actual risk is more <span>complicated</span>.</p>
+
+<p>Known good requests should work, while known bad requests should error. Implementing both kinds of coverage as an integration test is generally a good idea. You can replay the same bank of test requests as a release test. Splitting the known good requests into those that can be replayed against production and those that can’t yields three sets of requests:</p>
+
+<ul>
+  <li>Known bad requests</li>
+  <li>Known good requests that can be replayed against production</li>
+  <li>Known good requests that can’t be replayed against production</li>
+</ul>
+
+<p>You can use each set as both integration and release tests. Most of these tests can also be used as monitoring probes.</p>
+
+<p>It would seem to be superfluous and, in principle, pointless to deploy such monitoring because these exact same requests have already been tried two other ways. However, those two ways were different for a few reasons:</p>
+
+<ul>
+  <li>The release test probably wrapped the integrated server with a frontend and a fake backend.</li>
+  <li>The probe test probably wrapped the release binary with a load balancing <span>frontend</span> and a separate scalable persistent backend.</li>
+  <li>Frontends and backends probably have independent release cycles. It’s likely that the schedules for those cycles occur at different rates (due to their adaptive release cadences).</li>
+</ul>
+
+<p>Therefore, the monitoring probe running in production is a configuration that wasn’t previously tested.</p>
+
+<p>Those probes should never fail, but what does it mean if they do fail? Either the <span>frontend</span> API (from the load balancer) or the backend API (to the persistent store) is not equivalent between the production and release environments. Unless you already know why the production and release environments aren’t equivalent, the site is likely broken.</p>
+
+<p>The same production updater that gradually replaces the application also gradually replaces the probes so that all four combinations of old-or-new probes sending requests to old-or-new applications are being continuously generated. That updater can detect when one of the four combinations is generating errors and roll back to the last known good state. Usually, the updater expects each newly started application instance to be unhealthy for a short time as it prepares to start receiving lots of user traffic. If the probes are already inspected as part of the readiness check, the update safely fails indefinitely, and no user traffic is ever routed to the new version. The update remains paused until engineers have time and inclination to diagnose the fault condition and then encourage the production updater to cleanly roll back.</p>
+
+<p>This production test by probe does indeed offer protection to the site, plus clear feedback to the engineers. The earlier that feedback is given to engineers, the more useful it is. It’s also preferable that the test is automated so that the delivery of warnings to engineers is scalable.</p>
+
+<p>Assume that each component has the older software version that’s being replaced and the newer version that’s rolling out (now or very soon). The newer version might be talking to the old version’s peer, which forces it to use the deprecated API. Or the older version might be talking to a peer’s newer version, using the API which (at the time the older version was released) didn’t work properly yet. But it works now, honest! You’d better hope those tests for future compatibility (which are running as monitoring probes) had good API coverage.</p>
+
+<h5 class="subheaders jumptargets" id="fake-backend-versions">Fake Backend Versions</h5>
+
+<p>When implementing release tests, the fake backend is often maintained by the peer service’s engineering team and merely referenced as a build dependency. The hermetic test that is executed by the testing infrastructure always combines the fake backend and the test frontend at the same build point in the revision control history.</p>
+
+<p>That build dependency may be providing a runnable hermetic binary and, ideally, the engineering team maintaining it cuts a release of that fake backend binary at the same time they cut their main backend application and their probes. If that backend release is available, it might be worthwhile to include hermetic frontend release tests (without the fake backend binary) in the frontend release package.</p>
+
+<p>Your monitoring should be aware of all release versions on both sides of a given service interface between two peers. This setup ensures that retrieving every combination of the two releases and determining whether the test still passes doesn’t take much extra configuration. This monitoring doesn’t have to happen continuously—you only need to run new combinations that are the result of either team cutting a new release. Such problems don’t have to block that new release itself.</p>
+
+<p>On the other hand, rollout automation should ideally block the associated production rollout until the problematic combinations are no longer possible. Similarly, the peer team’s automation may consider draining (and upgrading) the replicas that haven’t yet moved from a problematic combination.</p>
+
+<h1 class="heading jumptargets" id="conclusion">Conclusion</h1>
+
+<p>Testing is one of the most profitable investments engineers can make to improve the reliability of their product. Testing isn’t an activity that happens once or twice in the lifecycle of a project; it’s continuous. The amount of effort required to write good tests is substantial, as is the effort to build and maintain infrastructure that promotes a strong testing culture. You can’t fix a problem until you understand it, and in engineering, you can only understand a problem by measuring it. The methodologies and techniques in this chapter provide a solid foundation for measuring faults and uncertainty in a software system, and help engineers reason about the reliability of software as it’s written and released to users.</p>
+
+<div class="footnotes"><p id="id-LvQuNI2hr"><sup><a class="jumptargets" href="#id-LvQuNI2hr-marker">86</a></sup>This chapter explains how to maximize the value derived from investing engineering effort into testing. Once an engineer defines suitable tests (for a given system) in a generalized way, the remaining work is common across all SRE teams and thus may be considered shared infrastructure. That infrastructure consists of a scheduler (to share budgeted resources across otherwise unrelated projects) and executors (that sandbox test binaries to prevent them from being considered trusted). These two infrastructure components can each be considered an ordinary SRE-supported service (much like cluster scale storage), and therefore won’t be discussed further here.</p><p id="id-LvQu7Socr"><sup><a class="jumptargets" href="#id-LvQu7Socr-marker">87</a></sup>For further reading on equivalence, see <a href="https://stackoverflow.com/questions/1909280/equivalence-class-testing-vs-boundary-value-testing" target="_blank" rel="noopener noreferrer"><em>https://stackoverflow.com/questions/1909280/equivalence-class-testing-vs-boundary-value-testing</em></a>.</p><p id="id-rq7uwtYFWhDImCJ"><sup><a class="jumptargets" href="#id-rq7uwtYFWhDImCJ-marker">88</a></sup>See <a href="https://dagger.dev/" target="_blank" rel="noopener noreferrer"><em>https://dagger.dev/</em></a>.</p><p id="id-wbau4FDI4TztWCD"><sup><a class="jumptargets" href="#id-wbau4FDI4TztWCD-marker">89</a></sup>A standard rule of thumb is to start by having the release impact 0.1% of user traffic, and then scaling by orders of magnitude every 24 hours while varying the geographic location of servers being upgraded (then on day 2: 1%, day 3: 10%, day 4: 100%).</p><p id="id-2opuqTwhGTVtBCz"><sup><a class="jumptargets" href="#id-2opuqTwhGTVtBCz-marker">90</a></sup>For instance, assuming a 24 hour interval of continuous exponential growth between 1% and 10%, <span><img class="equation" src="assets/d9214ec69a-Ghs4CCL8g1Y4HzGPhW0qx98ZWcHdrSHe9NtMB-4P5hsw9KKKQHVLuZaOgVWIisU-UvWGE6ab7rnpnOKZOsaBfm5wc4_QKzTga1UnSIE-s132" alt=""></span> seconds, or about 10 hours and 25 minutes.</p><p id="id-jE2ujIlcETXtnCK"><sup><a class="jumptargets" href="#id-jE2ujIlcETXtnCK-marker">91</a></sup>We’re using order here in the sense of “big O notation” order of complexity. For more context, see <a href="https://en.wikipedia.org/wiki/Big_O_notation" target="_blank" rel="noopener noreferrer"><em>https://en.wikipedia.org/wiki/Big_O_notation</em></a>.</p><p id="id-Zo9uxSpTZsK"><sup><a class="jumptargets" href="#id-Zo9uxSpTZsK-marker">92</a></sup>For more on this topic, we highly recommend <a href="https://sre.google/sre-book/bibliography#Bla14">[Bla14]</a> by our former coworker and ex-Googler, Mike Bland.</p><p id="id-wbau7S0CJsL"><sup><a class="jumptargets" href="#id-wbau7S0CJsL-marker">93</a></sup>See <a href="https://github.com/google/bazel" target="_blank" rel="noopener noreferrer"><em>https://github.com/google/bazel</em></a>.</p><p id="id-JJ7uDSjIBH7"><sup><a class="jumptargets" href="#id-JJ7uDSjIBH7-marker">94</a></sup>For example, code under test that wraps a nontrivial API to provide a simpler and backward-compatible abstraction. The API that used to be synchronous instead returns a future. Calling argument errors still deliver an exception, but not until the future is evaluated. The code under test passes the API result directly back to the caller. Many cases of argument misuse may not be caught.</p><p id="id-yJLuyFpFnhGHJ"><sup><a class="jumptargets" href="#id-yJLuyFpFnhGHJ-marker">95</a></sup>This section talks specifically about tools used by SRE that need to be scalable. However, SRE also develops and uses tools that don’t necessarily need to be scalable. The tools that don’t need to be scalable also need to be tested, but these tools are out of scope for this section, and therefore won’t be discussed here. Because their risk footprint is similar to user-facing applications, similar testing strategies are applicable on such SRE-developed tools.</p><p id="id-2opuZhjFGTmTyHz"><sup><a class="jumptargets" href="#id-2opuZhjFGTmTyHz-marker">96</a></sup>See <a href="https://github.com/Netflix/SimianArmy/wiki/Chaos-Monkey" target="_blank" rel="noopener noreferrer"><em>https://github.com/Netflix/SimianArmy/wiki/Chaos-Monkey</em></a>.</p><p id="id-p8BuBTjFKT8TZHX"><sup><a class="jumptargets" href="#id-p8BuBTjFKT8TZHX-marker">97</a></sup>See <a href="https://github.com/aphyr/jepsen" target="_blank" rel="noopener noreferrer"><em>https://github.com/aphyr/jepsen</em></a>.</p><p id="id-oAduvcXFjTlTnHG"><sup><a class="jumptargets" href="#id-oAduvcXFjTlTnHG-marker">98</a></sup>Even if the test run is repeated with the same random seed so that the task kills are in the same order, there is no serialization between the kills and the fake user traffic. Therefore, there’s no guarantee that the actual previously observed code path will now be exercised again.</p><p id="id-Xe4u9SLtZhWcNHD"><sup><a class="jumptargets" href="#id-Xe4u9SLtZhWcNHD-marker">99</a></sup>See <a href="https://xkcd.com/303/" target="_blank" rel="noopener noreferrer"><em>https://xkcd.com/303/</em></a>.</p><p id-xJ0u4SqIQuNHn><sup><a class="jumptargets" href="#id-xJ0u4SqIQuNHn-marker">100</a></sup>Perhaps acquired through <em>Mechanical Turk</em> or similar services.</p><p id="id-jE2ulFAhjU2Hr"><sup><a class="jumptargets" href="#id-jE2ulFAhjU2Hr-marker">101</a></sup>See <a href="https://github.com/google/protobuf" target="_blank" rel="noopener noreferrer"><em>https://github.com/google/protobuf</em></a>.</p><p id="id-2opulFrTNUNH8"><sup><a class="jumptargets" href="#id-2opulFrTNUNH8-marker">102</a></sup>Not because software engineers shouldn’t write them. Tools that cross between technology verticals and span abstraction layers tend to have weak associations with many software teams and a slightly stronger association with systems teams.</p></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="maia-aux">
+      <div class="previous">
+          <a href="tracking-outages.html">
+            <p class="footer-caption">Previous</p>
+            <p class="chapter-link">
+                Chapter 16 - Tracking Outages
+            </p>
+          </a>
+      </div>
+      <div class="next">
+          <a href="software-engineering-in-sre.html">
+            <p class="footer-caption">Next</p>
+            <p class="chapter-link">
+                Chapter 18 - Software Engineering in SRE
+            </p>
+          </a>
+      </div>
+        <p class="footer-link">Copyright © 2017 Google, Inc. Published by O'Reilly Media, Inc. Licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener noreferrer" target="_blank">CC BY-NC-ND 4.0</a></p>
+    </div>
+  </div>
+    </main>
+
+
+
+
+
+  </body>
+</html>

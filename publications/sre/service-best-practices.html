@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta charset="utf-8">
+    <meta content="initial-scale=1, minimum-scale=1, width=device-width" name="viewport">
+    <title>Google SRE: Production Services Best Practices</title>
+      <meta name="description" content="Explore SRE best practices | How Google SRE team use capacity planning, SLO's, resilience engineering to proactively manage and maintain world-class reliability.">
+    <meta name="referrer" content="no-referrer" />
+    <link rel="canonical" href="service-best-practices.html">
+    <link rel="apple-touch-icon-precomposed" sizes="180x180" href="https://lh3.googleusercontent.com/Yf2DCX8RKda6r4Jml9DLMByS2zQCBFs3kQpvBfN8UgIh4YVWIYSYIQOoTxJriyuM26cT5PDjyEb5aynDQ0Xyz46yHKnfg8JlUbDW">
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Google+Sans:400|Roboto:400,400italic,500,500italic,700,700italic|Roboto+Mono:400,500,700|Material+Icons">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://lh3.googleusercontent.com/Yf2DCX8RKda6r4Jml9DLMByS2zQCBFs3kQpvBfN8UgIh4YVWIYSYIQOoTxJriyuM26cT5PDjyEb5aynDQ0Xyz46yHKnfg8JlUbDW">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://lh3.googleusercontent.com/Yf2DCX8RKda6r4Jml9DLMByS2zQCBFs3kQpvBfN8UgIh4YVWIYSYIQOoTxJriyuM26cT5PDjyEb5aynDQ0Xyz46yHKnfg8JlUbDW">
+    <link rel="shortcut icon" href="https://lh3.googleusercontent.com/Yf2DCX8RKda6r4Jml9DLMByS2zQCBFs3kQpvBfN8UgIh4YVWIYSYIQOoTxJriyuM26cT5PDjyEb5aynDQ0Xyz46yHKnfg8JlUbDW">
+    <link href="https://sre.google/sre-book/static/css/index.min.css?cache=6c30b59" rel="stylesheet">
+
+
+
+  </head>
+
+  <body>
+
+    <main>
+  <div ng-controller= "HeaderCtrl as headerCtrl">
+    <div id="curtain" class="menu-closed"></div>
+      <div class="header clearfix">
+        <a id="burger-menu" class="expand"></a>
+        <h2 class="chapter-title">
+                Appendix B - A Collection of Best Practices for Production Services
+        </h2>
+      </div>
+      <div id="overlay-element" class="expands">
+        <div class="logo">
+          <a href="https://www.google.com"><img src="assets/c812e821ce-YoVRtLOHMSRYQZ3OhFL8RIamcjFYbmQXX4oAQx02MRqqY9zlKNvsuZpS73khXiOqTH3qrFW27VrERJJIHTjPk-tAh46q8-Fd4w6qlw" alt="Google"></a>
+        </div>
+        <ol id="drop-down" class="dropdown-content hide">
+          <li><a class="menu-buttons" href="table-of-contents.html">Table of Contents</a></li>
+            <li>
+              <a href="foreword.html" class="menu-buttons">
+                  Foreword
+              </a>
+            </li>
+            <li>
+              <a href="preface.html" class="menu-buttons">
+                  Preface
+              </a>
+            </li>
+            <li>
+              <a href="part-I-introduction.html" class="menu-buttons">
+                  Part I - Introduction
+              </a>
+            </li>
+            <li>
+              <a href="introduction.html" class="menu-buttons">
+                  1. Introduction
+              </a>
+            </li>
+            <li>
+              <a href="production-environment.html" class="menu-buttons">
+                  2. The Production Environment at Google, from the Viewpoint of an SRE
+              </a>
+            </li>
+            <li>
+              <a href="part-II-principles.html" class="menu-buttons">
+                  Part II - Principles
+              </a>
+            </li>
+            <li>
+              <a href="embracing-risk.html" class="menu-buttons">
+                  3. Embracing Risk
+              </a>
+            </li>
+            <li>
+              <a href="service-level-objectives.html" class="menu-buttons">
+                  4. Service Level Objectives
+              </a>
+            </li>
+            <li>
+              <a href="eliminating-toil.html" class="menu-buttons">
+                  5. Eliminating Toil
+              </a>
+            </li>
+            <li>
+              <a href="monitoring-distributed-systems.html" class="menu-buttons">
+                  6. Monitoring Distributed Systems
+              </a>
+            </li>
+            <li>
+              <a href="automation-at-google.html" class="menu-buttons">
+                  7. The Evolution of Automation at Google
+              </a>
+            </li>
+            <li>
+              <a href="release-engineering.html" class="menu-buttons">
+                  8. Release Engineering
+              </a>
+            </li>
+            <li>
+              <a href="simplicity.html" class="menu-buttons">
+                  9. Simplicity
+              </a>
+            </li>
+            <li>
+              <a href="part-III-practices.html" class="menu-buttons">
+                  Part III - Practices
+              </a>
+            </li>
+            <li>
+              <a href="practical-alerting.html" class="menu-buttons">
+                  10. Practical Alerting
+              </a>
+            </li>
+            <li>
+              <a href="being-on-call.html" class="menu-buttons">
+                  11. Being On-Call
+              </a>
+            </li>
+            <li>
+              <a href="effective-troubleshooting.html" class="menu-buttons">
+                  12. Effective Troubleshooting
+              </a>
+            </li>
+            <li>
+              <a href="emergency-response.html" class="menu-buttons">
+                  13. Emergency Response
+              </a>
+            </li>
+            <li>
+              <a href="managing-incidents.html" class="menu-buttons">
+                  14. Managing Incidents
+              </a>
+            </li>
+            <li>
+              <a href="postmortem-culture.html" class="menu-buttons">
+                  15. Postmortem Culture: Learning from Failure
+              </a>
+            </li>
+            <li>
+              <a href="tracking-outages.html" class="menu-buttons">
+                  16. Tracking Outages
+              </a>
+            </li>
+            <li>
+              <a href="testing-reliability.html" class="menu-buttons">
+                  17. Testing for Reliability
+              </a>
+            </li>
+            <li>
+              <a href="software-engineering-in-sre.html" class="menu-buttons">
+                  18. Software Engineering in SRE
+              </a>
+            </li>
+            <li>
+              <a href="load-balancing-frontend.html" class="menu-buttons">
+                  19. Load Balancing at the Frontend
+              </a>
+            </li>
+            <li>
+              <a href="load-balancing-datacenter.html" class="menu-buttons">
+                  20. Load Balancing in the Datacenter
+              </a>
+            </li>
+            <li>
+              <a href="handling-overload.html" class="menu-buttons">
+                  21. Handling Overload
+              </a>
+            </li>
+            <li>
+              <a href="addressing-cascading-failures.html" class="menu-buttons">
+                  22. Addressing Cascading Failures
+              </a>
+            </li>
+            <li>
+              <a href="managing-critical-state.html" class="menu-buttons">
+                  23. Managing Critical State: Distributed Consensus for Reliability
+              </a>
+            </li>
+            <li>
+              <a href="distributed-periodic-scheduling.html" class="menu-buttons">
+                  24. Distributed Periodic Scheduling with Cron
+              </a>
+            </li>
+            <li>
+              <a href="data-processing-pipelines.html" class="menu-buttons">
+                  25. Data Processing Pipelines
+              </a>
+            </li>
+            <li>
+              <a href="data-integrity.html" class="menu-buttons">
+                  26. Data Integrity: What You Read Is What You Wrote
+              </a>
+            </li>
+            <li>
+              <a href="reliable-product-launches.html" class="menu-buttons">
+                  27. Reliable Product Launches at Scale
+              </a>
+            </li>
+            <li>
+              <a href="part-IV-management.html" class="menu-buttons">
+                  Part IV - Management
+              </a>
+            </li>
+            <li>
+              <a href="accelerating-sre-on-call.html" class="menu-buttons">
+                  28. Accelerating SREs to On-Call and Beyond
+              </a>
+            </li>
+            <li>
+              <a href="dealing-with-interrupts.html" class="menu-buttons">
+                  29. Dealing with Interrupts
+              </a>
+            </li>
+            <li>
+              <a href="operational-overload.html" class="menu-buttons">
+                  30. Embedding an SRE to Recover from Operational Overload
+              </a>
+            </li>
+            <li>
+              <a href="communication-and-collaboration.html" class="menu-buttons">
+                  31. Communication and Collaboration in SRE
+              </a>
+            </li>
+            <li>
+              <a href="evolving-sre-engagement-model.html" class="menu-buttons">
+                  32. The Evolving SRE Engagement Model
+              </a>
+            </li>
+            <li>
+              <a href="part-V-conclusions.html" class="menu-buttons">
+                  Part V - Conclusions
+              </a>
+            </li>
+            <li>
+              <a href="lessons-learned.html" class="menu-buttons">
+                  33. Lessons Learned from Other Industries
+              </a>
+            </li>
+            <li>
+              <a href="conclusion.html" class="menu-buttons">
+                  34. Conclusion
+              </a>
+            </li>
+            <li>
+              <a href="availability-table.html" class="menu-buttons">
+                  Appendix A. Availability Table
+              </a>
+            </li>
+            <li class="active">
+              <a href="service-best-practices.html" class="menu-buttons">
+                  Appendix B. A Collection of Best Practices for Production Services
+              </a>
+            </li>
+            <li>
+              <a href="incident-document.html" class="menu-buttons">
+                  Appendix C. Example Incident State Document
+              </a>
+            </li>
+            <li>
+              <a href="example-postmortem.html" class="menu-buttons">
+                  Appendix D. Example Postmortem
+              </a>
+            </li>
+            <li>
+              <a href="launch-checklist.html" class="menu-buttons">
+                  Appendix E. Launch Coordination Checklist
+              </a>
+            </li>
+            <li>
+              <a href="production-meeting.html" class="menu-buttons">
+                  Appendix F. Example Production Meeting Minutes
+              </a>
+            </li>
+            <li>
+              <a href="bibliography.html" class="menu-buttons">
+                  Bibliography
+              </a>
+            </li>
+        </ol>
+      </div>
+    </div>
+
+  <div id="maia-main">
+    <div class="content" id="content">
+      <section data-type="appendix" id="appendix_service-best-practices">
+  <h1 class="heading jumptargets">A Collection of Best Practices for <span class="keep-together">Production Services</span></h1>
+  <p class="author byline">Written by Ben Treynor Sloss</br>Edited by Betsy Beyer</p>
+  <section data-type="sect1" id="fail-sanely-9psDtvG">
+    <h2 class="heading jumptargets">Fail Sanely</h2>
+    <p>Sanitize and validate configuration inputs, and respond to implausible inputs by <em>both</em> continuing to operate in the previous state <em>and</em> alerting to the receipt of bad input. Bad input often falls into one of these categories:</p>
+    <dl class="desc-list">
+      <dt class="dt-heading jumptargets" id="incorrect-data">Incorrect data</dt>
+      <dd>Validate both syntax and, if possible, semantics. Watch for empty data and partial or truncated data (e.g., alert if the configuration is <em>N</em>% smaller than the previous version).</dd>
+      <dt class="dt-heading jumptargets" id="delayed-data">Delayed data</dt>
+      <dd>This may invalidate current data due to timeouts. Alert well before the data is expected to expire.</dd>
+    </dl>
+    <p>Fail in a way that preserves function, possibly at the expense of being overly permissive or overly simplistic. We’ve found that it’s generally safer for systems to continue functioning with their previous configuration and await a human’s approval before using the new, perhaps invalid, data.</p>
+    <aside data-type="sidebar" class="highlight pagebreak-before" id="examples-xaSjh7tyl">
+      <h5 class="heading jumptargets">Examples</h5>
+      <p>In 2005, Google’s global DNS load- and latency-balancing system received an empty DNS entry file as a result of file permissions. It accepted this empty file and served <code>NXDOMAIN</code> for six minutes for all Google properties. In response, the system now performs a number of sanity checks on new configurations, including confirming the presence of virtual IPs for <em>google.com</em>, and will continue serving the previous DNS entries until it receives a new file that passes its input checks.</p>
+<p>In 2009, incorrect (but valid) data led to Google marking the entire Web as containing malware <a data-type="xref" href="https://sre.google/sre-book/bibliography#May09">[May09]</a>. A configuration file containing the list of suspect URLs was replaced by a single forward slash character (/), which matched all URLs. Checks for dramatic changes in file size and checks to see whether the configuration is matching sites that are believed unlikely to contain malware would have prevented this from reaching production.</p>
+    </aside>
+  </section>
+<section data-type="sect1" id="progressive-rollouts-ZKsBhMp">
+    <h1 class="heading jumptargets">Progressive Rollouts</h1>
+    <p>Nonemergency rollouts <em>must</em> proceed in stages. Both configuration and binary changes introduce risk, and you mitigate this risk by applying the change to small fractions of traffic and capacity at one time. The size of your service or rollout, as well as your risk profile, will inform the percentages of production capacity to which the rollout is pushed, and the appropriate time frame between stages. It’s also a good idea to perform different stages in different geographies, in order to detect problems related to diurnal traffic cycles and geographical traffic mix differences.</p>
+    <p>Rollouts should be supervised. To ensure that nothing unexpected is occurring during the rollout, it must be monitored either by the engineer performing the rollout stage or—preferably—a demonstrably reliable monitoring system. If unexpected behavior is detected, roll back first and diagnose afterward in order to minimize Mean Time to Recovery.</p>
+  </section>
+<section data-type="sect1" id="define-slos-like-a-user-zVsLTGp">
+    <h1 class="heading jumptargets">Define SLOs Like a User</h1>
+    <p>Measure availability and performance in terms that matter to an end user. See <a data-type="xref" href="service-level-objectives.html">Service Level Objectives</a> for more discussion.</p>
+    <aside data-type="sidebar" class="pagebreak-before" id="example-xaS0InTyl">
+      <h5 class="heading jumptargets">Example</h5>
+<p>Measuring error rates and latency at the Gmail client, rather than at the server, resulted in a substantial reduction in our assessment of
+      Gmail availability, and prompted changes to both Gmail client and
+      server code. The result was that Gmail went from about 99.0% available
+      to over 99.9% available in a few years.</p>
+    </aside>
+  </section>
+<section data-type="sect1" id="error-budgets-yDslcpY">
+    <h1 class="heading jumptargets">Error Budgets</h1>
+    <p>Balance reliability and the pace of innovation with error budgets (see <a data-type="xref" href="https://sre.google/sre-book/embracing-risk#xref_risk-management_unreliability-budgets">Motivation for Error Budgets</a>), which define the acceptable level of failure for a service, over some period; we often use a month. A budget is simply 1 minus a service’s SLO; for instance, a service with a 99.99% availability target has a 0.01% “budget” for unavailability. As long as the service hasn’t spent its error budget for the month through the background rate of errors plus any downtime, the development team is free (within reason) to launch new features, updates, and so on.</p>
+    <p>If the error budget is spent, the service freezes changes (except urgent security and bug fixes addressing any cause of the increased errors) until either the service has earned back room in the budget, or the month resets. For mature services with an SLO greater than 99.99%, a quarterly rather than monthly budget reset is appropriate, because the amount of allowable downtime is small.</p>
+    <p>Error budgets eliminate the structural tension that might otherwise develop between SRE and product development teams by giving them a common, data-driven mechanism for assessing launch risk. They also give both SRE and product development teams a common goal of developing practices and technology that allow faster innovation and more launches without "blowing the budget."</p>
+  </section>
+<section data-type="sect1" id="monitoring-V7sBirD">
+    <h1 class="heading jumptargets">Monitoring</h1>
+    <p>Monitoring may have only three output types:</p>
+    <dl class="desc-list">
+      <dt class="dt-heading jumptargets" id="pages">Pages</dt>
+      <dd>A human must do something <em>now</em></dd>
+      <dt class="dt-heading jumptargets" id="tickets">Tickets</dt>
+      <dd>A human must do something within a few days</dd>
+      <dt class="dt-heading jumptargets" id="logging">Logging</dt>
+      <dd>No one need look at this output immediately, but it’s available for later analysis if needed</dd>
+    </dl>
+    <p>If it’s important enough to bother a human, it should either <em>require</em> immediate action (i.e., page) or be treated as a bug and entered into your bug-tracking system. Putting alerts into email and hoping that someone will read all of them and notice the important ones is the moral equivalent of piping them to <em>/dev/null</em>: they will eventually be ignored. History demonstrates this strategy is an attractive nuisance because it can work for a while, but it relies on eternal human vigilance, and the inevitable outage is thus more severe when it happens.</p>
+  </section>
+<section data-type="sect1" id="postmortems-rWsmuYA">
+    <h1 class="heading jumptargets">Postmortems</h1>
+    <p>Postmortems (see <a data-type="xref" href="postmortem-culture.html">Postmortem Culture: Learning from Failure</a>) should be blameless and focus on process and technology, not people. Assume the people involved in an incident are intelligent, are well intentioned, and were making the best choices they could given the information they had available at the time. It follows that we can’t “fix” the people, but must instead fix their environment: e.g., improving system design to avoid entire classes of problems, making the appropriate information easily available, and automatically validating operational decisions to make it difficult to put systems in dangerous states.</p>
+  </section>
+<section data-type="sect1" id="capacity-planning-wPsEUPo">
+    <h1 class="heading jumptargets">Capacity Planning</h1>
+    <p>Provision to handle a simultaneous planned and unplanned outage, without making the user experience unacceptable; this results in an "<em>N</em> + 2” configuration, where peak traffic can be handled by <em>N</em> instances (possibly in degraded mode) while the largest 2 instances are unavailable:</p>
+    <ul>
+      <li>Validate prior demand forecasts against reality until they consistently match. Divergence implies unstable forecasting, inefficient provisioning, and risk of a capacity shortfall.</li>
+      <li>Use load testing rather than tradition to establish the resource-to-capacity ratio: a cluster of <em>X</em> machines could handle <em>Y</em> queries per second three months ago, but can it still do so given changes to the system?</li>
+      <li>Don’t mistake day-one load for steady-state load. Launches often attract more traffic, while they’re also the time you especially want to put the product’s best foot forward. See <a data-type="xref" href="reliable-product-launches.html">Reliable Product Launches at Scale</a> and <a data-type="xref" href="launch-checklist.html">Launch Coordination Checklist</a>.</li>
+    </ul>
+  </section>
+<section data-type="sect1" class="pagebreak-before" id="overloads-and-failure-xqsxCBn">
+    <h1 class="heading jumptargets">Overloads and Failure</h1>
+    <p>Services should produce reasonable but suboptimal results if overloaded. For example, Google Search will search a smaller fraction of the index, and stop serving features like Instant to continue to provide good quality web search results when overloaded. Search SRE tests web search clusters beyond their rated capacity to ensure they perform acceptably when overloaded with traffic.</p>
+    <p>For times when load is high enough that even degraded responses are too expensive for all queries, practice graceful load shedding, using well-behaved queuing and dynamic timeouts; see <a data-type="xref" href="handling-overload.html">Handling Overload</a>. Other techniques include answering requests after a significant delay (“tarpitting”) and choosing a consistent subset of clients to receive errors, preserving a good user experience for the remainder.</p>
+    <p>Retries can amplify low error rates into higher levels of traffic, leading to cascading failures (see <a data-type="xref" href="addressing-cascading-failures.html">Addressing Cascading Failures</a>). Respond to cascading failures by dropping a fraction of traffic (including retries!) upstream of the system once total load exceeds total capacity.</p>
+    <p>Every client that makes an RPC must implement exponential backoff (with jitter) for retries, to dampen error amplification. Mobile clients are especially troublesome because there may be millions of them and updating their code to fix behavior takes a significant amount of time—possibly weeks—and requires that users install updates.</p>
+  </section>
+<section data-type="sect1" id="sre-teams-Pasrs7Z">
+    <h1 class="heading jumptargets">SRE Teams</h1>
+    <p>SRE teams should spend no more than 50% of their time on operational work (see <a data-type="xref" href="eliminating-toil.html">Eliminating Toil</a>); operational overflow should be directed to the product development team. Many services also include the product developers in the on-call rotation and ticket handling, even if there is currently no overflow. This provides incentives to design systems that minimize or eliminate operational toil, along with ensuring that the product developers are in touch with the operational side of the service. A regular production meeting between SREs and the development team (see <a data-type="xref" href="communication-and-collaboration.html">Communication and Collaboration in SRE</a>) is also helpful.</p>
+    <p>We’ve found that at least eight people need to be part of the on-call team, in order to avoid fatigue and allow sustainable staffing and low turnover. Preferably, those on-call should be in two well-separated geographic locations (e.g., California and Ireland) to provide a better quality of life by avoiding nighttime pages; in this case, six people at each site is the minimum team size.</p>
+    <p>Expect to handle no more than two events per on-call shift (e.g., per 12 hours): it takes time to respond to and fix outages, start the postmortem, and file the resulting bugs. More frequent events may degrade the quality of response, and suggest that something is wrong with (at least one of) the system’s design, monitoring sensitivity, and response to postmortem bugs.</p>
+    <p>Ironically, if you implement these best practices, the SRE team may eventually end up out of practice in responding to incidents due to their infrequency, making a long outage out of a short one. Practice handling hypothetical outages (see <a data-type="xref" href="https://sre.google/sre-book/accelerating-sre-on-call#xref_training_disaster-rpg">Disaster Role Playing</a>) routinely and improve your incident-handling documentation in the process.</p>
+  </section>
+</section>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="maia-aux">
+      <div class="previous">
+          <a href="availability-table.html">
+            <p class="footer-caption">Previous</p>
+            <p class="chapter-link">
+                Appendix A - Availability Table
+            </p>
+          </a>
+      </div>
+      <div class="next">
+          <a href="incident-document.html">
+            <p class="footer-caption">Next</p>
+            <p class="chapter-link">
+                Appendix C - Example Incident State Document
+            </p>
+          </a>
+      </div>
+        <p class="footer-link">Copyright © 2017 Google, Inc. Published by O'Reilly Media, Inc. Licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener noreferrer" target="_blank">CC BY-NC-ND 4.0</a></p>
+    </div>
+  </div>
+    </main>
+
+
+
+
+
+  </body>
+</html>

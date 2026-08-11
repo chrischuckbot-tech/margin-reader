@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta charset="utf-8">
+    <meta content="initial-scale=1, minimum-scale=1, width=device-width" name="viewport">
+    <title>Google SRE: Incident Postmortem Example for Outage Resolution</title>
+      <meta name="description" content="This practical site reliability incident postmortem example outlines blameless analysis, action items and a detailed timeline for effective outage resolution.">
+    <meta name="referrer" content="no-referrer" />
+    <link rel="canonical" href="example-postmortem.html">
+    <link rel="apple-touch-icon-precomposed" sizes="180x180" href="https://lh3.googleusercontent.com/Yf2DCX8RKda6r4Jml9DLMByS2zQCBFs3kQpvBfN8UgIh4YVWIYSYIQOoTxJriyuM26cT5PDjyEb5aynDQ0Xyz46yHKnfg8JlUbDW">
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Google+Sans:400|Roboto:400,400italic,500,500italic,700,700italic|Roboto+Mono:400,500,700|Material+Icons">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://lh3.googleusercontent.com/Yf2DCX8RKda6r4Jml9DLMByS2zQCBFs3kQpvBfN8UgIh4YVWIYSYIQOoTxJriyuM26cT5PDjyEb5aynDQ0Xyz46yHKnfg8JlUbDW">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://lh3.googleusercontent.com/Yf2DCX8RKda6r4Jml9DLMByS2zQCBFs3kQpvBfN8UgIh4YVWIYSYIQOoTxJriyuM26cT5PDjyEb5aynDQ0Xyz46yHKnfg8JlUbDW">
+    <link rel="shortcut icon" href="https://lh3.googleusercontent.com/Yf2DCX8RKda6r4Jml9DLMByS2zQCBFs3kQpvBfN8UgIh4YVWIYSYIQOoTxJriyuM26cT5PDjyEb5aynDQ0Xyz46yHKnfg8JlUbDW">
+    <link href="https://sre.google/sre-book/static/css/index.min.css?cache=6c30b59" rel="stylesheet">
+
+
+
+  </head>
+
+  <body>
+
+    <main>
+  <div ng-controller= "HeaderCtrl as headerCtrl">
+    <div id="curtain" class="menu-closed"></div>
+      <div class="header clearfix">
+        <a id="burger-menu" class="expand"></a>
+        <h2 class="chapter-title">
+                Appendix D - Example Postmortem
+        </h2>
+      </div>
+      <div id="overlay-element" class="expands">
+        <div class="logo">
+          <a href="https://www.google.com"><img src="assets/c812e821ce-YoVRtLOHMSRYQZ3OhFL8RIamcjFYbmQXX4oAQx02MRqqY9zlKNvsuZpS73khXiOqTH3qrFW27VrERJJIHTjPk-tAh46q8-Fd4w6qlw" alt="Google"></a>
+        </div>
+        <ol id="drop-down" class="dropdown-content hide">
+          <li><a class="menu-buttons" href="table-of-contents.html">Table of Contents</a></li>
+            <li>
+              <a href="foreword.html" class="menu-buttons">
+                  Foreword
+              </a>
+            </li>
+            <li>
+              <a href="preface.html" class="menu-buttons">
+                  Preface
+              </a>
+            </li>
+            <li>
+              <a href="part-I-introduction.html" class="menu-buttons">
+                  Part I - Introduction
+              </a>
+            </li>
+            <li>
+              <a href="introduction.html" class="menu-buttons">
+                  1. Introduction
+              </a>
+            </li>
+            <li>
+              <a href="production-environment.html" class="menu-buttons">
+                  2. The Production Environment at Google, from the Viewpoint of an SRE
+              </a>
+            </li>
+            <li>
+              <a href="part-II-principles.html" class="menu-buttons">
+                  Part II - Principles
+              </a>
+            </li>
+            <li>
+              <a href="embracing-risk.html" class="menu-buttons">
+                  3. Embracing Risk
+              </a>
+            </li>
+            <li>
+              <a href="service-level-objectives.html" class="menu-buttons">
+                  4. Service Level Objectives
+              </a>
+            </li>
+            <li>
+              <a href="eliminating-toil.html" class="menu-buttons">
+                  5. Eliminating Toil
+              </a>
+            </li>
+            <li>
+              <a href="monitoring-distributed-systems.html" class="menu-buttons">
+                  6. Monitoring Distributed Systems
+              </a>
+            </li>
+            <li>
+              <a href="automation-at-google.html" class="menu-buttons">
+                  7. The Evolution of Automation at Google
+              </a>
+            </li>
+            <li>
+              <a href="release-engineering.html" class="menu-buttons">
+                  8. Release Engineering
+              </a>
+            </li>
+            <li>
+              <a href="simplicity.html" class="menu-buttons">
+                  9. Simplicity
+              </a>
+            </li>
+            <li>
+              <a href="part-III-practices.html" class="menu-buttons">
+                  Part III - Practices
+              </a>
+            </li>
+            <li>
+              <a href="practical-alerting.html" class="menu-buttons">
+                  10. Practical Alerting
+              </a>
+            </li>
+            <li>
+              <a href="being-on-call.html" class="menu-buttons">
+                  11. Being On-Call
+              </a>
+            </li>
+            <li>
+              <a href="effective-troubleshooting.html" class="menu-buttons">
+                  12. Effective Troubleshooting
+              </a>
+            </li>
+            <li>
+              <a href="emergency-response.html" class="menu-buttons">
+                  13. Emergency Response
+              </a>
+            </li>
+            <li>
+              <a href="managing-incidents.html" class="menu-buttons">
+                  14. Managing Incidents
+              </a>
+            </li>
+            <li>
+              <a href="postmortem-culture.html" class="menu-buttons">
+                  15. Postmortem Culture: Learning from Failure
+              </a>
+            </li>
+            <li>
+              <a href="tracking-outages.html" class="menu-buttons">
+                  16. Tracking Outages
+              </a>
+            </li>
+            <li>
+              <a href="testing-reliability.html" class="menu-buttons">
+                  17. Testing for Reliability
+              </a>
+            </li>
+            <li>
+              <a href="software-engineering-in-sre.html" class="menu-buttons">
+                  18. Software Engineering in SRE
+              </a>
+            </li>
+            <li>
+              <a href="load-balancing-frontend.html" class="menu-buttons">
+                  19. Load Balancing at the Frontend
+              </a>
+            </li>
+            <li>
+              <a href="load-balancing-datacenter.html" class="menu-buttons">
+                  20. Load Balancing in the Datacenter
+              </a>
+            </li>
+            <li>
+              <a href="handling-overload.html" class="menu-buttons">
+                  21. Handling Overload
+              </a>
+            </li>
+            <li>
+              <a href="addressing-cascading-failures.html" class="menu-buttons">
+                  22. Addressing Cascading Failures
+              </a>
+            </li>
+            <li>
+              <a href="managing-critical-state.html" class="menu-buttons">
+                  23. Managing Critical State: Distributed Consensus for Reliability
+              </a>
+            </li>
+            <li>
+              <a href="distributed-periodic-scheduling.html" class="menu-buttons">
+                  24. Distributed Periodic Scheduling with Cron
+              </a>
+            </li>
+            <li>
+              <a href="data-processing-pipelines.html" class="menu-buttons">
+                  25. Data Processing Pipelines
+              </a>
+            </li>
+            <li>
+              <a href="data-integrity.html" class="menu-buttons">
+                  26. Data Integrity: What You Read Is What You Wrote
+              </a>
+            </li>
+            <li>
+              <a href="reliable-product-launches.html" class="menu-buttons">
+                  27. Reliable Product Launches at Scale
+              </a>
+            </li>
+            <li>
+              <a href="part-IV-management.html" class="menu-buttons">
+                  Part IV - Management
+              </a>
+            </li>
+            <li>
+              <a href="accelerating-sre-on-call.html" class="menu-buttons">
+                  28. Accelerating SREs to On-Call and Beyond
+              </a>
+            </li>
+            <li>
+              <a href="dealing-with-interrupts.html" class="menu-buttons">
+                  29. Dealing with Interrupts
+              </a>
+            </li>
+            <li>
+              <a href="operational-overload.html" class="menu-buttons">
+                  30. Embedding an SRE to Recover from Operational Overload
+              </a>
+            </li>
+            <li>
+              <a href="communication-and-collaboration.html" class="menu-buttons">
+                  31. Communication and Collaboration in SRE
+              </a>
+            </li>
+            <li>
+              <a href="evolving-sre-engagement-model.html" class="menu-buttons">
+                  32. The Evolving SRE Engagement Model
+              </a>
+            </li>
+            <li>
+              <a href="part-V-conclusions.html" class="menu-buttons">
+                  Part V - Conclusions
+              </a>
+            </li>
+            <li>
+              <a href="lessons-learned.html" class="menu-buttons">
+                  33. Lessons Learned from Other Industries
+              </a>
+            </li>
+            <li>
+              <a href="conclusion.html" class="menu-buttons">
+                  34. Conclusion
+              </a>
+            </li>
+            <li>
+              <a href="availability-table.html" class="menu-buttons">
+                  Appendix A. Availability Table
+              </a>
+            </li>
+            <li>
+              <a href="service-best-practices.html" class="menu-buttons">
+                  Appendix B. A Collection of Best Practices for Production Services
+              </a>
+            </li>
+            <li>
+              <a href="incident-document.html" class="menu-buttons">
+                  Appendix C. Example Incident State Document
+              </a>
+            </li>
+            <li class="active">
+              <a href="example-postmortem.html" class="menu-buttons">
+                  Appendix D. Example Postmortem
+              </a>
+            </li>
+            <li>
+              <a href="launch-checklist.html" class="menu-buttons">
+                  Appendix E. Launch Coordination Checklist
+              </a>
+            </li>
+            <li>
+              <a href="production-meeting.html" class="menu-buttons">
+                  Appendix F. Example Production Meeting Minutes
+              </a>
+            </li>
+            <li>
+              <a href="bibliography.html" class="menu-buttons">
+                  Bibliography
+              </a>
+            </li>
+        </ol>
+      </div>
+    </div>
+
+  <div id="maia-main">
+    <div class="content" id="content">
+      <section data-type="appendix" id="appendix_postmortem-culture_template">
+<h1 class="heading jumptargets">Example Postmortem</h1>
+<h2 class="subheaders jumptargets" id="shakespeare-sonnet-postmortem">Shakespeare Sonnet++ Postmortem (incident #465)</h2>
+<p><strong>Date</strong>: 2015-10-21</p>
+<p><strong>Authors</strong>: jennifer, martym, agoogler</p>
+<p><strong>Status</strong>: Complete, action items in progress</p>
+<p><strong>Summary</strong>: Shakespeare Search down for 66 minutes during period of very high interest in Shakespeare due to discovery of a new sonnet.</p>
+<p><strong>Impact</strong>:<sup><a class="jumptarget" data-type="noteref" id="id-gA2uwFdcDB-marker" href="#id-gA2uwFdcDB">163</a></sup> Estimated 1.21B queries lost, no revenue impact.</p>
+<p><strong>Root Causes</strong>:<sup><a class="jumptarget" data-type="noteref" id="id-YAJuMt7iQW-marker" href="#id-YAJuMt7iQW">164</a></sup> Cascading failure due to combination of exceptionally high load and a resource leak when searches failed due to terms not being in the Shakespeare corpus. The newly discovered sonnet used a word that had never before appeared in one of Shakespeare’s works, which happened to be the term users searched for. Under normal circumstances, the rate of task failures due to resource leaks is low enough to be unnoticed.</p>
+<p><strong>Trigger</strong>: Latent bug triggered by sudden increase in traffic.</p>
+<p><strong>Resolution</strong>: Directed traffic to sacrificial cluster and added 10x capacity to mitigate cascading failure. Updated index deployed, resolving interaction with latent bug. Maintaining extra capacity until surge in public interest in new sonnet passes. Resource leak identified and fix deployed.</p>
+<p><strong>Detection</strong>: Borgmon detected high level of HTTP 500s and paged on-call.</p>
+<p><strong>Action Items</strong>:<sup><a class="jumptarget" data-type="noteref" id="id-lM2ulFwsKD-marker" href="#id-lM2ulFwsKD">165</a></sup></p>
+<table class="postmorten-table">
+  <thead>
+    <tr>
+      <th>Action Item</th>
+      <th>Type</th>
+      <th>Owner</th>
+      <th>Bug</th>
+    </tr>
+  </thead>
+<tbody>
+    <tr>
+      <td><p>Update playbook with instructions for responding to cascading failure</p></td>
+      <td><p>mitigate</p></td>
+      <td><p>jennifer</p></td>
+      <td><p>n/a <strong>DONE</strong></p></td>
+    </tr>
+    <tr>
+      <td><p>Use flux capacitor to balance load between clusters</p></td>
+      <td><p>prevent</p></td>
+      <td><p>martym</p></td>
+      <td><p>Bug 5554823 <strong>TODO</strong></p></td>
+    </tr>
+    <tr>
+      <td><p>Schedule cascading failure test during next DiRT</p></td>
+      <td><p>process</p></td>
+      <td><p>docbrown</p></td>
+      <td><p>n/a <strong>TODO</strong></p></td>
+    </tr>
+    <tr>
+      <td><p>Investigate running index MR/fusion continuously</p></td>
+      <td><p>prevent</p></td>
+      <td><p>jennifer</p></td>
+      <td><p>Bug 5554824 <strong>TODO</strong></p></td>
+    </tr>
+    <tr>
+      <td><p>Plug file descriptor leak in search ranking subsystem</p></td>
+      <td><p>prevent</p></td>
+      <td><p>agoogler</p></td>
+      <td><p>Bug 5554825 <strong>DONE</strong></p></td>
+    </tr>
+    <tr>
+      <td><p>Add load shedding capabilities to Shakespeare search</p></td>
+      <td><p>prevent</p></td>
+      <td><p>agoogler</p></td>
+      <td><p>Bug 5554826 <strong>TODO</strong></p></td>
+    </tr>
+    <tr>
+      <td><p>Build regression tests to ensure servers respond sanely to queries of death</p></td>
+      <td><p>prevent</p></td>
+      <td><p>clarac</p></td>
+      <td><p>Bug 5554827 <strong>TODO</strong></p></td>
+    </tr>
+    <tr>
+      <td><p>Deploy updated search ranking subsystem to prod</p></td>
+      <td><p>prevent</p></td>
+      <td><p>jennifer</p></td>
+      <td><p>n/a <strong>DONE</strong></p></td>
+    </tr>
+    <tr>
+      <td><p>Freeze production until 2015-11-20 due to error budget exhaustion, or seek exception due to grotesque, unbelievable, bizarre, and unprecedented circumstances</p></td>
+      <td><p>other</p></td>
+      <td><p>docbrown</p></td>
+      <td><p>n/a <strong>TODO</strong></p></td>
+    </tr>
+  </tbody>
+</table>
+<section data-type="sect2" id="lessons-learned-2ksGfja">
+  <h2 class="subheaders jumptargets">Lessons Learned</h2>
+  <section data-type="sect3" id="what-went-well-pWsqFrfMm">
+    <p><strong>What went well</strong></p>
+    <ul>
+      <li>Monitoring quickly alerted us to high rate (reaching ~100%) of HTTP 500s</li>
+      <li>Rapidly distributed updated Shakespeare corpus to all clusters</li>
+    </ul>
+  </section>
+ <section data-type="sect3" id="what-went-wrong-o8seIOf9z">
+    <p><strong>What went wrong</strong></p>
+    <ul>
+      <li>We’re out of practice in responding to cascading failure</li>
+      <li>We exceeded our availability error budget (by several orders of magnitude) due to the exceptional surge of traffic that essentially all resulted in failures</li>
+    </ul>
+  </section>
+ <section data-type="sect3" class="pagebreak-before" id="where-we-got-luckythis-section-is-really-for-near-misses-eg-the-goat-teleporter-was-available-for-emergency-use-with-other-animals-despite-lack-of-certification-g0s1tvfDB">
+    <p><strong>Where we got lucky<sup><a class="jumptarget" data-type="noteref" id="id-mX2uoSWSotMfzG-marker" href="#id-mX2uoSWSotMfzG">166</a></sup></strong></p>
+ <ul>
+      <li>Mailing list of Shakespeare aficionados had a copy of new sonnet available</li>
+      <li>Server logs had stack traces pointing to file descriptor exhaustion as cause for crash</li>
+      <li>Query-of-death was resolved by pushing new index containing popular search term</li>
+    </ul>
+  </section>
+</section>
+
+<section data-type="sect2" id="timelinea-screenplay-of-the-incident-use-the-incident-timeline-from-the-incident-management-document-to-start-filling-in-the-postmortems-timeline-then-supplement-with-other-relevant-entries-pWsQSj2">
+<h2 class="subheaders jumptargets">Timeline<sup><a class="jumptarget" data-type="noteref" id="id-N1KFnSNSAS9a-marker" href="#id-N1KFnSNSAS9a">167</a></sup></h2>
+
+<p>2015-10-21 <em>(all times UTC)</em></p>
+
+<ul>
+  <li>14:51 News reports that a new Shakespearean sonnet has been discovered in a Delorean’s glove compartment</li>
+  <li>14:53 Traffic to Shakespeare search increases by 88x after post to <em>/r/shakespeare</em> points to Shakespeare search engine as place to find new sonnet (except we don’t have the sonnet yet)</li>
+  <li>14:54 <strong>OUTAGE BEGINS</strong> — Search backends start melting down under load</li>
+  <li>14:55 docbrown receives pager storm, <code>ManyHttp500s</code> from all clusters</li>
+  <li>14:57 All traffic to Shakespeare search is failing: see <em>https://monitor</em></a></li>
+  <li>14:58 docbrown starts investigating, finds backend crash rate very high</li>
+  <li>15:01 <strong>INCIDENT BEGINS</strong> docbrown declares incident #465 due to cascading failure, coordination on <code>#shakespeare</code>, names jennifer incident commander</li>
+  <li>15:02 someone coincidentally sends email to <em>shakespeare-discuss@</em> re sonnet discovery, which happens to be at top of martym’s inbox</li>
+  <li>15:03 jennifer notifies <em>shakespeare-incidents@</em> list of the incident</li>
+  <li>15:04 martym tracks down text of new sonnet and looks for documentation on corpus update</li>
+  <li>15:06 docbrown finds that crash symptoms identical across all tasks in all clusters, investigating cause based on application logs</li>
+  <li>15:07 martym finds documentation, starts prep work for corpus update</li>
+  <li>15:10 martym adds sonnet to Shakespeare’s known works, starts indexing job</li>
+  <li>15:12 docbrown contacts clarac &amp; agoogler (from Shakespeare dev team) to help with examining codebase for possible causes</li>
+  <li>15:18 clarac finds smoking gun in logs pointing to file descriptor exhaustion, confirms against code that leak exists if term not in corpus is searched for</li>
+  <li>15:20 martym’s index MapReduce job completes</li>
+  <li>15:21 jennifer and docbrown decide to increase instance count enough to drop load on instances that they’re able to do appreciable work before dying and being restarted</li>
+  <li>15:23 docbrown load balances all traffic to USA-2 cluster, permitting instance count increase in other clusters without servers failing immediately</li>
+  <li>15:25 martym starts replicating new index to all clusters</li>
+  <li>15:28 docbrown starts 2x instance count increase</li>
+  <li>15:32 jennifer changes load balancing to increase traffic to nonsacrificial clusters</li>
+  <li>15:33 tasks in nonsacrificial clusters start failing, same symptoms as before</li>
+  <li>15:34 found order-of-magnitude error in whiteboard calculations for instance count increase</li>
+  <li>15:36 jennifer reverts load balancing to resacrifice USA-2 cluster in preparation for additional global 5x instance count increase (to a total of 10x initial capacity)</li>
+  <li>15:36 <strong>OUTAGE MITIGATED</strong>, updated index replicated to all clusters</li>
+  <li>15:39 docbrown starts second wave of instance count increase to 10x initial capacity</li>
+  <li>15:41 jennifer reinstates load balancing across all clusters for 1% of traffic</li>
+  <li>15:43 nonsacrificial clusters’ HTTP 500 rates at nominal rates, task failures intermittent at low levels</li>
+  <li>15:45 jennifer balances 10% of traffic across nonsacrificial clusters</li>
+  <li>15:47 nonsacrificial clusters’ HTTP 500 rates remain within SLO, no task failures observed</li>
+  <li>15:50 30% of traffic balanced across nonsacrificial clusters</li>
+  <li>15:55 50% of traffic balanced across nonsacrificial clusters</li>
+  <li>16:00 <strong>OUTAGE ENDS</strong>, all traffic balanced across all clusters</li>
+  <li>16:30 <strong>INCIDENT ENDS</strong>, reached exit criterion of 30 minutes’ nominal <span class="keep-together">performance</span></li>
+</ul>
+</section>
+
+<section data-type="sect2" id="supporting-informationuseful-information-links-logs-screenshots-graphs-irc-logs-im-logs-etc-o8sYFXG">
+  <h2 class="subheaders jumptargets">Supporting information:<sup><a class="jumptarget" data-type="noteref" id="id-8ZQumS0SqFvo-marker" href="#id-8ZQumS0SqFvo">168</a></sup></h2>
+
+    <ul>
+    <li>
+      <p>Monitoring dashboard,</p>
+     <p>https://monitor/shakespeare?end_time=20151021T160000<br>&amp;duration=7200 </p>
+    </li>
+  </ul>
+</section>
+
+<div class="footnotes" data-type="footnotes"><p data-type="footnote" id="id-gA2uwFdcDB"><sup><a class="jumptargets" href="#id-gA2uwFdcDB-marker">163</a></sup>Impact is the effect on users, revenue, etc.</p><p data-type="footnote" id="id-YAJuMt7iQW"><sup><a class="jumptargets" href="#id-YAJuMt7iQW-marker">164</a></sup>An explanation of the circumstances in which this incident happened. It’s often helpful to use a technique such as the 5 Whys <a data-type="xref" href="https://sre.google/sre-book/bibliography#Ohn88">[Ohn88]</a> to understand the contributing factors.</p><p data-type="footnote" id="id-lM2ulFwsKD"><sup><a class="jumptargets" href="#id-lM2ulFwsKD-marker">165</a></sup>"Knee-jerk" AIs often turn out to be too extreme or costly to implement, and judgment may be needed to re-scope them in a larger context. There’s a risk of over-optimizing for a particular issue, such as adding specific monitoring/alerting when reliable mechanisms like unit tests can catch problems much earlier in the development process.</p><p data-type="footnote" id="id-mX2uoSWSotMfzG"><sup><a class="jumptargets" href="#id-mX2uoSWSotMfzG-marker">166</a></sup>This section is really for near misses, e.g., “The goat teleporter was available for emergency use with other animals despite lack of certification.”</p><p data-type="footnote" id="id-N1KFnSNSAS9a"><sup><a class="jumptargets" href="#id-N1KFnSNSAS9a-marker">167</a></sup>A “screenplay” of the incident; use the incident timeline from the Incident Management document to start filling in the postmortem’s timeline, then supplement with other relevant entries.</p><p data-type="footnote" id="id-8ZQumS0SqFvo"><sup><a class="jumptargets" href="#id-8ZQumS0SqFvo-marker">168</a></sup>Useful information, links, logs, screenshots, graphs, IRC logs, IM logs, etc.</p></div>
+</section>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="maia-aux">
+      <div class="previous">
+          <a href="incident-document.html">
+            <p class="footer-caption">Previous</p>
+            <p class="chapter-link">
+                Appendix C - Example Incident State Document
+            </p>
+          </a>
+      </div>
+      <div class="next">
+          <a href="launch-checklist.html">
+            <p class="footer-caption">Next</p>
+            <p class="chapter-link">
+                Appendix E - Launch Coordination Checklist
+            </p>
+          </a>
+      </div>
+        <p class="footer-link">Copyright © 2017 Google, Inc. Published by O'Reilly Media, Inc. Licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener noreferrer" target="_blank">CC BY-NC-ND 4.0</a></p>
+    </div>
+  </div>
+    </main>
+
+
+
+
+
+  </body>
+</html>

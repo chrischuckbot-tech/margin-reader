@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta charset="utf-8">
+    <meta content="initial-scale=1, minimum-scale=1, width=device-width" name="viewport">
+    <title>Google SRE - Resilience Engineering To Work With Stress</title>
+      <meta name="description" content="Discover the power of Resilience Engineering. Learn practical strategies for team dynamics, reduce ops burden, and cultivate sustainable practices.">
+    <meta name="referrer" content="no-referrer" />
+    <link rel="canonical" href="operational-overload.html">
+    <link rel="apple-touch-icon-precomposed" sizes="180x180" href="https://lh3.googleusercontent.com/Yf2DCX8RKda6r4Jml9DLMByS2zQCBFs3kQpvBfN8UgIh4YVWIYSYIQOoTxJriyuM26cT5PDjyEb5aynDQ0Xyz46yHKnfg8JlUbDW">
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Google+Sans:400|Roboto:400,400italic,500,500italic,700,700italic|Roboto+Mono:400,500,700|Material+Icons">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://lh3.googleusercontent.com/Yf2DCX8RKda6r4Jml9DLMByS2zQCBFs3kQpvBfN8UgIh4YVWIYSYIQOoTxJriyuM26cT5PDjyEb5aynDQ0Xyz46yHKnfg8JlUbDW">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://lh3.googleusercontent.com/Yf2DCX8RKda6r4Jml9DLMByS2zQCBFs3kQpvBfN8UgIh4YVWIYSYIQOoTxJriyuM26cT5PDjyEb5aynDQ0Xyz46yHKnfg8JlUbDW">
+    <link rel="shortcut icon" href="https://lh3.googleusercontent.com/Yf2DCX8RKda6r4Jml9DLMByS2zQCBFs3kQpvBfN8UgIh4YVWIYSYIQOoTxJriyuM26cT5PDjyEb5aynDQ0Xyz46yHKnfg8JlUbDW">
+    <link href="https://sre.google/sre-book/static/css/index.min.css?cache=6c30b59" rel="stylesheet">
+
+
+
+  </head>
+
+  <body>
+
+    <main>
+  <div ng-controller= "HeaderCtrl as headerCtrl">
+    <div id="curtain" class="menu-closed"></div>
+      <div class="header clearfix">
+        <a id="burger-menu" class="expand"></a>
+        <h2 class="chapter-title">
+                Chapter 30 - Embedding an SRE to Recover from Operational Overload
+        </h2>
+      </div>
+      <div id="overlay-element" class="expands">
+        <div class="logo">
+          <a href="https://www.google.com"><img src="assets/c812e821ce-YoVRtLOHMSRYQZ3OhFL8RIamcjFYbmQXX4oAQx02MRqqY9zlKNvsuZpS73khXiOqTH3qrFW27VrERJJIHTjPk-tAh46q8-Fd4w6qlw" alt="Google"></a>
+        </div>
+        <ol id="drop-down" class="dropdown-content hide">
+          <li><a class="menu-buttons" href="table-of-contents.html">Table of Contents</a></li>
+            <li>
+              <a href="foreword.html" class="menu-buttons">
+                  Foreword
+              </a>
+            </li>
+            <li>
+              <a href="preface.html" class="menu-buttons">
+                  Preface
+              </a>
+            </li>
+            <li>
+              <a href="part-I-introduction.html" class="menu-buttons">
+                  Part I - Introduction
+              </a>
+            </li>
+            <li>
+              <a href="introduction.html" class="menu-buttons">
+                  1. Introduction
+              </a>
+            </li>
+            <li>
+              <a href="production-environment.html" class="menu-buttons">
+                  2. The Production Environment at Google, from the Viewpoint of an SRE
+              </a>
+            </li>
+            <li>
+              <a href="part-II-principles.html" class="menu-buttons">
+                  Part II - Principles
+              </a>
+            </li>
+            <li>
+              <a href="embracing-risk.html" class="menu-buttons">
+                  3. Embracing Risk
+              </a>
+            </li>
+            <li>
+              <a href="service-level-objectives.html" class="menu-buttons">
+                  4. Service Level Objectives
+              </a>
+            </li>
+            <li>
+              <a href="eliminating-toil.html" class="menu-buttons">
+                  5. Eliminating Toil
+              </a>
+            </li>
+            <li>
+              <a href="monitoring-distributed-systems.html" class="menu-buttons">
+                  6. Monitoring Distributed Systems
+              </a>
+            </li>
+            <li>
+              <a href="automation-at-google.html" class="menu-buttons">
+                  7. The Evolution of Automation at Google
+              </a>
+            </li>
+            <li>
+              <a href="release-engineering.html" class="menu-buttons">
+                  8. Release Engineering
+              </a>
+            </li>
+            <li>
+              <a href="simplicity.html" class="menu-buttons">
+                  9. Simplicity
+              </a>
+            </li>
+            <li>
+              <a href="part-III-practices.html" class="menu-buttons">
+                  Part III - Practices
+              </a>
+            </li>
+            <li>
+              <a href="practical-alerting.html" class="menu-buttons">
+                  10. Practical Alerting
+              </a>
+            </li>
+            <li>
+              <a href="being-on-call.html" class="menu-buttons">
+                  11. Being On-Call
+              </a>
+            </li>
+            <li>
+              <a href="effective-troubleshooting.html" class="menu-buttons">
+                  12. Effective Troubleshooting
+              </a>
+            </li>
+            <li>
+              <a href="emergency-response.html" class="menu-buttons">
+                  13. Emergency Response
+              </a>
+            </li>
+            <li>
+              <a href="managing-incidents.html" class="menu-buttons">
+                  14. Managing Incidents
+              </a>
+            </li>
+            <li>
+              <a href="postmortem-culture.html" class="menu-buttons">
+                  15. Postmortem Culture: Learning from Failure
+              </a>
+            </li>
+            <li>
+              <a href="tracking-outages.html" class="menu-buttons">
+                  16. Tracking Outages
+              </a>
+            </li>
+            <li>
+              <a href="testing-reliability.html" class="menu-buttons">
+                  17. Testing for Reliability
+              </a>
+            </li>
+            <li>
+              <a href="software-engineering-in-sre.html" class="menu-buttons">
+                  18. Software Engineering in SRE
+              </a>
+            </li>
+            <li>
+              <a href="load-balancing-frontend.html" class="menu-buttons">
+                  19. Load Balancing at the Frontend
+              </a>
+            </li>
+            <li>
+              <a href="load-balancing-datacenter.html" class="menu-buttons">
+                  20. Load Balancing in the Datacenter
+              </a>
+            </li>
+            <li>
+              <a href="handling-overload.html" class="menu-buttons">
+                  21. Handling Overload
+              </a>
+            </li>
+            <li>
+              <a href="addressing-cascading-failures.html" class="menu-buttons">
+                  22. Addressing Cascading Failures
+              </a>
+            </li>
+            <li>
+              <a href="managing-critical-state.html" class="menu-buttons">
+                  23. Managing Critical State: Distributed Consensus for Reliability
+              </a>
+            </li>
+            <li>
+              <a href="distributed-periodic-scheduling.html" class="menu-buttons">
+                  24. Distributed Periodic Scheduling with Cron
+              </a>
+            </li>
+            <li>
+              <a href="data-processing-pipelines.html" class="menu-buttons">
+                  25. Data Processing Pipelines
+              </a>
+            </li>
+            <li>
+              <a href="data-integrity.html" class="menu-buttons">
+                  26. Data Integrity: What You Read Is What You Wrote
+              </a>
+            </li>
+            <li>
+              <a href="reliable-product-launches.html" class="menu-buttons">
+                  27. Reliable Product Launches at Scale
+              </a>
+            </li>
+            <li>
+              <a href="part-IV-management.html" class="menu-buttons">
+                  Part IV - Management
+              </a>
+            </li>
+            <li>
+              <a href="accelerating-sre-on-call.html" class="menu-buttons">
+                  28. Accelerating SREs to On-Call and Beyond
+              </a>
+            </li>
+            <li>
+              <a href="dealing-with-interrupts.html" class="menu-buttons">
+                  29. Dealing with Interrupts
+              </a>
+            </li>
+            <li class="active">
+              <a href="operational-overload.html" class="menu-buttons">
+                  30. Embedding an SRE to Recover from Operational Overload
+              </a>
+            </li>
+            <li>
+              <a href="communication-and-collaboration.html" class="menu-buttons">
+                  31. Communication and Collaboration in SRE
+              </a>
+            </li>
+            <li>
+              <a href="evolving-sre-engagement-model.html" class="menu-buttons">
+                  32. The Evolving SRE Engagement Model
+              </a>
+            </li>
+            <li>
+              <a href="part-V-conclusions.html" class="menu-buttons">
+                  Part V - Conclusions
+              </a>
+            </li>
+            <li>
+              <a href="lessons-learned.html" class="menu-buttons">
+                  33. Lessons Learned from Other Industries
+              </a>
+            </li>
+            <li>
+              <a href="conclusion.html" class="menu-buttons">
+                  34. Conclusion
+              </a>
+            </li>
+            <li>
+              <a href="availability-table.html" class="menu-buttons">
+                  Appendix A. Availability Table
+              </a>
+            </li>
+            <li>
+              <a href="service-best-practices.html" class="menu-buttons">
+                  Appendix B. A Collection of Best Practices for Production Services
+              </a>
+            </li>
+            <li>
+              <a href="incident-document.html" class="menu-buttons">
+                  Appendix C. Example Incident State Document
+              </a>
+            </li>
+            <li>
+              <a href="example-postmortem.html" class="menu-buttons">
+                  Appendix D. Example Postmortem
+              </a>
+            </li>
+            <li>
+              <a href="launch-checklist.html" class="menu-buttons">
+                  Appendix E. Launch Coordination Checklist
+              </a>
+            </li>
+            <li>
+              <a href="production-meeting.html" class="menu-buttons">
+                  Appendix F. Example Production Meeting Minutes
+              </a>
+            </li>
+            <li>
+              <a href="bibliography.html" class="menu-buttons">
+                  Bibliography
+              </a>
+            </li>
+        </ol>
+      </div>
+    </div>
+
+  <div id="maia-main">
+    <div class="content" id="content">
+      <section data-type="chapter" id="chapter_recovering-from-ops-overload">
+  <h1 class="heading jumptargets">Embedding an SRE to Recover from Operational Overload</h1>
+  <p class="byline author">Written by Randall Bosetti<br>Edited by Diane Bates</p>
+  <p>It's standard policy for Google's SRE teams to evenly split their time between projects and reactive ops work. In practice, this balance can be upset for months at a time by an increase in the daily ticket volume. A burdensome amount of ops work is especially dangerous because the SRE team might burn out or be unable to make progress on project work. When a team must allocate a disproportionate amount of time to resolving tickets at the cost of spending time improving the service, scalability and reliability suffer.</p>
+  <p>One way to relieve this burden is to temporarily transfer an SRE into the overloaded team. Once embedded in a team, the SRE focuses on improving the team's practices instead of simply helping the team empty the ticket queue. The SRE observes the team's daily routine and makes recommendations to improve their practices. This consultation gives the team a fresh perspective on its routines that team members can't provide for themselves.</p>
+  <p>When you are using this approach, it isn't necessary to transfer more than one engineer. Two SREs don't necessarily produce better results and may actually cause problems if the team reacts defensively.</p>
+  <p>If you are starting your first SRE team, the approach outlined in this chapter will help you to avoid turning into an operation team solely focused on a ticket rotation. If you decide to embed yourself or one of your reports in a team, take time to review SRE practices and philosophy in <a href="introduction.html">Ben Treynor Sloss's introduction</a> and the material on monitoring in <a data-type="xref" href="monitoring-distributed-systems.html">Monitoring Distributed Systems</a>.</p>
+  <p>The following sections provide guidance to the SRE who will be embedded on a team.</p>
+  <section data-type="sect1" id="phase-1-learn-the-service-and-get-context-4ksBuQ">
+    <h2 class="heading jumptargets">Phase 1: Learn the Service and Get Context</h2>
+    <p>Your job while embedded with the team is to articulate why processes and habits contribute to, or detract from, the service's
+scalability. Remind the team that more tickets should not require more SREs: the goal of the SRE model is to only introduce more humans as more complexity is added to the system. Instead, try to draw attention to how healthy work habits reduce the time spent on tickets. Doing so is as important as pointing out missed opportunities for automation or simplification of the service.</p>
+    <aside data-type="sidebar" id="ops-mode-versus-nonlinear-scaling-y0SrIvuL">
+      <h5 class="subheaders jumptargets">Ops Mode Versus Nonlinear Scaling</h5>
+      <p>The term <em>ops mode</em> refers to a certain method of keeping a service running. Various work items increase with the size
+of the service. For example, a service needs a way to increase the number of configured virtual machines (VMs) as it grows. A team in ops mode responds by having a greater number of administrators managing those VMs. SRE instead focuses on writing software or eliminating scalability concerns so that the number of people required to run a service doesn't increase as a function of load on the service.</p>
+    </aside>
+    <p>Teams sliding into ops mode might be convinced that scale doesn't matter for them ("my service is tiny"). Shadow an on-call session to determine whether the assessment is true, because the element of scale affects your strategy.</p>
+    <p>If the primary service is important to the business but actually is tiny (entailing few resources or low complexity), put more focus on ways in which the team's current approach prevents them from improving the service's reliability. Remember that your job is to make the service work, not to shield the development team from alerts.</p>
+    <p>On the other hand, if the service is just getting started, focus on ways to prepare the team for explosive growth. A 100 request/second service can turn into a 10k request/second service in a year.</p>
+    <section data-type="sect2" id="identify-the-largest-sources-of-stress-V7srckuW">
+      <h2 class="subheaders jumptargets">Identify the Largest Sources of Stress</h2>
+      <p>SRE teams sometimes fall into ops mode because they focus on how to quickly address emergencies instead of how to reduce the number of emergencies. A default to ops mode usually happens in response to an overwhelming pressure, real <em>or imagined</em>. After you've learned enough about the service to ask hard questions about its design and deployment, spend some time prioritizing various service outages according to their impact on the team's stress levels. Keep in mind that, due to the team's perspective and history, some very small problems or outages may produce an inordinate amount of stress.</p>
+    </section>
+    <section data-type="sect2" id="identify-kindling-rWsqipub">
+      <h2 class="subheaders jumptargets">Identify Kindling</h2>
+      <p>Once you <a href="https://sre.google/workbook/overload/">identify a team's largest existing problems</a>, move on to emergencies waiting to happen. Sometimes impending emergencies come in the form of a new subsystem that isn't designed to be self-managing. Other sources include:</p>
+      <dl class="desc-list">
+        <dt class="dt-heading jumptargets" id="knowledge-gaps">Knowledge gaps</dt>
+        <dd>In large teams, people can overspecialize without immediate consequence. When a person specializes, they run the risk of either not having the broad knowledge they need to perform on-call support or allowing team members to ignore the critical pieces of the system that they own.</dd>
+        <dt class="dt-heading jumptargets" id="services-developed-by-sre-that-are-quietly-increasing-in-importance">Services developed by SRE that are quietly increasing in importance</dt>
+        <dd>These services often don't get the same careful attention as new feature launches because they're smaller in scale and implicitly endorsed by at least one SRE.</dd>
+        <dt class="dt-heading jumptargets" id="strong-dependence-on-the-next-big-thing">Strong dependence on "the next big thing"</dt>
+        <dd>People might ignore problems for months at a time because they believe the new solution that's on the horizon obviates temporary fixes.</dd>
+        <dt class="dt-heading jumptargets" id="common-alerts-that-arent-diagnosed-by-either-the-dev-team-or-sres">Common alerts that aren't diagnosed by either the dev team or SREs</dt>
+        <dd>Such alerts are frequently triaged as <em>transient</em>, but still distract your teammates from fixing real problems. Either investigate such alerts fully, or fix the alerting rules.</dd>
+        <dt class="dt-heading jumptargets" id="any-service-that-is-both-the-subject-of-complaints-from-your-clients-and-lacks-a-formal-sli-slo-sla">Any service that is both the subject of complaints from your clients and lacks a formal SLI/SLO/SLA</dt>
+        <dd>See <a data-type="xref" href="service-level-objectives.html">Service Level Objectives</a> for a discussion of SLIs, SLOs, and SLAs.</dd>
+        <dt class="dt-heading jumptargets" id="any-service-with-a-capacity-plan-that-is-effectively-add-more-servers-our-servers-were-running-out-of-memory-last-night">Any service with a capacity plan that is effectively "Add more servers: our servers were running out of memory last night"</dt>
+        <dd>Capacity plans should be sufficiently forward-looking. If your system model predicts that servers need 2 GB, a loadtest that passes in the short term (revealing 1.99 GB in its last run) doesn't necessarily mean that your system capacity is in adequate shape.</dd>
+        <dt class="dt-heading jumptargets" id="postmortems-that-only-have-action-items-for-rolling-back-the-specific-changes-that-caused-an-outage">Postmortems that only have action items for rolling back the specific changes that caused an outage</dt>
+        <dd>For example, "Change the streaming timeout back to 60 seconds," instead of "Figure out why it sometimes takes 60 seconds to fetch the first megabyte of our promo videos."</dd>
+        <dt class="dt-heading jumptargets" id="any-serving-critical-component-for-which-the-existing-sres-respond-to-questions-by-saying-we-dont-know-anything-about-that-the-devs-own-it">Any serving-critical component for which the existing SREs respond to questions by saying, "We don't know anything about that; the devs own it"</dt>
+        <dd>To give acceptable on-call support for a component, you should at least know the consequences when it breaks and the
+urgency needed to fix problems.</dd>
+      </dl>
+    </section>
+  </section>
+  <section data-type="sect1" id="phase-2-sharing-context-JMsQUZ">
+    <h1 class="heading jumptargets">Phase 2: Sharing Context</h1>
+    <p>After scoping the dynamics and pain points of the team, lay the groundwork for improvement through best practices like postmortems and by identifying sources of toil and how to best address them.</p>
+    <section data-type="sect2" id="write-a-good-postmortem-for-the-team-ZKsnIzUg">
+      <h2 class="subheaders jumptargets">Write a Good Postmortem for the Team</h2>
+      <p>Postmortems offer much insight into a team's collective reasoning. Postmortems conducted by unhealthy teams are often ineffectual. Some team members might consider postmortems punitive, or even useless. While you might be tempted to review the
+postmortem archives and leave comments for improvement, doing so doesn't help the team. Instead, the exercise might put the team on the
+defensive.</p>
+      <p>Instead of trying to correct previous mistakes, take ownership of the next postmortem. There <em>will</em> be an outage while you're embedded. If you aren't the person on-call, team up with the on-call SRE to write a great, blameless postmortem. This document is an opportunity to demonstrate how a shift toward the SRE model benefits the team by making bug fixes more permanent. More permanent bug fixes reduce the impact of outages on team members' time.</p>
+      <p>As mentioned, you might encounter responses such as "Why me?" This response is especially likely when a team believes that the
+postmortem process is retaliatory. This attitude comes from subscribing to the Bad Apple Theory: the system is working fine, and if we get rid of all the bad apples and their mistakes, the system will continue to be fine. The Bad Apple Theory is demonstrably false, as shown by evidence <a data-type="xref" href="https://sre.google/sre-book/bibliography#Dek14">[Dek14]</a> from several disciplines, including airline safety. You should point out this falsity. The most effective phrasing for a postmortem is to say, "Mistakes are inevitable in any system with multiple subtle interactions. You were on-call, and I trust you to make the right decisions with the right information. I'd like you to write down what you were thinking at each point in time, so that we can find out where the system misled you, and where the cognitive demands were too high."</p>
+    </section>
+    <section data-type="sect2" id="sort-fires-according-to-type-zVsbtDU7">
+      <h2 class="subheaders jumptargets">Sort Fires According to Type</h2>
+      <p>There are two types of fires in this simplified-for-convenience model:</p>
+      <ul>
+        <li>Some fires shouldn't exist. They cause what is commonly called ops work or toil (see <a data-type="xref" href="eliminating-toil.html">Eliminating Toil</a>).</li>
+        <li>Other fires that cause stress and/or furious typing are actually part of the job.</li>
+      </ul>
+      <p>In either case, the team needs to build tools to control the burn.</p>
+      <p>Sort the team fires into toil and not-toil. When you're finished, present the list to the team and clearly explain why each fire is either work that should be automated or acceptable overhead for running the service.</p>
+    </section>
+  </section>
+  <section data-type="sect1" id="phase-3-driving-change-9pskCr">
+    <h1 class="heading jumptargets">Phase 3: Driving Change</h1>
+    <p>Team health is a process. As such, it's not something that you can solve with heroic effort. To ensure that the team can self-regulate, you can help them build a good mental model for an ideal SRE engagement.</p>
+    <div data-type="note" id="id-7MUEIMC7">
+      <h6>Note</h6>
+      <p>Humans are pretty good at homeostasis, so <em>focus on creating (or restoring) the right initial conditions and teaching the
+small set of principles needed to make healthy choices</em>.</p>
+    </div>
+    <section data-type="sect2" id="start-with-the-basics-yDsgtoCL">
+      <h2 class="subheaders jumptargets">Start with the Basics</h2>
+      <p>Teams struggling with the distinction between the SRE and traditional ops model are generally unable to articulate <em>why</em> certain aspects of the team's code, processes, or culture bother them. Rather than trying to address each of these issues point-by-point, work forward from the principles outlined in Chapters <a data-type="xref" href="introduction.html" data-xrefstyle="select:labelnumber">Introduction</a> and <a data-type="xref" href="monitoring-distributed-systems.html" data-xrefstyle="select:labelnumber">Monitoring Distributed Systems</a>.</p>
+      <p>Your first goal for the team should be writing a service level objective (SLO), if one doesn't already exist. The SLO is important because it provides a quantitative measure of the impact of outages, in addition to how important a process change could be. An SLO is probably the single most important lever for moving a team from reactive ops work to a healthy, long-term SRE focus. If this agreement is missing, no other advice in this chapter will be helpful. <em>If you find yourself on a team without SLOs, first read <a data-type="xref" href="service-level-objectives.html">Service Level Objectives</a>, then get the tech leads and management in a room and start arbitrating.</em></p>
+    </section>
+    <section data-type="sect2" id="get-help-clearing-kindling-V7sohnCW">
+      <h2 class="subheaders jumptargets">Get Help Clearing Kindling</h2>
+      <p>You may have a strong urge to simply fix the issues you identify. Please resist the urge to fix these issues yourself, because
+doing so bolsters the idea that "making changes is for other people." Instead, take the following steps:</p>
+      <ol>
+        <li>Find useful work that can be accomplished by one team member.</li>
+        <li>Clearly explain how this work addresses an issue from the postmortem <em>in a permanent way</em>. Even otherwise healthy teams can produce shortsighted action items.</li>
+        <li>Serve as the reviewer for the code changes and document revisions.</li>
+        <li>Repeat for two or three issues.</li>
+      </ol>
+      <p>When you identify an additional issue, put it in a bug report or a doc for the team to consult. Doing so serves the dual purposes of distributing information and encouraging team members to write docs (which are often the first victim of deadline pressure). Always explain your reasoning, and emphasize that good documentation ensures that the team doesn't repeat old mistakes in a slightly new context.</p>
+    </section>
+    <section data-type="sect2" id="explain-your-reasoning-rWsJT0Cb">
+      <h2 class="subheaders jumptargets">Explain Your Reasoning</h2>
+      <p>As the team recovers its momentum and grasps the basics of your suggested changes, move on to tackle the quotidian decisions that originally led to <a href="dealing-with-interrupts.html">ops overload.</a> Prepare for this undertaking to be challenged. If you're lucky, the challenge will be along the lines of, "Explain why. Right now. In the middle of the weekly production meeting."</p>
+      <p>If you're unlucky, no one demands an explanation. Sidestep this problem entirely by simply explaining all of your decisions, whether or not someone requests an explanation. Refer to the basics that underscore your suggestions. Doing so helps build the team's mental model. <em>After you leave, the team should be able to predict what your comment on a design or changelist would be.</em> If you don't explain your reasoning, or do so poorly, there is a risk that the team will simply emulate that lackadaisical behavior, so be explicit.</p>
+      <p>Examples of a thorough explanation of your decision:</p>
+      <ul>
+        <li>"I'm not pushing back on the latest release because the tests are bad. I'm pushing back because the error budget we set for releases is exhausted."</li>
+        <li>"Releases need to be rollback-safe because our SLO is tight. Meeting that SLO requires that the mean time to recovery is
+small, so in-depth diagnosis before a rollback is not realistic."</li>
+      </ul>
+      <p>Examples of an insufficient explanation of your decision:</p>
+      <ul>
+        <li>"I don't think having every server generate its routing config is safe, because we can't see it."</li>
+      </ul>
+      <p>This decision is probably correct, but the reasoning is poor (or poorly explained). The team can't read your mind, so they very likely might emulate the observed poor reasoning. Instead, try "[…] isn't safe because a bug in that code can cause a correlated failure across the service and the additional code is a source of bugs that might slow down a rollback."</p>
+      <ul>
+        <li>"The automation should give up if it encounters a conflicting deployment."</li>
+      </ul>
+      <p>Like the previous example, this explanation is probably correct, but insufficient. Instead, try "[…] because we're making the
+simplifying assumption that all changes pass through the automation, and something has clearly violated that rule. If this happens often, we should identify and remove sources of unorganized change."</p>
+    </section>
+    <section data-type="sect2" id="ask-leading-questions-wPs1c0Cj">
+      <h2 class="subheaders jumptargets">Ask Leading Questions</h2>
+      <p>Leading questions are not loaded questions. When talking with the SRE team, try to ask questions in a way that encourages people to think about the basic principles. It's particularly valuable for <em>you</em> to model this behavior because, by definition, a team in ops mode rejects this sort of reasoning from its own constituents. Once you've spent some time explaining your reasoning for various policy questions, this practice reinforces the team's understanding of SRE philosophy.</p>
+      <p>Examples of leading questions:</p>
+      <ul>
+        <li>"I see that the TaskFailures alert fires frequently, but the on-call engineers usually don't do anything to respond to the
+alert. How does this impact the SLO?"</li>
+        <li>"This turnup procedure looks pretty complicated. Do you know why there are so many config files to update when creating a new instance of the service?"</li>
+      </ul>
+      <p>Counterexamples of leading questions:</p>
+      <ul>
+        <li>"What's up with all of these old, stalled releases?"</li>
+        <li>"Why does the Frobnitzer do so many things?"</li>
+      </ul>
+    </section>
+  </section>
+  <section data-type="sect1" id="conclusion-ZKsdsY">
+    <h1 class="heading jumptargets">Conclusion</h1>
+    <p>Following the tenets outlined in this chapter provides an SRE team with the <span class="keep-together">following</span>:</p>
+    <ul>
+      <li>A technical, possibly quantitative, perspective on why they should change.</li>
+      <li>A strong example of what change looks like.</li>
+      <li>A logical explanation for much of the "folk wisdom" used by SRE.</li>
+      <li>The core principles needed to address novel situations in a scalable manner.</li>
+    </ul>
+    <p>Your final task is to write an after-action report. This report should reiterate your perspective, examples, and explanation. It should also provide some action items for the team to ensure they exercise what you've taught them. You can organize the report as a
+postvitam,<sup><a class="jumptarget" data-type="noteref" id="id-p8BuzSWtjs2-marker" href="#id-p8BuzSWtjs2">145</a></sup> explaining the critical decisions at each step that led to success.<a data-type="indexterm" data-primary="" data-startref="embed30" id="id-KnCdFat7s8"></a></p>
+    <p>The bulk of the engagement is now complete. Once your embedded assignment concludes, you should remain available for design and code reviews. Keep an eye on the team for the next few months to confirm that they're slowly improving their capacity planning, emergency response, and rollout processes.</p>
+  </section>
+  <div class="footnotes" data-type="footnotes">
+    <p data-type="footnote" id="id-p8BuzSWtjs2"><sup><a class="jumptargets" href="#id-p8BuzSWtjs2-marker">145</a></sup>In contrast to a postmortem.</p>
+  </div>
+</section>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="maia-aux">
+      <div class="previous">
+          <a href="dealing-with-interrupts.html">
+            <p class="footer-caption">Previous</p>
+            <p class="chapter-link">
+                Chapter 29 - Dealing with Interrupts
+            </p>
+          </a>
+      </div>
+      <div class="next">
+          <a href="communication-and-collaboration.html">
+            <p class="footer-caption">Next</p>
+            <p class="chapter-link">
+                Chapter 31 - Communication and Collaboration in SRE
+            </p>
+          </a>
+      </div>
+        <p class="footer-link">Copyright © 2017 Google, Inc. Published by O'Reilly Media, Inc. Licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener noreferrer" target="_blank">CC BY-NC-ND 4.0</a></p>
+    </div>
+  </div>
+    </main>
+
+
+
+
+
+  </body>
+</html>

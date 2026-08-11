@@ -1,6 +1,7 @@
-const SHELL_CACHE = "margin-shell-v2";
+const SHELL_CACHE = "margin-shell-v4";
 const CONTENT_CACHE = "margin-content-v1";
-const PUBLICATION_TOC = "https://abseil.io/resources/swe-book/html/toc.html";
+const PUBLICATION_MANIFEST = "./data/publications.json";
+const PUBLICATION_HOSTS = new Set(["abseil.io", "google.github.io", "aosabook.org"]);
 const SHELL_ASSETS = [
   "./",
   "./index.html",
@@ -17,7 +18,7 @@ const SHELL_ASSETS = [
 self.addEventListener("install", (event) => {
   event.waitUntil((async () => {
     await caches.open(SHELL_CACHE).then((cache) => cache.addAll(SHELL_ASSETS));
-    await cachePublication();
+    await cachePublications();
     self.skipWaiting();
   })());
 });
@@ -31,46 +32,53 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
-async function cachePublication() {
+async function cachePublications() {
+  try {
+    const manifestUrl = new URL(PUBLICATION_MANIFEST, self.registration.scope).href;
+    const manifestResponse = await fetch(manifestUrl);
+    if (!manifestResponse.ok) return;
+    const publications = await manifestResponse.json();
+    for (const publication of publications) {
+      if (publication.type === "remote-html") await cachePublication(publication);
+    }
+  } catch {
+    // The app still installs if a source is temporarily unavailable.
+  }
+}
+
+async function cachePublication(publication) {
   try {
     const contentCache = await caches.open(CONTENT_CACHE);
-    const tocResponse = await fetch(PUBLICATION_TOC, { mode: "cors" });
+    const sourceUrl = new URL(publication.sourceUrl, self.registration.scope).href;
+    const baseUrl = new URL(publication.baseUrl, self.registration.scope).href;
+    const sourceIsLocal = new URL(sourceUrl).origin === self.location.origin;
+    const tocResponse = await fetch(sourceUrl, { mode: sourceIsLocal ? "same-origin" : "cors" });
     if (!tocResponse.ok) return;
-    await contentCache.put(PUBLICATION_TOC, tocResponse.clone());
+    await contentCache.put(sourceUrl, tocResponse.clone());
     const tocHtml = await tocResponse.text();
+    const hrefPattern = publication.tocHrefPattern ? new RegExp(publication.tocHrefPattern, "i") : /\.html(?:#.*)?$/i;
     const chapterUrls = [...new Set(
-      [...tocHtml.matchAll(/href=["']([^"']+\.html(?:#[^"']*)?)["']/gi)]
-        .map((match) => new URL(match[1], PUBLICATION_TOC).href.split("#")[0])
-        .filter((url) => new URL(url).hostname === "abseil.io"),
+      [...tocHtml.matchAll(/href=["']([^"']+)["']/gi)]
+        .map((match) => match[1])
+        .filter((href) => hrefPattern.test(href))
+        .map((href) => new URL(href, baseUrl).href.split("#")[0]),
     )];
-    const imageUrls = new Set();
-
     for (let index = 0; index < chapterUrls.length; index += 6) {
       const batch = chapterUrls.slice(index, index + 6);
       await Promise.allSettled(batch.map(async (url) => {
         let response = await contentCache.match(url);
         if (!response) {
-          response = await fetch(url, { mode: "cors" });
+          const isLocal = new URL(url).origin === self.location.origin;
+          response = await fetch(url, { mode: isLocal ? "same-origin" : "cors" });
           if (!response.ok) return;
           await contentCache.put(url, response.clone());
         }
-        const html = await response.text();
-        [...html.matchAll(/<img[^>]+src=["']([^"']+)["']/gi)]
-          .forEach((match) => imageUrls.add(new URL(match[1], url).href));
-      }));
-    }
-
-    const images = [...imageUrls];
-    for (let index = 0; index < images.length; index += 8) {
-      const batch = images.slice(index, index + 8);
-      await Promise.allSettled(batch.map(async (url) => {
-        if (await contentCache.match(url)) return;
-        const response = await fetch(url, { mode: "no-cors" });
-        await contentCache.put(url, response);
+        // Chapter HTML is the offline baseline. Illustrations are cached
+        // automatically by the reader when their publication is opened.
       }));
     }
   } catch {
-    // The app still installs if the source is temporarily unavailable.
+    // One unavailable publication must not prevent the app from installing.
   }
 }
 
@@ -78,12 +86,13 @@ self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   const url = new URL(event.request.url);
   const isAppAsset = url.origin === self.location.origin;
-  const isPublicationAsset = url.hostname === "abseil.io";
+  const isLocalPublication = isAppAsset && url.pathname.includes("/publications/");
+  const isPublicationAsset = isLocalPublication || PUBLICATION_HOSTS.has(url.hostname);
   if (!isAppAsset && !isPublicationAsset) return;
   event.respondWith(
     caches.match(event.request).then((cached) => cached || fetch(event.request).then((response) => {
       const copy = response.clone();
-      caches.open(isAppAsset ? SHELL_CACHE : CONTENT_CACHE).then((cache) => cache.put(event.request, copy));
+      caches.open(isAppAsset && !isLocalPublication ? SHELL_CACHE : CONTENT_CACHE).then((cache) => cache.put(event.request, copy));
       return response;
     }).catch(() => isAppAsset ? caches.match("./index.html") : Response.error())),
   );

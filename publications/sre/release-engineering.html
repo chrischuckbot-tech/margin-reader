@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta charset="utf-8">
+    <meta content="initial-scale=1, minimum-scale=1, width=device-width" name="viewport">
+    <title>Google SRE: Role of Release Engineer and Best Practices</title>
+      <meta name="description" content="Master release engineering best practices, what a release engineer does at Google and understand key tools in configuration management of site reliability">
+    <meta name="referrer" content="no-referrer" />
+    <link rel="canonical" href="release-engineering.html">
+    <link rel="apple-touch-icon-precomposed" sizes="180x180" href="https://lh3.googleusercontent.com/Yf2DCX8RKda6r4Jml9DLMByS2zQCBFs3kQpvBfN8UgIh4YVWIYSYIQOoTxJriyuM26cT5PDjyEb5aynDQ0Xyz46yHKnfg8JlUbDW">
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Google+Sans:400|Roboto:400,400italic,500,500italic,700,700italic|Roboto+Mono:400,500,700|Material+Icons">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://lh3.googleusercontent.com/Yf2DCX8RKda6r4Jml9DLMByS2zQCBFs3kQpvBfN8UgIh4YVWIYSYIQOoTxJriyuM26cT5PDjyEb5aynDQ0Xyz46yHKnfg8JlUbDW">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://lh3.googleusercontent.com/Yf2DCX8RKda6r4Jml9DLMByS2zQCBFs3kQpvBfN8UgIh4YVWIYSYIQOoTxJriyuM26cT5PDjyEb5aynDQ0Xyz46yHKnfg8JlUbDW">
+    <link rel="shortcut icon" href="https://lh3.googleusercontent.com/Yf2DCX8RKda6r4Jml9DLMByS2zQCBFs3kQpvBfN8UgIh4YVWIYSYIQOoTxJriyuM26cT5PDjyEb5aynDQ0Xyz46yHKnfg8JlUbDW">
+    <link href="https://sre.google/sre-book/static/css/index.min.css?cache=6c30b59" rel="stylesheet">
+
+
+
+  </head>
+
+  <body>
+
+    <main>
+  <div ng-controller= "HeaderCtrl as headerCtrl">
+    <div id="curtain" class="menu-closed"></div>
+      <div class="header clearfix">
+        <a id="burger-menu" class="expand"></a>
+        <h2 class="chapter-title">
+                Chapter 8 - Release Engineering
+        </h2>
+      </div>
+      <div id="overlay-element" class="expands">
+        <div class="logo">
+          <a href="https://www.google.com"><img src="assets/c812e821ce-YoVRtLOHMSRYQZ3OhFL8RIamcjFYbmQXX4oAQx02MRqqY9zlKNvsuZpS73khXiOqTH3qrFW27VrERJJIHTjPk-tAh46q8-Fd4w6qlw" alt="Google"></a>
+        </div>
+        <ol id="drop-down" class="dropdown-content hide">
+          <li><a class="menu-buttons" href="table-of-contents.html">Table of Contents</a></li>
+            <li>
+              <a href="foreword.html" class="menu-buttons">
+                  Foreword
+              </a>
+            </li>
+            <li>
+              <a href="preface.html" class="menu-buttons">
+                  Preface
+              </a>
+            </li>
+            <li>
+              <a href="part-I-introduction.html" class="menu-buttons">
+                  Part I - Introduction
+              </a>
+            </li>
+            <li>
+              <a href="introduction.html" class="menu-buttons">
+                  1. Introduction
+              </a>
+            </li>
+            <li>
+              <a href="production-environment.html" class="menu-buttons">
+                  2. The Production Environment at Google, from the Viewpoint of an SRE
+              </a>
+            </li>
+            <li>
+              <a href="part-II-principles.html" class="menu-buttons">
+                  Part II - Principles
+              </a>
+            </li>
+            <li>
+              <a href="embracing-risk.html" class="menu-buttons">
+                  3. Embracing Risk
+              </a>
+            </li>
+            <li>
+              <a href="service-level-objectives.html" class="menu-buttons">
+                  4. Service Level Objectives
+              </a>
+            </li>
+            <li>
+              <a href="eliminating-toil.html" class="menu-buttons">
+                  5. Eliminating Toil
+              </a>
+            </li>
+            <li>
+              <a href="monitoring-distributed-systems.html" class="menu-buttons">
+                  6. Monitoring Distributed Systems
+              </a>
+            </li>
+            <li>
+              <a href="automation-at-google.html" class="menu-buttons">
+                  7. The Evolution of Automation at Google
+              </a>
+            </li>
+            <li class="active">
+              <a href="release-engineering.html" class="menu-buttons">
+                  8. Release Engineering
+              </a>
+            </li>
+            <li>
+              <a href="simplicity.html" class="menu-buttons">
+                  9. Simplicity
+              </a>
+            </li>
+            <li>
+              <a href="part-III-practices.html" class="menu-buttons">
+                  Part III - Practices
+              </a>
+            </li>
+            <li>
+              <a href="practical-alerting.html" class="menu-buttons">
+                  10. Practical Alerting
+              </a>
+            </li>
+            <li>
+              <a href="being-on-call.html" class="menu-buttons">
+                  11. Being On-Call
+              </a>
+            </li>
+            <li>
+              <a href="effective-troubleshooting.html" class="menu-buttons">
+                  12. Effective Troubleshooting
+              </a>
+            </li>
+            <li>
+              <a href="emergency-response.html" class="menu-buttons">
+                  13. Emergency Response
+              </a>
+            </li>
+            <li>
+              <a href="managing-incidents.html" class="menu-buttons">
+                  14. Managing Incidents
+              </a>
+            </li>
+            <li>
+              <a href="postmortem-culture.html" class="menu-buttons">
+                  15. Postmortem Culture: Learning from Failure
+              </a>
+            </li>
+            <li>
+              <a href="tracking-outages.html" class="menu-buttons">
+                  16. Tracking Outages
+              </a>
+            </li>
+            <li>
+              <a href="testing-reliability.html" class="menu-buttons">
+                  17. Testing for Reliability
+              </a>
+            </li>
+            <li>
+              <a href="software-engineering-in-sre.html" class="menu-buttons">
+                  18. Software Engineering in SRE
+              </a>
+            </li>
+            <li>
+              <a href="load-balancing-frontend.html" class="menu-buttons">
+                  19. Load Balancing at the Frontend
+              </a>
+            </li>
+            <li>
+              <a href="load-balancing-datacenter.html" class="menu-buttons">
+                  20. Load Balancing in the Datacenter
+              </a>
+            </li>
+            <li>
+              <a href="handling-overload.html" class="menu-buttons">
+                  21. Handling Overload
+              </a>
+            </li>
+            <li>
+              <a href="addressing-cascading-failures.html" class="menu-buttons">
+                  22. Addressing Cascading Failures
+              </a>
+            </li>
+            <li>
+              <a href="managing-critical-state.html" class="menu-buttons">
+                  23. Managing Critical State: Distributed Consensus for Reliability
+              </a>
+            </li>
+            <li>
+              <a href="distributed-periodic-scheduling.html" class="menu-buttons">
+                  24. Distributed Periodic Scheduling with Cron
+              </a>
+            </li>
+            <li>
+              <a href="data-processing-pipelines.html" class="menu-buttons">
+                  25. Data Processing Pipelines
+              </a>
+            </li>
+            <li>
+              <a href="data-integrity.html" class="menu-buttons">
+                  26. Data Integrity: What You Read Is What You Wrote
+              </a>
+            </li>
+            <li>
+              <a href="reliable-product-launches.html" class="menu-buttons">
+                  27. Reliable Product Launches at Scale
+              </a>
+            </li>
+            <li>
+              <a href="part-IV-management.html" class="menu-buttons">
+                  Part IV - Management
+              </a>
+            </li>
+            <li>
+              <a href="accelerating-sre-on-call.html" class="menu-buttons">
+                  28. Accelerating SREs to On-Call and Beyond
+              </a>
+            </li>
+            <li>
+              <a href="dealing-with-interrupts.html" class="menu-buttons">
+                  29. Dealing with Interrupts
+              </a>
+            </li>
+            <li>
+              <a href="operational-overload.html" class="menu-buttons">
+                  30. Embedding an SRE to Recover from Operational Overload
+              </a>
+            </li>
+            <li>
+              <a href="communication-and-collaboration.html" class="menu-buttons">
+                  31. Communication and Collaboration in SRE
+              </a>
+            </li>
+            <li>
+              <a href="evolving-sre-engagement-model.html" class="menu-buttons">
+                  32. The Evolving SRE Engagement Model
+              </a>
+            </li>
+            <li>
+              <a href="part-V-conclusions.html" class="menu-buttons">
+                  Part V - Conclusions
+              </a>
+            </li>
+            <li>
+              <a href="lessons-learned.html" class="menu-buttons">
+                  33. Lessons Learned from Other Industries
+              </a>
+            </li>
+            <li>
+              <a href="conclusion.html" class="menu-buttons">
+                  34. Conclusion
+              </a>
+            </li>
+            <li>
+              <a href="availability-table.html" class="menu-buttons">
+                  Appendix A. Availability Table
+              </a>
+            </li>
+            <li>
+              <a href="service-best-practices.html" class="menu-buttons">
+                  Appendix B. A Collection of Best Practices for Production Services
+              </a>
+            </li>
+            <li>
+              <a href="incident-document.html" class="menu-buttons">
+                  Appendix C. Example Incident State Document
+              </a>
+            </li>
+            <li>
+              <a href="example-postmortem.html" class="menu-buttons">
+                  Appendix D. Example Postmortem
+              </a>
+            </li>
+            <li>
+              <a href="launch-checklist.html" class="menu-buttons">
+                  Appendix E. Launch Coordination Checklist
+              </a>
+            </li>
+            <li>
+              <a href="production-meeting.html" class="menu-buttons">
+                  Appendix F. Example Production Meeting Minutes
+              </a>
+            </li>
+            <li>
+              <a href="bibliography.html" class="menu-buttons">
+                  Bibliography
+              </a>
+            </li>
+        </ol>
+      </div>
+    </div>
+
+  <div id="maia-main">
+    <div class="content" id="content">
+      <section data-type="chapter" id="chapter_release-engineering">
+  <h1 class="heading jumptargets">Release Engineering</h1>
+
+  <p class="byline author">Written by Dinah McNutt<br>Edited by Betsy Beyer and Tim Harvey</p>
+
+  <p>Release engineering is a relatively new and fast-growing discipline of software engineering that can be concisely described as building and delivering software <a data-type="xref" href="https://sre.google/sre-book/bibliography#McN14a">[McN14a]</a>. Release engineers have a solid (if not expert) understanding of source code management, compilers, build configuration languages, automated build tools, package managers, and installers. Their skill set includes deep knowledge of multiple domains: development, configuration management, test integration, system administration, and customer support.</p>
+
+  <p>Running reliable services requires reliable release processes. Site Reliability Engineers (SREs) need to know that the binaries and configurations they use are built in a reproducible, automated way so that releases are repeatable and aren’t “unique snowflakes.” Changes to any aspect of the release process should be intentional, rather than accidental. SREs care about this process from source code to deployment.</p>
+
+  <p>Release engineering is a specific job function at Google. Release engineers work with software engineers (SWEs) in product development and SREs to define all the steps required to release software—from how the software is stored in the source code repository, to build rules for compilation, to how testing, packaging, and deployment are conducted.</p>
+<section data-type="sect1" id="the-role-of-a-release-engineer-q8sBcz">
+    <h2 class="heading jumptargets">The Role of a Release Engineer</h2>
+
+    <p>Google is a data-driven company and <a href="https://sre.google/workbook/canarying-releases/">release engineering</a> follows suit. We have tools that report on a host of metrics, such as how much time it takes for a code change to be deployed into production (in other words, release velocity) and statistics on what features are being used in build configuration files <a data-type="xref" href="https://sre.google/sre-book/bibliography#Ada15">[Ada15]</a>. Most of these tools were envisioned and developed by release engineers.</p>
+
+    <p>Release engineers define best practices for using our tools in order to make sure projects are released using consistent and repeatable methodologies. Our best practices cover all elements of the release process. Examples include compiler flags, formats for build identification tags, and required steps during a build. Making sure that our tools behave correctly by default and are adequately documented makes it easy for teams to stay focused on features and users, rather than spending time reinventing the wheel (poorly) when it comes to releasing software.</p>
+
+    <p>Google has a large number of SREs who are charged with safely deploying products and keeping Google services up and running. In order to make sure our release processes meet business requirements, release engineers and SREs work together to develop <a href="https://sre.google/workbook/canarying-releases/">strategies for canarying</a> changes, pushing out new releases without interrupting services, and rolling back features that demonstrate problems.</p>
+  </section>
+<section data-type="sect1" id="philosophy-1LsKiY">
+    <h1 class="heading jumptargets">Philosophy</h1>
+    <p>Release engineering is guided by an engineering and service philosophy that’s expressed through four major principles, detailed in the following sections.</p>
+<section data-type="sect2" id="self-service-model-vJslIDiY">
+      <h2 class="subheaders jumptargets">Self-Service Model</h2>
+      <p>In order to work at scale, teams must be self-sufficient. Release engineering has developed best practices and tools that allow our product development teams to control and run their own release processes. Although we have thousands of engineers and products, we can achieve a high release velocity because individual teams can decide how often and when to release new versions of their products. Release processes can be automated to the point that they require minimal involvement by the engineers, and many projects are automatically built and released using a combination of our automated build system and our deployment tools. Releases are truly automatic, and only require engineer involvement if and when problems arise.</p>
+    </section>
+<section data-type="sect2" id="high-velocity-lqs8tViM">
+      <h2 class="subheaders jumptargets">High Velocity</h2>
+      <p>User-facing software (such as many components of Google Search) is rebuilt frequently, as we aim to roll out customer-facing features as quickly as possible. We have embraced the philosophy that frequent releases result in fewer changes between versions. This approach makes testing and troubleshooting easier. Some teams perform hourly builds and then select the version to actually deploy to production from the resulting pool of builds. Selection is based upon the test results and the features contained in a given build. Other teams have adopted a “Push on Green” release model and deploy every build that passes all tests <a data-type="xref" href="https://sre.google/sre-book/bibliography#Kle14">[Kle14]</a>.</p>
+    </section>
+<section data-type="sect2" id="hermetic-builds-nqslhnid">
+      <h2 class="subheaders jumptargets">Hermetic Builds</h2>
+      <p>Build tools must allow us to ensure consistency and repeatability. If two people attempt to build the same product at the same revision number in the source code repository on different machines, we expect identical results.<sup><a class="jumptarget" data-type="noteref" id="id-KpEudFeFwhwi0-marker" href="#id-KpEudFeFwhwi0">36</a></sup> Our builds are hermetic, meaning that they are insensitive to the libraries and other software installed on the build machine. Instead, builds depend on known versions of build tools, such as compilers, and dependencies, such as libraries. The build process is self-contained and must not rely on services that are external to the build environment.</p>
+      <p>Rebuilding older releases when we need to fix a bug in software that’s running in production can be a challenge. We accomplish this task by rebuilding at the same revision as the original build and including specific changes that were submitted after that point in time. We call this tactic <em>cherry picking</em>. Our build tools are themselves versioned based on the revision in the source code repository for the project being built. Therefore, a project built last month won’t use this month’s version of the compiler if a cherry pick is required, because that version may contain incompatible or undesired features.</p>
+    </section>
+<section data-type="sect2" id="enforcement-of-policies-and-procedures-NbsQTaiZ">
+      <h2 class="subheaders jumptargets">Enforcement of Policies and Procedures</h2>
+      <p>Several layers of security and access control determine who can perform specific operations when releasing a project. Gated operations include:</p>
+      <ul>
+        <li>Approving source code changes—this operation is managed through configuration files scattered throughout the codebase</li>
+        <li>Specifying the actions to be performed during the release process</li>
+        <li>Creating a new release</li>
+        <li>Approving the initial integration proposal (which is a request to perform a build at a specific revision number in the source code repository) and subsequent cherry picks</li>
+        <li>Deploying a new release</li>
+        <li>Making changes to a project’s build configuration</li>
+      </ul>
+      <p>Almost all changes to the codebase require a code review, which is a streamlined action integrated into our normal developer workflow. Our automated release system produces a report of all changes contained in a release, which is archived with other build artifacts. By allowing SREs to understand what changes are included in a new release of a project, this report can expedite troubleshooting when there are problems with a release.</p>
+    </section>
+  </section>
+<section data-type="sect1" id="continuous-build-and-deployment-Yms8u8">
+    <h1 class="heading jumptargets">Continuous Build and Deployment</h1>
+    <p>Google has developed an automated release system called <em>Rapid</em>. Rapid is a system that leverages a number of Google technologies to provide a framework that delivers scalable, hermetic, and reliable releases. The following sections describe the software lifecycle at Google and how it is managed using Rapid and other associated tools.</p>
+<section data-type="sect2" id="building-lqsAI1uM">
+      <h2 class="subheaders jumptargets">Building</h2>
+      <p>Blaze<sup><a class="jumptarget" data-type="noteref" id="id-QQLukSXFJIruN-marker" href="#id-QQLukSXFJIruN">37</a></sup> is Google’s build tool of choice. It supports building binaries from a range of languages, including our standard languages of C++, Java, Python, Go, and JavaScript. Engineers use Blaze to define build targets (e.g., the output of a build, such as a JAR file), and to specify the dependencies for each target <a data-type="xref" href="https://sre.google/sre-book/bibliography#Kem11">[Kem11]</a>. When performing a build, Blaze automatically builds the dependency targets.</p>
+      <p>Build targets for binaries and unit tests are defined in Rapid’s project configuration files. Project-specific flags, such as a unique build identifier, are passed by Rapid to Blaze. All binaries support a flag that displays the build date, the revision number, and the build identifier, which allow us to easily associate a binary to a record of how it was built.</p>
+    </section>
+<section data-type="sect2" id="branching-nqs9tMud">
+      <h2 class="subheaders jumptargets">Branching</h2>
+      <p>All code is checked into the main branch of the source code tree (mainline). However, most major projects don’t release directly from the mainline. Instead, we branch from the mainline at a specific revision and never merge changes from the branch back into the mainline. Bug fixes are submitted to the mainline and then cherry picked into the branch for inclusion in the release. This practice avoids inadvertently picking up unrelated changes submitted to the mainline since the original build occurred. Using this branch and cherry pick method, we know the exact contents of each release.</p>
+    </section>
+<section data-type="sect2" id="testing-Nbsrh0uZ">
+      <h2 class="subheaders jumptargets">Testing</h2>
+      <p>A continuous test system runs <a href="testing-reliability.html">unit tests</a> against the code in the mainline each time a change is submitted, allowing us to detect build and test failures quickly. Release engineering recommends that the continuous build test targets correspond to the same test targets that gate the project release. We also recommend creating releases at the revision number (version) of the last continuous test build that successfully completed all tests. These measures decrease the chance that subsequent changes made to the mainline will cause failures during the build performed at release time.</p>
+      <p>During the release process, we re-run the unit tests using the release branch and create an audit trail showing that all the tests passed. This step is important because if a release involves cherry picks, the release branch may contain a version of the code that doesn’t exist anywhere on the mainline. We want to guarantee that the tests pass in the context of what’s actually being released.</p>
+      <p>To complement the continuous test system, we use an independent testing environment that runs system-level tests on packaged build artifacts. These tests can be launched manually or from Rapid.</p>
+    </section>
+<section data-type="sect2" id="packaging-8ksQTeum">
+      <h2 class="subheaders jumptargets">Packaging</h2>
+      <p>Software is distributed to our production machines via the Midas Package Manager (MPM) <a data-type="xref" href="https://sre.google/sre-book/bibliography#McN14c">[McN14c]</a>. MPM assembles packages based on Blaze rules that list the build artifacts to include, along with their owners and permissions. Packages are named (e.g., <em>search/shakespeare/frontend</em>), versioned with a unique hash, and signed to ensure authenticity. MPM supports applying labels to a particular version of a package. Rapid applies a label containing the build ID, which guarantees that a package can be uniquely referenced using the name of the package and this label.</p>
+      <p>Labels can be applied to an MPM package to indicate a package’s location in the release process (e.g., <code>dev</code>, <code>canary</code>, or <code>production</code>). If you apply an existing label to a new package, the label is automatically moved from the old package to the new package. For example: if a package is labeled as <code>canary</code>, someone subsequently installing the canary version of that package will automatically receive the newest version of the package with the label <code>canary</code>.</p>
+    </section>
+<section data-type="sect2" id="rapid-m8sJcDux">
+      <h2 class="subheaders jumptargets">Rapid</h2>
+      <p><a data-type="xref" href="#fig_release-engineering_simplified-rapid-architecture">Figure 8-1</a> shows the main components of the Rapid system. Rapid is configured with files called <em>blueprints</em>. Blueprints are written in an internal configuration language and are used to define build and test targets, rules for deployment, and administrative information (like project owners). Role-based access control lists determine who can perform specific actions on a Rapid project.</p>
+      <figure class="horizontal vertical jumptarget" id="fig_release-engineering_simplified-rapid-architecture">
+        <img src="assets/15dd246e21-jqiQKoCx7lZ40RJVF7fGYCbAJ4cB5SmMs1TeeGafya_qu50UyNWO97EAE1mNdO00vN3pQwrUC5gYvajlGELrSnaa7FSX1idvuccc-s900" alt="Simplified view of Rapid architecture showing the main components of the system.">
+        <figcaption><span class="label">Figure 8-1. </span>Simplified view of Rapid architecture showing the main components of the system</figcaption>
+      </figure>
+      <p>Each Rapid project has workflows that define the actions to perform during the release process. Workflow actions can be performed serially or in parallel, and a workflow can launch other workflows. Rapid dispatches work requests to tasks running as a Borg job on our production servers. Because Rapid uses our production infrastructure, it can handle thousands of release requests simultaneously.</p>
+      <p>A typical release process proceeds as follows:</p>
+      <ol>
+        <li>Rapid uses the requested integration revision number (often obtained automatically from our continuous test system) to create a release branch.</li>
+        <li>Rapid uses Blaze to compile all the binaries and execute the unit tests, often performing these two steps in parallel. Compilation and testing occur in environments dedicated to those specific tasks, as opposed to taking place in the Borg job where the Rapid workflow is executing. This separation allows us to parallelize work easily.</li>
+        <li>Build artifacts are then available for system testing and canary deployments. A typical canary deployment involves starting a few jobs in our production environment after the completion of system tests.</li>
+        <li>The results of each step of the process are logged. A report of all changes since the last release is created.</li>
+      </ol>
+      <p>Rapid allows us to manage our release branches and cherry picks; individual cherry pick requests can be approved or rejected for inclusion in a release.</p>
+    </section>
+<section data-type="sect2" id="deployment-dbsMi8um">
+      <h2 class="subheaders jumptargets">Deployment</h2>
+      <p>Rapid is often used to drive simple deployments directly. It updates the Borg jobs to use newly built MPM packages based on deployment definitions in the blueprint files and specialized task executors.</p>
+      <p>For more complicated deployments, we use Sisyphus, which is a general-purpose rollout automation framework developed by SRE. A rollout is a logical unit of work that is composed of one or more individual tasks. Sisyphus provides a set of Python classes that can be extended to support any deployment process. It has a dashboard that allows for finer control on how the rollout is performed and provides a way to monitor the rollout’s progress.</p>
+      <p>In a typical integration, Rapid creates a rollout in a long-running Sisyphus job. Rapid knows the build label associated with the MPM package it created, and can specify that build label when creating the rollout in Sisyphus. Sisyphus uses the build label to specify which version of the MPM packages should be deployed.</p>
+      <p>With Sisyphus, the rollout process can be as simple or complicated as necessary. For example, it can update all the associated jobs immediately or it can roll out a new binary to successive clusters over a period of several hours.</p>
+      <p>Our goal is to fit the deployment process to the risk profile of a given service. In development or pre-production environments, we may build hourly and push releases automatically when all tests pass. For large user-facing services, we may push by starting in one cluster and expand exponentially until all clusters are updated. For sensitive pieces of infrastructure, we may extend the rollout over several days, interleaving them across instances in different geographic regions.</p>
+    </section>
+  </section>
+<section data-type="sect1" id="configuration-management-vJsYUr">
+    <h1 class="heading jumptargets">Configuration Management</h1>
+    <p>Configuration management is one area of particularly close collaboration between release engineers and SREs. Although configuration management may initially seem a deceptively simple problem, configuration changes are a potential source of instability. As a result, our approach to releasing and managing system and service configurations has evolved substantially over time. Today we use several models for distributing configuration files, as described in the following paragraphs. All schemes involve storing configuration in our primary source code repository and enforcing a strict code review requirement.</p>
+    <p><em>Use the mainline for configuration.</em> This was the first method used to configure services in Borg (and the systems that pre-dated Borg). Using this scheme, developers and SREs modify configuration files at the head of the main branch. The changes are reviewed and then applied to the running system. As a result, binary releases and configuration changes are decoupled. While conceptually and procedurally simple, this technique often leads to skew between the checked-in version of the configuration files and the running version of the configuration file because jobs must be updated in order to pick up the changes.</p>
+    <p><em>Include configuration files and binaries in the same MPM package.</em> For projects with few configuration files or projects where the files (or a subset of files) change with each release cycle, the configuration files can be included in the MPM package with the binaries. While this strategy limits flexibility by binding the binary and configuration files tightly, it simplifies deployment, because it only requires installing one <span class="keep-together">package</span>.</p>
+    <p><em>Package configuration files into MPM "configuration packages."</em> We can apply the hermetic principle to configuration management. Binary configurations tend to be tightly bound to particular versions of binaries, so we leverage the build and packaging systems to snapshot and release configuration files alongside their binaries. Similar to our treatment of binaries, we can use the build ID to reconstruct the configuration at a specific point in time.</p>
+    <p>For example, a change that implements a new feature can be released with a flag setting that configures that feature. By generating two MPM packages, one for the binary and one for the configuration, we retain the ability to change each package independently. That is, if the feature was released with a flag setting of <code>first_folio</code> but we realize it should instead be <code>bad_quarto</code>, we can cherry pick that change onto the release branch, rebuild the configuration package, and deploy it. This approach has the advantage of not requiring a new binary build.</p>
+    <p>We can leverage MPM’s labeling feature to indicate which versions of MPM packages should be installed together. A label of <code>much_ado</code> can be applied to the MPM packages described in the previous paragraph, which allows us to fetch both packages using this label. When a new version of the project is built, the <code>much_ado</code> label will be applied to the new packages. Because these tags are unique within the namespace for an MPM package, only the latest package with that tag will be used.</p>
+    <p><em>Read configuration files from an external store.</em> Some projects have configuration files that need to change frequently or dynamically (i.e., while the binary is running). These files can be stored in Chubby, Bigtable, or our source-based filesystem <a data-type="xref" href="https://sre.google/sre-book/bibliography#Yor11">[Yor11]</a>.</p>
+    <p>In summary, project owners consider the different options for distributing and managing configuration files and decide which works best on a case-by-case basis.</p>
+  </section>
+<section data-type="sect1" id="conclusions-lqsYCj">
+    <h1 class="heading jumptargets">Conclusions</h1>
+    <p>While this chapter has specifically discussed Google’s approach to release engineering and the ways in which release engineers work and collaborate with SREs, these practices can also be applied more widely.</p>
+<section data-type="sect2" id="its-not-just-for-googlers-NbsaIgCZ">
+      <h2 class="subheaders jumptargets">It’s Not Just for Googlers</h2>
+      <p>When equipped with the right tools, proper automation, and well-defined policies, developers and SREs shouldn’t have to worry about releasing software. Releases can be as painless as simply pressing a button.</p>
+      <p>Most companies deal with the same set of release engineering problems regardless of their size or the tools they use: How should you handle versioning of your packages? Should you use a continuous build and deploy model, or perform periodic builds? How often should you release? What configuration management policies should you use? What release metrics are of interest?</p>
+      <p>Google Release Engineers have developed our own tools out of necessity because open sourced or vendor-supplied tools don’t work at the scale we require. Custom tools allow us to include functionality to support (and even enforce) release process policies. However, these policies must first be defined in order to add appropriate features to our tools, and all companies should take the effort to define their release processes whether or not the processes can be automated and/or enforced.</p>
+    </section>
+<section data-type="sect2" id="start-release-engineering-at-the-beginning-8ksKtxCm">
+      <h2 class="subheaders jumptargets">Start Release Engineering at the Beginning</h2>
+      <p>Release engineering has often been an afterthought, and this way of thinking must change as platforms and services continue to grow in size and complexity.</p>
+      <p>Teams should budget for release engineering resources at the beginning of the product development cycle. It’s cheaper to put good practices and process in place early, rather than have to retrofit your system later.</p>
+      <p>It is essential that the developers, SREs, and release engineers work together. The release engineer needs to understand the intention of how the code should be built and deployed. The developers shouldn’t build and “throw the results over the fence” to be handled by the release engineers.</p>
+      <p class="pagebreak-after">Individual project teams decide when release engineering becomes involved in a project. Because release engineering is still a relatively young discipline, managers don’t always plan and budget for release engineering in the early stages of a project. Therefore, when considering how to incorporate release engineering practices, be sure that you consider its role as applied to the entire lifecycle of your product or service—particularly the early stages.</p>
+      <aside data-type="sidebar" id="more-information-bwSdT9tkC2" class="highlight">
+      <h5 class="heading jumptargets">More Information</h5>
+      <p>For more information on release engineering, see the following presentations, each of which has video available online:</p>
+      <ul>
+        <li><a href="https://usenix.org/conference/ures14west/summit-program/presentation/dickson" target="_blank" rel="noopener noreferrer"><em>How Embracing Continuous Release Reduced Change Complexity</em></a>, <span class="keep-together">USENIX</span> Release Engineering Summit West 2014, <a data-type="xref" href="https://sre.google/sre-book/bibliography#Dic14">[Dic14]</a></li>
+        <li><a href="https://www.usenix.org/conference/ucms13/summit-program/presentation/mcnutt" target="_blank" rel="noopener noreferrer"><em>Maintaining Consistency in a Massively Parallel Environment</em></a>, <span class="keep-together">USENIX</span>Configuration Management Summit 2013, <a data-type="xref" href="https://sre.google/sre-book/bibliography#McN13">[McN13]</a></li>
+        <li><a href="https://www.youtube.com/watch?v=RNMjYV_UsQ8" target="_blank" rel="noopener noreferrer"><em>The 10 Commandments of Release Engineering</em></a>, 2nd International Workshop on Release Engineering 2014, <a data-type="xref" href="https://sre.google/sre-book/bibliography#McN14b">[McN14b]</a></li>
+        <li><a href="https://www.usenix.org/conference/lisa14/conference-program/presentation/mcnutt" target="_blank" rel="noopener noreferrer"><em>Distributing Software in a Massively Parallel Environment</em></a>, LISA 2014, <a data-type="xref" href="https://sre.google/sre-book/bibliography#McN14c">[McN14c]</a></li>
+      </ul>
+      </aside>
+    </section>
+  </section>
+<div data-type="footnotes" class="footnotes"><p data-type="footnote" id="id-KpEudFeFwhwi0"><sup><a class="jumptargets" href="#id-KpEudFeFwhwi0-marker">36</a></sup>Google uses a monolithic unified source code repository; see <a data-type="xref" href="https://sre.google/sre-book/bibliography#Pot16">[Pot16]</a>.</p><p data-type="footnote" id="id-QQLukSXFJIruN"><sup><a class="jumptargets" href="#id-QQLukSXFJIruN-marker">37</a></sup>Blaze has been open sourced as Bazel. See “Bazel FAQ” on the Bazel website, <a href="https://bazel.build/faq.html" target="_blank" rel="noopener noreferrer"><em class="hyperlink">https://bazel.build/faq.html</em></a>.</p></div>
+</section>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="maia-aux">
+      <div class="previous">
+          <a href="automation-at-google.html">
+            <p class="footer-caption">Previous</p>
+            <p class="chapter-link">
+                Chapter 7 - The Evolution of Automation at Google
+            </p>
+          </a>
+      </div>
+      <div class="next">
+          <a href="simplicity.html">
+            <p class="footer-caption">Next</p>
+            <p class="chapter-link">
+                Chapter 9 - Simplicity
+            </p>
+          </a>
+      </div>
+        <p class="footer-link">Copyright © 2017 Google, Inc. Published by O'Reilly Media, Inc. Licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener noreferrer" target="_blank">CC BY-NC-ND 4.0</a></p>
+    </div>
+  </div>
+    </main>
+
+
+
+
+
+  </body>
+</html>
