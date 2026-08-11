@@ -52,7 +52,6 @@ const els = {
   fontIncrease: $("#font-increase"),
   lineHeightInput: $("#line-height-input"),
   codeWrapInput: $("#code-wrap-input"),
-  downloadButton: $("#download-button"),
   downloadProgressFill: $("#download-progress-fill"),
   offlineStatus: $("#offline-status"),
   offlineCount: $("#offline-count"),
@@ -69,6 +68,7 @@ const state = {
   pendingSelection: null,
   notebookTab: "highlights",
   installPrompt: null,
+  offlineJob: null,
   scrollTimer: null,
   toastTimer: null,
   settings: loadJSON(STORAGE.settings, {
@@ -166,7 +166,6 @@ function bindEvents() {
   els.settingsButton.addEventListener("click", () => els.settingsDialog.showModal());
   els.bookmarkButton.addEventListener("click", toggleBookmark);
   els.tocSearch.addEventListener("input", renderToc);
-  els.downloadButton.addEventListener("click", downloadPublication);
   els.previousChapterButton.addEventListener("click", () => loadChapter(state.chapterIndex - 1));
   els.nextChapterButton.addEventListener("click", () => loadChapter(state.chapterIndex + 1));
   els.chapterContent.addEventListener("click", handleChapterClick);
@@ -291,6 +290,7 @@ async function openPublication(id, requestedChapterUrl = null, push = true) {
     if (index < 0) index = Math.min(progress.chapterIndex || 0, state.chapters.length - 1);
     renderToc();
     updateOfflineStatus();
+    ensurePublicationOffline();
     await loadChapter(index, requested?.includes("#") ? new URL(requested).hash : "", push);
   } catch (error) {
     renderChapterError(error);
@@ -808,9 +808,12 @@ function closePanels() {
   els.scrim.hidden = true;
 }
 
-async function downloadPublication() {
-  if (!("caches" in window) || !state.chapters.length) return showToast("Offline storage is not available here");
-  els.downloadButton.disabled = true;
+async function ensurePublicationOffline() {
+  if (!("caches" in window) || !state.chapters.length || state.offlineJob) return;
+  const existing = loadJSON(STORAGE.offline, {})[state.publication.id];
+  if (existing?.complete && existing.version === 2) return updateOfflineStatus();
+  state.offlineJob = true;
+  els.offlineStatus.textContent = navigator.onLine ? "Saving for offline" : "Offline copy incomplete";
   const urls = [state.publication.sourceUrl, ...state.chapters.map((chapter) => chapter.url.split("#")[0])];
   const uniqueUrls = [...new Set(urls)];
   const resourceUrls = new Set();
@@ -825,7 +828,7 @@ async function downloadPublication() {
     complete += 1;
     const percent = (complete / uniqueUrls.length) * 100;
     els.downloadProgressFill.style.width = `${percent}%`;
-    els.offlineStatus.textContent = "Downloading";
+    els.offlineStatus.textContent = "Saving for offline";
     els.offlineCount.textContent = `${complete}/${uniqueUrls.length}`;
   }
   let resourcesComplete = 0;
@@ -839,11 +842,11 @@ async function downloadPublication() {
   }
   const total = uniqueUrls.length + resourceUrls.size;
   const offline = loadJSON(STORAGE.offline, {});
-  offline[state.publication.id] = { complete: failed === 0, count: total - failed, total, updatedAt: Date.now() };
+  offline[state.publication.id] = { version: 2, complete: failed === 0, count: total - failed, total, updatedAt: Date.now() };
   saveJSON(STORAGE.offline, offline);
-  els.downloadButton.disabled = false;
+  state.offlineJob = null;
   updateOfflineStatus();
-  showToast(failed ? `${failed} chapter${failed === 1 ? "" : "s"} could not download` : "Publication ready offline");
+  if (!failed) showToast("Book is ready offline");
 }
 
 async function cacheResource(url) {
@@ -856,16 +859,14 @@ async function cacheResource(url) {
 function updateOfflineStatus() {
   const info = loadJSON(STORAGE.offline, {})[state.publication?.id];
   if (!info) {
-    els.offlineStatus.textContent = navigator.onLine ? "Available online" : "Not downloaded";
+    els.offlineStatus.textContent = navigator.onLine ? "Preparing offline reading" : "Offline copy incomplete";
     els.offlineCount.textContent = "";
     els.downloadProgressFill.style.width = "0";
-    els.downloadButton.firstChild;
     return;
   }
-  els.offlineStatus.textContent = info.complete ? "Ready offline" : "Partly downloaded";
+  els.offlineStatus.textContent = info.complete ? "Ready offline" : (navigator.onLine ? "Finishing offline copy" : "Offline copy incomplete");
   els.offlineCount.textContent = `${info.count}/${info.total}`;
   els.downloadProgressFill.style.width = `${(info.count / info.total) * 100}%`;
-  els.downloadButton.lastChild.textContent = info.complete ? "Refresh offline copy" : "Finish download";
 }
 
 function handleKeyboard(event) {

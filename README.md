@@ -11,7 +11,7 @@ Margin is a static, installable reading app for software engineering books, pape
 - Chapter search and internal section links
 - Highlights, notes, chapter bookmarks, and a local notebook
 - Copy buttons for code examples
-- Offline download for chapter text and illustrations
+- Automatic offline caching for chapter text and illustrations—no download step
 - Installable PWA metadata for “Add to Home Screen”
 - Basic PDF support for future local publications
 

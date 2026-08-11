@@ -144,7 +144,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .library-intro { max-width: 520px; margin: 34px 0 0; color: var(--ink-soft); font: 400 clamp(17px, 2vw, 20px)/1.6 "Newsreader", serif; }
 .library-section { margin-top: clamp(94px, 13vw, 170px); }
 .section-heading { display: flex; align-items: end; justify-content: space-between; padding-bottom: 22px; border-bottom: 1px solid var(--line-strong); }
-.section-heading h2, .reader-promise h2 { margin: 0; font: 500 clamp(30px, 4vw, 44px)/1.05 "Newsreader", serif; letter-spacing: -.035em; }
+.section-heading h2 { margin: 0; font: 500 clamp(30px, 4vw, 44px)/1.05 "Newsreader", serif; letter-spacing: -.035em; }
 .section-kicker { margin-bottom: 10px; color: var(--ink-faint); }
 .library-count { margin: 0; color: var(--ink-faint); font: 500 11px/1 var(--mono-font); text-transform: uppercase; letter-spacing: .08em; }
 .publication-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr)); gap: 26px; padding-top: 30px; }
@@ -179,11 +179,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .book-progress span { display: block; height: 100%; background: var(--copper); }
 .book-card-skeleton { height: 220px; background: linear-gradient(100deg, var(--paper-deep) 30%, var(--paper-raised) 50%, var(--paper-deep) 70%); background-size: 400% 100%; animation: shimmer 1.3s infinite; }
 @keyframes shimmer { to { background-position: -100% 0; } }
-.reader-promise { display: grid; grid-template-columns: 1fr 1.2fr; gap: 70px; margin-top: 110px; padding: 70px 0 20px; border-top: 1px solid var(--line-strong); }
-.reader-promise ul { list-style: none; margin: 0; padding: 0; }
-.reader-promise li { display: grid; grid-template-columns: 45px 1fr; gap: 15px; padding: 15px 0; border-bottom: 1px solid var(--line); color: var(--ink-soft); font: 400 15px/1.4 var(--ui-font); }
-.reader-promise li span { color: var(--copper); font: 500 10px/1.8 var(--mono-font); }
-
 /* Reader shell */
 .reader-view { min-height: 100vh; }
 .top-progress { position: fixed; z-index: 40; inset: 0 0 auto; height: 2px; background: transparent; }
@@ -222,9 +217,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .toc-item small { grid-column: 2; color: var(--ink-faint); font: 400 9px/1.2 var(--mono-font); }
 .download-box { padding: 14px 15px calc(15px + var(--safe-bottom)); border-top: 1px solid var(--line); }
 .download-status-row { display: flex; justify-content: space-between; margin-bottom: 8px; color: var(--ink-faint); font: 500 8px/1 var(--mono-font); text-transform: uppercase; letter-spacing: .06em; }
-.download-progress { height: 2px; margin-bottom: 11px; overflow: hidden; background: var(--paper-deep); }
+.download-progress { height: 2px; overflow: hidden; background: var(--paper-deep); }
 .download-progress span { display: block; width: 0; height: 100%; background: var(--forest); transition: width 180ms ease; }
-.download-box .quiet-button { min-height: 36px; font-size: 11px; }
 
 /* Reading surface */
 .reader-main { min-width: 0; min-height: calc(100vh - 68px); padding: 0 clamp(28px, 6vw, 90px) 80px; outline: none; }
@@ -353,7 +347,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   .book-card { grid-template-columns: 108px 1fr; gap: 18px; min-height: 199px; padding: 16px; }
   .book-cover { min-height: 166px; }.cover-title { font-size: 19px; }
   .book-meta h3 { font-size: 22px; }
-  .reader-promise { grid-template-columns: 1fr; gap: 35px; margin-top: 80px; padding-top: 50px; }
   .library-footer span:last-child { display: none; }
   .reader-header { grid-template-columns: 1fr minmax(120px, 1.6fr) 1fr; padding-inline: 8px; }
   .mobile-only { display: inline-grid; }
