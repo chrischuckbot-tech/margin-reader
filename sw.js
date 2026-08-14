@@ -1,26 +1,33 @@
-const SHELL_CACHE = "margin-shell-v6";
+const SHELL_CACHE = "margin-shell-v8";
 const CONTENT_CACHE = "margin-content-v1";
 const PUBLICATION_MANIFEST = "./data/publications.json";
-const APP_SHELL = "./index.html";
+const SCOPE_URL = new URL("./", self.registration.scope).href;
+const APP_SHELL = new URL("index.html", SCOPE_URL).href;
 const PUBLICATION_HOSTS = new Set(["abseil.io", "google.github.io", "aosabook.org"]);
-const SHELL_ASSETS = [
-  "./",
-  "./index.html",
-  "./styles.css",
-  "./app.js",
-  "./manifest.webmanifest",
-  "./data/publications.json",
-  "./assets/icon.svg",
-  "./assets/icon-192.png",
-  "./assets/icon-512.png",
-  "./assets/apple-touch-icon.png",
-];
+const CORE_SHELL_ASSETS = [
+  "index.html",
+  "styles.css",
+  "app.js",
+  "data/publications.json",
+].map((path) => new URL(path, SCOPE_URL).href);
+const OPTIONAL_SHELL_ASSETS = [
+  "manifest.webmanifest",
+  "assets/icon.svg",
+  "assets/icon-192.png",
+  "assets/icon-512.png",
+  "assets/apple-touch-icon.png",
+].map((path) => new URL(path, SCOPE_URL).href);
 
 let publicationCacheJob = null;
 
 self.addEventListener("install", (event) => {
   event.waitUntil((async () => {
-    await caches.open(SHELL_CACHE).then((cache) => cache.addAll(SHELL_ASSETS));
+    const cache = await caches.open(SHELL_CACHE);
+    await cache.addAll(CORE_SHELL_ASSETS);
+    await Promise.allSettled(OPTIONAL_SHELL_ASSETS.map(async (url) => {
+      const response = await fetch(url);
+      if (response.ok) await cache.put(url, response);
+    }));
     self.skipWaiting();
   })());
 });
@@ -101,35 +108,64 @@ self.addEventListener("fetch", (event) => {
   if (!isAppAsset && !isPublicationAsset) return;
 
   if (event.request.mode === "navigate") {
-    event.respondWith(serveShell(event, APP_SHELL));
+    event.respondWith(serveAppShell(event.request));
     return;
   }
 
   if (isAppAsset && !isLocalPublication) {
-    event.respondWith(serveShell(event, event.request));
+    event.respondWith(cacheFirst(event, SHELL_CACHE));
     return;
   }
 
-  event.respondWith(
-    caches.match(event.request).then((cached) => cached || fetch(event.request).then((response) => {
-      const copy = response.clone();
-      caches.open(CONTENT_CACHE).then((cache) => cache.put(event.request, copy));
-      return response;
-    }).catch(() => Response.error())),
-  );
+  event.respondWith(cacheFirst(event, CONTENT_CACHE));
 });
 
-function serveShell(event, cacheKey) {
-  const update = fetch(event.request).then(async (response) => {
-    if (response.ok) {
-      const cache = await caches.open(SHELL_CACHE);
-      await cache.put(cacheKey, response.clone());
+async function serveAppShell(request) {
+  const cache = await caches.open(SHELL_CACHE);
+  const cached = await cache.match(APP_SHELL);
+  if (cached) return cached;
+
+  try {
+    const response = await fetch(request);
+    if (!response.ok) throw new Error(`App shell returned ${response.status}`);
+    try { await cache.put(APP_SHELL, response.clone()); } catch { /* Do not hide a valid network response. */ }
+    return response;
+  } catch {
+    return createOfflineFallback();
+  }
+}
+
+async function cacheFirst(event, cacheName) {
+  const cached = await caches.match(event.request);
+  if (cached) return cached;
+
+  try {
+    const response = await fetch(event.request);
+    if (response.ok || response.type === "opaque") {
+      const copy = response.clone();
+      event.waitUntil(caches.open(cacheName).then((cache) => cache.put(event.request, copy)).catch(() => {}));
     }
     return response;
-  });
-  event.waitUntil(update.catch(() => {}));
+  } catch {
+    return Response.error();
+  }
+}
 
-  return caches.open(SHELL_CACHE).then(async (cache) => (
-    (await cache.match(cacheKey)) || update
-  ));
+function createOfflineFallback() {
+  const html = `<!doctype html>
+    <html lang="en">
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+        <meta name="theme-color" content="#f4f0e8">
+        <title>Margin — Offline</title>
+        <style>
+          *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:32px;background:#f4f0e8;color:#20221f;font:16px/1.55 system-ui,sans-serif}
+          main{width:min(100%,430px)}strong{display:grid;width:44px;height:44px;place-items:center;margin-bottom:34px;border-radius:3px 3px 13px 3px;background:#173f38;color:#faf8f3;font:24px Georgia,serif}
+          h1{margin:0 0 14px;font:500 44px/1 Georgia,serif;letter-spacing:-.03em}p{margin:0 0 26px;color:#676a64}a{display:inline-block;padding:11px 16px;border:1px solid rgba(32,34,31,.28);border-radius:4px;color:inherit;text-decoration:none;font-weight:600}
+        </style>
+      </head>
+      <body><main><strong>M</strong><h1>Margin is offline.</h1><p>The app has not finished saving on this device. Reconnect once, open Margin, and wait for the library to appear before going offline.</p><a href="${SCOPE_URL}">Try again</a></main></body>
+    </html>`;
+  return new Response(html, { headers: { "Content-Type": "text/html; charset=utf-8" } });
 }
