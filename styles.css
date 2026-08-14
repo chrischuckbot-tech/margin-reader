@@ -265,6 +265,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .chapter-content .footnotes { padding-top: 2em; border-top: 1px solid var(--line); font-size: .84em; color: var(--ink-soft); }
 .source-attribution { margin-top: 4em; padding-top: 18px; border-top: 1px solid var(--line); color: var(--ink-faint); font: 400 10px/1.65 var(--ui-font); }
 .source-attribution a { color: var(--ink-soft); }
+.chapter-content.embedded-publication { width: min(100%, 1040px); padding-top: 32px; }
+.embedded-notice { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 12px; color: var(--ink-faint); font: 500 9px/1.4 var(--mono-font); letter-spacing: .06em; text-transform: uppercase; }
+.embedded-notice a { color: var(--forest); }
+.embedded-publication iframe { display: block; width: 100%; height: calc(100vh - 145px); border: 1px solid var(--line); background: #fff; }
 .chapter-content mark.reader-highlight { padding: .06em 0; border-radius: 2px; background: var(--highlight-yellow); color: inherit; cursor: pointer; }
 .chapter-content mark.reader-highlight[data-color="green"] { background: var(--highlight-green); }
 .chapter-content mark.reader-highlight[data-color="blue"] { background: var(--highlight-blue); }
@@ -349,6 +353,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   .book-card { grid-template-columns: 108px 1fr; gap: 18px; min-height: 199px; padding: 16px; }
   .book-cover { min-height: 166px; }.cover-title { font-size: 19px; }
   .book-meta h3 { font-size: 22px; }
+  .embedded-notice { align-items: flex-start; flex-direction: column; gap: 5px; }
+  .embedded-publication iframe { height: calc(100vh - 175px); }
   .library-footer span:last-child { display: none; }
   .reader-header { grid-template-columns: 1fr minmax(120px, 1.6fr) 1fr; padding-inline: 8px; }
   .mobile-only { display: inline-grid; }

@@ -95,5 +95,20 @@
     "accent": "violet",
     "year": "2014",
     "topics": ["Patterns", "Architecture", "Performance"]
+  },
+  {
+    "id": "distributed-systems-for-fun-and-profit",
+    "title": "Distributed Systems for Fun and Profit",
+    "shortTitle": "Distributed Systems",
+    "authors": "Mikito Takada",
+    "description": "An approachable introduction to failure, time, replication, consistency, and the trade-offs behind distributed systems.",
+    "type": "web",
+    "sourceUrl": "https://book.mixu.net/distsys/single-page.html",
+    "publisher": "Mikito Takada",
+    "license": "Free official online edition; copyright retained by the author",
+    "licenseUrl": "https://github.com/mixu/distsysbook#licence",
+    "accent": "copper",
+    "year": "2013",
+    "topics": ["Distributed Systems", "Consistency", "Replication"]
   }
 ]

@@ -1,4 +1,4 @@
-const SHELL_CACHE = "margin-shell-v8";
+const SHELL_CACHE = "margin-shell-v9";
 const CONTENT_CACHE = "margin-content-v1";
 const PUBLICATION_MANIFEST = "./data/publications.json";
 const SCOPE_URL = new URL("./", self.registration.scope).href;

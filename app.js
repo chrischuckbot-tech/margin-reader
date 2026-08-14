@@ -229,7 +229,8 @@ function renderLibrary() {
   els.publicationGrid.innerHTML = state.publications.map((publication) => {
     const saved = progress[publication.id] || {};
     const percent = Math.round(saved.overallPercent || 0);
-    const label = saved.chapterTitle ? `Continue · ${saved.chapterTitle}` : "Start reading";
+    const isWebEdition = publication.type === "web";
+    const label = isWebEdition ? "Read official edition" : (saved.chapterTitle ? `Continue · ${saved.chapterTitle}` : "Start reading");
     return `
       <button class="book-card" type="button" data-publication-id="${escapeHTML(publication.id)}">
         <span class="book-cover ${escapeHTML(publication.accent || "copper")}" aria-hidden="true">
@@ -242,8 +243,8 @@ function renderLibrary() {
           <h3>${escapeHTML(publication.title)}</h3>
           <span class="book-author">${escapeHTML(publication.authors)}</span>
           <span class="book-progress-wrap">
-            <span class="book-progress-label"><span>${escapeHTML(label)}</span><span>${percent}%</span></span>
-            <span class="book-progress"><span style="width:${percent}%"></span></span>
+            <span class="book-progress-label"><span>${escapeHTML(label)}</span><span>${isWebEdition ? "Online" : `${percent}%`}</span></span>
+            <span class="book-progress"><span style="width:${isWebEdition ? 100 : percent}%"></span></span>
           </span>
         </span>
       </button>`;
@@ -306,6 +307,9 @@ async function openPublication(id, requestedChapterUrl = null, push = true) {
 async function fetchToc(publication) {
   if (publication.type === "pdf") {
     return [{ publicationId: publication.id, title: publication.title, url: publication.sourceUrl, type: "pdf", label: "PDF" }];
+  }
+  if (publication.type === "web") {
+    return [{ publicationId: publication.id, title: "Complete online edition", url: publication.sourceUrl, type: "web", label: "Official website" }];
   }
   const html = await fetchText(publication.sourceUrl);
   const doc = new DOMParser().parseFromString(html, "text/html");
@@ -403,6 +407,7 @@ async function loadChapter(index, hash = "", push = true) {
   state.currentUrl = chapter.url.split("#")[0];
   els.chapterLoading.hidden = false;
   els.chapterContent.hidden = true;
+  els.chapterContent.classList.remove("embedded-publication");
   els.chapterNavigation.hidden = true;
   els.readerChapterTitle.textContent = chapter.title;
   els.bookmarkButton.classList.toggle("active", isCurrentChapterBookmarked());
@@ -412,6 +417,8 @@ async function loadChapter(index, hash = "", push = true) {
   try {
     if (state.publication.type === "pdf") {
       renderPdf(state.publication);
+    } else if (state.publication.type === "web") {
+      renderWebPublication(state.publication);
     } else {
       const html = await fetchText(state.currentUrl, true);
       const doc = new DOMParser().parseFromString(html, "text/html");
@@ -480,6 +487,20 @@ function getOriginalChapterUrl(localUrl) {
 
 function renderPdf(publication) {
   els.chapterContent.innerHTML = `<iframe title="${escapeHTML(publication.title)}" src="${escapeHTML(publication.sourceUrl)}" style="width:100%;height:calc(100vh - 150px);border:1px solid var(--line)"></iframe>`;
+}
+
+function renderWebPublication(publication) {
+  els.chapterContent.classList.add("embedded-publication");
+  els.chapterContent.innerHTML = `
+    <aside class="embedded-notice">
+      <span>Official online edition</span>
+      <a href="${escapeHTML(publication.sourceUrl)}" target="_blank" rel="noopener noreferrer">Open in a new tab</a>
+    </aside>
+    <iframe
+      title="${escapeHTML(publication.title)}"
+      src="${escapeHTML(publication.sourceUrl)}"
+      referrerpolicy="strict-origin-when-cross-origin"
+    ></iframe>`;
 }
 
 function renderChapterError(error) {
@@ -848,6 +869,7 @@ function closePanels() {
 }
 
 async function ensurePublicationOffline() {
+  if (state.publication?.type === "web") return updateOfflineStatus();
   if (!("caches" in window) || !state.chapters.length || state.offlineJob) return;
   const existing = loadJSON(STORAGE.offline, {})[state.publication.id];
   if (existing?.complete && existing.version === 2) return updateOfflineStatus();
@@ -896,6 +918,12 @@ async function cacheResource(url) {
 }
 
 function updateOfflineStatus() {
+  if (state.publication?.type === "web") {
+    els.offlineStatus.textContent = "Official online edition";
+    els.offlineCount.textContent = "Connection required";
+    els.downloadProgressFill.style.width = "100%";
+    return;
+  }
   const info = loadJSON(STORAGE.offline, {})[state.publication?.id];
   if (!info) {
     els.offlineStatus.textContent = navigator.onLine ? "Preparing offline reading" : "Offline copy incomplete";

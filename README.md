@@ -9,6 +9,7 @@ Margin is a static, installable reading app for software engineering books, pape
 - Building Secure and Reliable Systems
 - The Architecture of Open Source Applications, Volumes 1 and 2
 - Game Programming Patterns
+- Distributed Systems for Fun and Profit (official online edition)
 - Light, sepia, and dark themes
 - Serif/sans type, text size, line spacing, and code wrapping controls
 - Chapter progress and automatic resume
@@ -71,4 +72,4 @@ PDFs currently use the browser’s built-in viewer. A future PDF-specific layer 
 
 ## Content rights
 
-The included book remains hosted by its publisher. Margin fetches and restyles the official pages for reading, while preserving title/author attribution and linking each chapter back to its original source and license. Software Engineering at Google is published under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/).
+Included books remain hosted by their publishers or authors. Margin fetches, restyles, or embeds the official pages for reading, while preserving title/author attribution and linking back to the original source and license. Software Engineering at Google is published under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/). Distributed Systems for Fun and Profit is shown from the author-hosted online edition and is not bundled for offline use.
